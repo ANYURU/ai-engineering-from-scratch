@@ -2,132 +2,130 @@
 id: inference-optimization
 title: Inference Optimization: KV Cache, Quantization, Batching
 code: IO
-subtitle: KV cache, quantization and batching: where decode time goes and how to cut it.
+subtitle: KV cache, quantization, batching and speculation. Formulas, scheduler numbers and the mistakes that cost latency.
 hue: 200
 sources: phases/07-transformers-deep-dive/12-kv-cache-flash-attention, phases/10-llms-from-scratch/11-quantization, phases/10-llms-from-scratch/12-inference-optimization, phases/17-infrastructure-and-production/04-vllm-serving-internals, phases/17-infrastructure-and-production/05-eagle3-speculative-decoding, phases/17-infrastructure-and-production/08-inference-metrics-goodput, phases/17-infrastructure-and-production/09-production-quantization
-source_hash: 8b5a735e414be091
+source_hash: 24eabbf93445b948
 ---
 
-## Inference path
+## Inference pipeline
 type: architecture
-from: phases/17-infrastructure-and-production/04-vllm-serving-internals/code/main.py, phases/10-llms-from-scratch/12-inference-optimization/code/main.py, phases/10-llms-from-scratch/11-quantization/code/main.py, phases/07-transformers-deep-dive/12-kv-cache-flash-attention/code/main.py
+from: phases/10-llms-from-scratch/12-inference-optimization/code/main.py, phases/17-infrastructure-and-production/04-vllm-serving-internals/code/main.py
 
 ```arch
-node | req | 1,1 | Request | prompt and output lengths | client
-node | sched | 1,2 | Scheduler | admit on free blocks | queue
-node | pre | 2,1 | Prefill | prompt slices | process
-node | kv | 3,1 | KV cache | K and V per layer | store
-node | dec | 2,2 | Decode | one token per request | process
-node | qw | 3,2 | Quantized weights | scale and round | model
-edge | req | sched | queue
-edge | sched | pre | admit
-edge | pre | kv | write
-edge | kv | dec | read K and V
-edge | sched | dec | batch
-edge | qw | dec | weights
+node | req | 1,1 | Request | queue and arrival | client
+node | pc | 1,2 | PrefixCache | shared prompt trie | store
+node | admit | 2,1 | Admit | free KV blocks | process
+node | kv | 2,2 | KVCache | K and V per token | store
+node | pre | 3,1 | Prefill | chunked prompt | gpu
+node | dec | 3,2 | Decode | one token per step | gpu
+edge | req | admit | arrive
+edge | pc | pre | reuse prefix
+edge | admit | pre | blocks free
+edge | pre | dec | prompt done
+edge | dec | kv | append
+edge | kv | dec | read
 ```
 
 ## One decode step
 type: flow
-from: phases/17-infrastructure-and-production/04-vllm-serving-internals/code/main.py, phases/07-transformers-deep-dive/12-kv-cache-flash-attention/code/main.py
+from: phases/10-llms-from-scratch/12-inference-optimization/code/main.py
 
-1. **Scheduler**: admits a waiting request when free blocks fit.
-2. **Prefill**: processes the prompt in slices of `CHUNK_SIZE` tokens.
-3. **Cache append**: stores the new K and V for this step.
-4. **Attention**: scores the query against the cache, then applies softmax.
-5. **Release**: frees the blocks of finished requests.
+1. **Write**: `kv_cache.update` stores the new K and V for each layer.
+2. **Read**: The cache returns the slices up to the current length.
+3. **Attend**: `scaled_dot_product_attention` runs over the cached prefix.
+4. **Advance**: On a one-token decode, `kv_cache.advance(1)` moves the length.
 
-## Cached decode loop
+## Core softmax update
 type: annotated-code
 lang: python
 from: phases/07-transformers-deep-dive/12-kv-cache-flash-attention/code/main.py
 
 ```python
-for q, k, v in zip(all_queries, all_K, all_V):
-    cache.append(k, v)  # store this step's K and V
-    out = attention_full(q, cache.K, cache.V)  # attend over the cache
-    ops += len(cache)  # cost grows with cache length
-    outputs.append(out)
+new_m = max(m, *scores)                      # running max
+if m == float("-inf"):
+    exp_old = 0.0
+else:
+    exp_old = math.exp(m - new_m)            # rescale old sums
+exp_new = [math.exp(sc - new_m) for sc in scores]
+s = s * exp_old + sum(exp_new)               # running sum
 ```
 
-## Run the code
+## Task reference
 type: task-table
-from: phases/07-transformers-deep-dive/12-kv-cache-flash-attention/code/main.py, phases/10-llms-from-scratch/11-quantization/code/main.py, phases/17-infrastructure-and-production/04-vllm-serving-internals/code/main.py
+from: phases/07-transformers-deep-dive/12-kv-cache-flash-attention/code/main.py, phases/10-llms-from-scratch/12-inference-optimization/code/main.py
 
 | Task | Code |
 |---|---|
-| Naive decode, recomputes the prefix | `decode_naive(all_K, all_V, all_queries)` |
-| Cached decode, appends K and V | `decode_cached(all_K, all_V, all_queries)` |
-| Tiled softmax, Flash style | `tiled_softmax_dot(q, Ks, Vs, tile=4)` |
-| KV cache bytes | `kv_cache_bytes(N, n_layers, n_heads_kv, d_head, dtype=2)` |
-| Symmetric quantize | `quantize_symmetric(tensor, num_bits=8)` |
-| Per-channel quantize | `quantize_per_channel(tensor, num_bits=8, axis=0)` |
-| Continuous batching sim | `simulate_continuous(reqs, chunked)` |
+| Count KV cache bytes | `kv_cache_bytes(N, n_layers, n_heads_kv, d_head, dtype=2)` |
+| Tiled attention output | `tiled_softmax_dot(q, Ks, Vs, tile=4)` |
+| Simulate batching | `simulate_continuous_batching(requests, batch_size)` |
+| Cache a shared prefix | `PrefixCache(max_entries=1000)` |
+| Speculate tokens | `speculative_decode(draft_model, target_model, context, num_speculative=5)` |
+| Check memory fit | `memory_budget(config, gpu_memory_gb)` |
 
-## Default settings
+## Defaults
 type: defaults
-from: phases/07-transformers-deep-dive/12-kv-cache-flash-attention/code/main.py, phases/10-llms-from-scratch/11-quantization/code/main.py, phases/17-infrastructure-and-production/04-vllm-serving-internals/code/main.py
+from: phases/07-transformers-deep-dive/12-kv-cache-flash-attention/code/main.py, phases/10-llms-from-scratch/12-inference-optimization/code/main.py, phases/17-infrastructure-and-production/04-vllm-serving-internals/code/main.py
 
 | Setting | Default | Note |
 |---|---|---|
-| `dtype` | 2 | Bytes per element for fp16 or bf16 |
-| `tile` | 4 | Tokens per tile in the Flash style loop |
-| `num_bits` | 8 | Bits in symmetric quantization |
-| `CHUNK_SIZE` | 512 | Prompt tokens per prefill slice |
+| `dtype` in `kv_cache_bytes` | 2 | Bytes per value. fp16 or bf16 |
+| `tile` in `tiled_softmax_dot` | 4 | Keys per tile |
+| `max_entries` in `PrefixCache` | 1000 | Trie node limit |
+| `num_speculative` | 5 | Draft tokens per round |
+| `acceptance_rate` in `DraftModel` | 0.8 | Simulated accept rate |
+| `CHUNK_SIZE` | 512 | Prefill tokens per slice |
 | `KV_BLOCK_SIZE` | 16 | Tokens per KV block |
-| `KV_BLOCKS_AVAILABLE` | 1800 | Toy KV block budget |
+| `KV_BLOCKS_AVAILABLE` | 1800 | Toy block budget |
 
-## Static vs continuous batching
-type: comparison
-from: phases/17-infrastructure-and-production/04-vllm-serving-internals/code/main.py
-
-| Factor | Static | Continuous |
-|---|---|---|
-| Output length | Padded to the longest in the window | Each request ends at its own length |
-| Admission | Fixed windows of the batch size | When free blocks fit |
-| Finished requests | Kept until the window ends | Released each step |
-| Prefill | Padded to the longest prompt | Sliced by the chunk size |
-
-## Key formulas
+## Formulas
 type: concepts
-from: phases/07-transformers-deep-dive/12-kv-cache-flash-attention/code/main.py, phases/10-llms-from-scratch/11-quantization/code/main.py
+from: phases/07-transformers-deep-dive/12-kv-cache-flash-attention/code/main.py, phases/10-llms-from-scratch/12-inference-optimization/code/main.py, phases/10-llms-from-scratch/11-quantization/code/main.py, phases/17-infrastructure-and-production/04-vllm-serving-internals/code/main.py
 
-- **KV bytes**: `2 * N * n_layers * n_heads_kv * d_head * dtype` gives the cache size for N tokens.
-- **Quantization scale**: `scale = abs_max / qmax` maps the largest weight to the top integer.
-- **Rounding**: `np.clip(np.round(tensor / scale), qmin, qmax)` stores each weight as an integer.
+- **KV cache bytes**: `2 * N * n_layers * n_heads_kv * d_head * dtype`.
+- **Per token KV**: two tensors times layers, KV heads, head size and item size.
+- **Running max softmax**: the output matches a full softmax. Only one tile is held.
+- **Block count**: ceiling of total tokens divided by the block size.
+- **Quantization scale**: abs max divided by the integer range maximum.
 
 ## Troubleshooting
 type: troubleshooting
-from: phases/10-llms-from-scratch/12-inference-optimization/outputs/skill-inference-optimization.md
+from: phases/10-llms-from-scratch/12-inference-optimization/code/main.py, phases/17-infrastructure-and-production/04-vllm-serving-internals/code/main.py
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| GPU mostly idle during decode | Decode at batch 1 is memory-bound | Raise batch size with continuous batching |
-| KV memory wasted | Contiguous KV blocks | Use paged KV blocks |
-| Fast tokens but slow responses | Only throughput was measured | Measure latency too |
-| Speculative decoding slows down | High temperature lowers acceptance | Use low temperature |
+| Prefix lookup returns 0 | First tokens differ, so the trie walk stops | Keep the shared prompt identical from token one |
+| Trie stops inserting | `max_entries` reached | Raise `max_entries` |
+| Batch slots sit idle | Static batch waits for the longest output | Use continuous batching |
+| Decode stalls on a long prompt | Prefill is not chunked | Set `chunked` so prefill uses `CHUNK_SIZE` |
+| Speculation is slower | Low acceptance rate | Measure the rate before enabling it |
+| Model does not fit | Weights exceed GPU memory | Quantize or add GPUs |
 
 ## Glossary
 type: glossary
-from: phases/07-transformers-deep-dive/12-kv-cache-flash-attention/code/main.py, phases/17-infrastructure-and-production/04-vllm-serving-internals/code/main.py
+from: phases/10-llms-from-scratch/12-inference-optimization/code/main.py, phases/17-infrastructure-and-production/04-vllm-serving-internals/code/main.py
 
-- **KV block**: fixed number of tokens held by one cache block.
-- **Chunk**: prompt tokens taken in one prefill step.
-- **Naive decode**: recomputes attention over the full prefix at each step.
-- **Continuous batching**: admits and releases requests at every step.
+- **KV cache**: Stored keys and values for past tokens, so they are not recomputed.
+- **Prefill**: Processing the whole prompt before the first output token.
+- **Decode**: Producing one output token per step.
+- **TTFT**: Time to first token. Set when prefill ends.
+- **ITL**: Inter-token latency. Time between output tokens.
 
 ## Questions
 type: qa
-from: phases/07-transformers-deep-dive/12-kv-cache-flash-attention/code/main.py, phases/17-infrastructure-and-production/04-vllm-serving-internals/code/main.py
+from: phases/10-llms-from-scratch/12-inference-optimization/code/main.py, phases/17-infrastructure-and-production/04-vllm-serving-internals/code/main.py, phases/17-infrastructure-and-production/08-inference-metrics-goodput/code/main.py
 
-- **Why is cached decode faster?** It appends one K and V and reuses the rest.
-- **Why does naive decode cost grow fast?** Its op count is N(N+1)/2.
-- **Why slice the prefill?** Each step takes at most `CHUNK_SIZE` prompt tokens.
+- **Why store K and V?** Each decode step reads them instead of recomputing the prefix.
+- **Why is static batching wasteful?** Every row waits for the largest output length.
+- **Why chunk prefill?** A long prompt would block the decode tokens of other requests.
+- **Why do benchmark tools disagree on TPOT?** One counts the TTFT time in the rate and the other does not.
 
 ## Tips
 type: tips
-from: phases/10-llms-from-scratch/12-inference-optimization/outputs/skill-inference-optimization.md
+from: phases/17-infrastructure-and-production/08-inference-metrics-goodput/code/main.py, phases/17-infrastructure-and-production/04-vllm-serving-internals/code/main.py, phases/10-llms-from-scratch/12-inference-optimization/code/main.py
 
-- Use a draft model 5-10x smaller than the target.
-- Aim for acceptance above 70%.
-- Prefer EAGLE, then draft-target, then n-gram.
+- Report P99 latency, not the mean. Check each request against all three limits.
+- Derive the chunk size and block count from the scheduler constants.
+- Keep the shared prompt prefix identical across requests.
+- Check KV memory against the budget before raising the batch size.

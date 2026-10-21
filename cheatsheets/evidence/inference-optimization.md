@@ -1,75 +1,74 @@
 # Evidence: cheatsheets/inference-optimization.md
 
-Abbreviations: A = phases/07-transformers-deep-dive/12-kv-cache-flash-attention/code, B = phases/10-llms-from-scratch/11-quantization/code, C = phases/17-infrastructure-and-production/04-vllm-serving-internals/code, D = phases/10-llms-from-scratch/12-inference-optimization/code, E = phases/10-llms-from-scratch/12-inference-optimization/outputs.
+Abbreviations: P07 = phases/07-transformers-deep-dive/12-kv-cache-flash-attention, P10 = phases/10-llms-from-scratch/12-inference-optimization, Q11 = phases/10-llms-from-scratch/11-quantization, P04 = phases/17-infrastructure-and-production/04-vllm-serving-internals, P08 = phases/17-infrastructure-and-production/08-inference-metrics-goodput, c = code/main.py.
 
-## Architecture: Inference path (architecture, 6 nodes)
-- Request, prompt and output lengths: C/main.py:32-33
-- Scheduler, admit on free blocks: C/main.py:133-136
-- Prefill, prompt slices: C/main.py:147-151
-- KV cache, K and V per layer: D/main.py:21-25
-- Decode, one token per request: C/main.py:155-156
-- Quantized weights, scale and round: B/main.py:82-90
+## Architecture: Inference pipeline (6 nodes, 6 edges)
+- Request queue and arrival: P04/c:125
+- PrefixCache shared prompt trie: P10/c:184-190
+- Admit free KV blocks: P04/c:134
+- KVCache K and V per token: P10/c:5-19, 21-29
+- Prefill chunked prompt: P04/c:150
+- Decode one token per step: P10/c:150-151
 
-## One decode step (flow, 5 steps)
-- Scheduler admits when free blocks fit: C/main.py:133-136
-- Prefill slices by chunk size: C/main.py:147-151
-- Cache append stores K and V: A/main.py:93
-- Attention scores and softmax: A/main.py:26-27, 94
-- Release frees finished blocks: C/main.py:170-173
+## One decode step (flow, 4 steps)
+1. Write new K and V: P10/c:73
+2. Read cache slices up to length: P10/c:21-29
+3. Attend over cached prefix: P10/c:79
+4. Advance on one-token decode: P10/c:76-77
 
-## Cached decode loop (annotated-code, 5 lines)
-- Loop over queries, K and V: A/main.py:92
-- Append K and V to the cache: A/main.py:93
-- Attend over the cache: A/main.py:94
-- Cost grows with cache length: A/main.py:95
-- Collect outputs: A/main.py:96
+## Core softmax update (annotated-code, 3 facts)
+- Running max: P07/c:46
+- Rescale old sums: P07/c:47-50
+- Running sum: P07/c:51-52
 
-## Run the code (task-table, 7 rows)
-- decode_naive: A/main.py:72
-- decode_cached: A/main.py:87
-- tiled_softmax_dot: A/main.py:35
-- kv_cache_bytes: A/main.py:100
-- quantize_symmetric: B/main.py:82
-- quantize_per_channel: B/main.py:97
-- simulate_continuous: C/main.py:123
+## Task reference (task-table, 6)
+- kv_cache_bytes signature: P07/c:100
+- tiled_softmax_dot signature: P07/c:35
+- simulate_continuous_batching signature: P10/c:122
+- PrefixCache max_entries: P10/c:185
+- speculative_decode signature: P10/c:260
+- memory_budget signature: P10/c:347
 
-## Default settings (defaults, 6 rows)
-- dtype 2: A/main.py:100
-- tile 4: A/main.py:35
-- num_bits 8: B/main.py:82
-- CHUNK_SIZE 512: C/main.py:24
-- KV_BLOCK_SIZE 16: C/main.py:25
-- KV_BLOCKS_AVAILABLE 1800: C/main.py:26
+## Defaults (defaults, 8)
+- dtype=2 in kv_cache_bytes: P07/c:100
+- tile=4: P07/c:35
+- max_entries=1000: P10/c:185
+- num_speculative=5: P10/c:260
+- acceptance_rate=0.8: P10/c:239
+- CHUNK_SIZE = 512: P04/c:25
+- KV_BLOCK_SIZE = 16: P04/c:26
+- KV_BLOCKS_AVAILABLE = 1800: P04/c:27
 
-## Static vs continuous batching (comparison, 4 rows)
-- Output length, static pads to max output: C/main.py:106 (static); C/main.py:170-173 (continuous)
-- Admission, static fixed windows: C/main.py:101-103 (static); C/main.py:133-136 (continuous)
-- Finished requests, static kept to window end: C/main.py:115-119 (static); C/main.py:170-173 (continuous)
-- Prefill, static pads prompt, continuous chunked: C/main.py:105 (static); C/main.py:149 (continuous)
+## Formulas (concepts, 5)
+- KV cache bytes: P07/c:100-102
+- Per token KV: P10/c:38-39
+- Running max softmax: P07/c:46-52
+- Block count ceiling: P04/c:52
+- Quantization scale: Q11/c:88
 
-## Key formulas (concepts, 3)
-- KV bytes formula: A/main.py:102
-- Quantization scale: B/main.py:88
-- Rounding and clipping: B/main.py:89
+## Troubleshooting (troubleshooting, 6)
+- Prefix lookup misses: P10/c:202-218
+- Trie stops inserting: P10/c:224-225
+- Static batch idle slots: P10/c:112-116
+- Unchunked prefill stall: P04/c:150
+- Speculation slower at low acceptance: P10/c:282-290, 305
+- Model does not fit: P10/c:352-353
 
-## Troubleshooting (troubleshooting, 4 rows)
-- Decode at batch 1 is memory-bound: E/skill-inference-optimization.md:66
-- Contiguous KV blocks waste memory: E/skill-inference-optimization.md:67
-- Only throughput measured: E/skill-inference-optimization.md:70
-- High temperature lowers acceptance: E/skill-inference-optimization.md:71
+## Glossary (glossary, 5)
+- KV cache: P10/c:5-19
+- Prefill: P04/c:80
+- Decode: P04/c:89-91
+- TTFT: P04/c:87
+- ITL: P04/c:93
 
-## Glossary (glossary, 4)
-- KV block size constant: C/main.py:25
-- Chunk size constant: C/main.py:24
-- Naive decode recomputes prefix: A/main.py:73
-- Continuous batching admits and releases each step: C/main.py:123
+## Questions (qa, 4)
+- Why store K and V: P10/c:73
+- Static batching waste: P10/c:112
+- Chunk prefill: P04/c:150
+- TPOT tool disagreement: P08/c:30-38
 
-## Questions (qa, 3)
-- Cached decode reuses K and V: A/main.py:93-94
-- Naive op count N(N+1)/2: A/main.py:74
-- Each prefill step takes at most chunk size: C/main.py:149
-
-## Tips (tips, 3)
-- Draft model 5-10x smaller: E/skill-inference-optimization.md:58
-- Acceptance above 70%: E/skill-inference-optimization.md:59
-- EAGLE, then draft-target, then n-gram: E/skill-inference-optimization.md:62
+## Tips (tips, 4)
+- P99 and three limits per request: P08/c:85-91
+- Derive chunk size and block count: P04/c:25-27
+- Shared prompt prefix: P10/c:202-203
+- Check KV memory against budget: P10/c:347-358
