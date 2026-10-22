@@ -9,7 +9,7 @@ One GPU is not enough. When you finish this section, you can pick the parallel l
 | Question | If yes | If no |
 |---|---|---|
 | Does the model fit on one GPU, with room for the KV cache you need? | Use data parallelism: one full copy for each GPU, `--data-parallel-size N`. The output grows with the copy count. | Split the model across GPUs. The next question decides where. |
-| Does the split model fit inside one machine? | Keep the split inside the machine. The next question picks the layout. | Add pipeline parallelism across machines, `--pipeline-parallel-size M`, with tensor parallelism inside each machine. |
+| Does the split model fit inside one machine? | Keep the split inside the machine. The next question picks the layout. | Add pipeline parallelism across machines, `--pipeline-parallel-size M`, with tensor parallelism inside each machine. The tensor-parallel size must divide the model's attention-head count. If the GPUs in each machine do not divide it, use `--tensor-parallel-size 1` and set the pipeline size to the total GPU count. |
 | Do the GPUs have NVLink, and does the GPU count divide the model evenly? | Use tensor parallelism, `--tensor-parallel-size N`. | Use pipeline parallelism inside the machine, `--pipeline-parallel-size N`. |
 
 ```figure
