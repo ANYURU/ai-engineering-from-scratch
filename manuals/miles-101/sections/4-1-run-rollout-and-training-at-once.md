@@ -37,6 +37,12 @@ On a layout with separate rollout GPUs, these settings decide how old a sample c
 
 `--over-sampling-batch-size` has no effect under `--fully-async`.
 
+## Lower the learning rate as samples get older
+
+Sample age and learning rate work together. A 2026 study of async GRPO on Llama models of 1B and 3B parameters changed both. The largest stable learning rate fell in proportion to the number of steps between weight updates. Twice the steps allowed about half the learning rate.
+
+We have not tested this. Use it as a starting rule: when you raise `--update-weights-interval` or the age limit, lower the learning rate by the same factor. Then watch the gap and the reward.
+
 ## What to watch
 
 - The weight version of each sample. The rollout metrics report how old the samples are.
@@ -47,8 +53,8 @@ On our single GB10, we cannot measure the overlap that async training gives, bec
 
 ```takeaways
 - Use async training only when rollout and training run on different GPUs.
-- Set a limit on sample age, and watch the share of samples that the limit drops.
+- Set a limit on sample age, and lower the learning rate as you let samples get older.
 - On one GPU, use async mode only to learn its settings.
 ```
 
-Sources: Miles fully async documentation, train_async.py, and async rollout arguments at main 08752a12.
+Sources: Miles fully async documentation, train_async.py, and async rollout arguments at main 08752a12; Scaling Laws for Collapse in Asynchronous GRPO, arXiv 2607.01083.
