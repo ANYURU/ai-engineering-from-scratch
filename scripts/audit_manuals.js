@@ -287,7 +287,7 @@ function auditManual(manual, add) {
     proseIssues(span, add);
     if (span.kind === 'sentence' || span.kind === 'step') stats.words += plain(span.text).split(' ').filter(Boolean).length;
     for (const match of String(span.text).replace(/`[^`]*`/g, '').matchAll(/\{\{([^}]+)\}\}/g)) checkKey(match[1], span.where);
-    for (const match of String(span.text).matchAll(/[“"]([^”"]{24,}?)[”"]\s*\{\{[^}]+\}\}/g)) add(span.where, 'quote', `write the source in our own words, and put literal output in code font: "${match[1].slice(0, 80)}"`);
+    for (const match of String(span.text).replace(/`[^`]*`/g, '').matchAll(/[“"]([^”"]{24,}?)[”"]\s*\{\{[^}]+\}\}/g)) add(span.where, 'quote', `write the source in our own words, and put literal output in code font: "${match[1].slice(0, 80)}"`);
   }
   for (const doc of manual.documents) {
     if (!doc.thesis) add(doc.label, 'thesis', 'a one-sentence thesis blockquote is required under the title');
@@ -304,6 +304,7 @@ function auditManual(manual, add) {
       if (block.type === 'code' && manuals.LISTING_LANGS.has(block.lang)) add(where, 'listing-fence', `a ${block.lang} block must be a listing with a capture source`);
       if (block.type === 'rule') {
         checkKey(block.source, where);
+        for (const match of String(block.quote).replace(/`[^`]*`/g, '').matchAll(/\{\{([^}]+)\}\}/g)) checkKey(match[1], where);
         if (/^[“"]/.test(block.quote.trim())) add(where, 'quote', 'a rule states the source in our own words, not as a quote');
       }
       if (block.type === 'listing') {
