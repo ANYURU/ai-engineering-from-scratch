@@ -185,6 +185,7 @@ test('evidence is linked to the repository, never printed', () => {
   assert.match(html, /<a class="m-evidence" href="[^"]+\/summary\/l4\.json"[^>]*>Raw runs<\/a>/);
   assert.match(html, /<a class="m-evidence" href="[^"]+\/summary\/l4-throttled\.json"[^>]*>Raw runs<\/a>/);
   assert.match(html, /<td>plain-48-s2<\/td>/);
+  assert.match(html, /<td>true-on-policy<\/td><td>see the section<\/td><td>1<\/td><td>none, the job stopped before its first rollout<\/td>/);
   for (const [, kind, rel] of html.matchAll(/github\.com\/rohitg00\/ai-engineering-from-scratch\/(blob|tree)\/main\/([^"]+)"/g)) {
     const full = path.join(__dirname, '..', rel);
     assert.ok(fs.existsSync(full), rel);

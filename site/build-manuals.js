@@ -289,7 +289,10 @@ function labRunsHtml(manual, where) {
         rows.push({ cells: [escapeHtml(sweep), escapeHtml(`${data.environment.gpu}${name.includes('throttled') ? ', throttled' : ''}`), String(Object.keys(configs).length), seeds, link] });
       }
     } else {
-      for (const run of Object.keys(data)) rows.push({ cells: [escapeHtml(run), 'see the section', '1', '1', link] });
+      for (const [run, result] of Object.entries(data)) {
+        const started = result && Array.isArray(result.rollouts) && result.rollouts.length > 0;
+        rows.push({ cells: [escapeHtml(run), 'see the section', '1', started ? '1' : 'none, the job stopped before its first rollout', link] });
+      }
     }
   }
   return tableHtml(['Experiment', 'Hardware', 'Configurations', 'Seeds per point', 'Data'], rows);
