@@ -32,7 +32,7 @@ vllm serve Qwen/Qwen3-8B --port 8200 \
   --kv-transfer-config '{"kv_connector": "NixlConnector", "kv_role": "kv_consumer"}'
 ```
 
-Then put a router in front that sends each request to both. The vLLM repository has example scripts and a proxy for this setup. Its own CI tests it on pairs of L4 GPUs.
+Then put a router in front. For each request, the router sends the request to the prefill server first and reads the KV transfer parameters from its response. It then sends the request to the decode server with those parameters, so that the decode server can load the cache. The vLLM repository has example scripts and a proxy for this setup. Its own CI tests it on pairs of L4 GPUs.
 
 If a cache transfer fails, the default policy fails the request. The `kv_load_failure_policy` field set to `recompute` computes the prompt again on the decode server instead.
 

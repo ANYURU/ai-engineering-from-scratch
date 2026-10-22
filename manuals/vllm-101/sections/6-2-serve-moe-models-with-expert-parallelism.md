@@ -24,7 +24,7 @@ On one machine with eight GPUs, spread the experts across all of them:
 vllm serve <model> --data-parallel-size 8 --enable-expert-parallel
 ```
 
-For a model that does not fit one machine, such as the large DeepSeek models, run one command on each machine. This example uses two machines with eight GPUs each. The first machine takes the requests:
+For a model that does not fit one machine, such as the large DeepSeek models, run one command on each machine. This example uses two machines with eight GPUs each. First install DeepEP and DeepGEMM on both machines, as the expert parallel guide in the vLLM documentation describes. They are not part of the normal install, and a server with a DeepEP backend stops at startup without DeepEP. The first machine takes the requests:
 
 ```bash
 vllm serve <model> --enable-expert-parallel \
