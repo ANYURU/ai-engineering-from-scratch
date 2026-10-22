@@ -37,7 +37,7 @@ Every run used these settings unless its name says otherwise:
 | Run | Steps | Seed | What changed |
 |---|---|---|---|
 | plain | 12 | default | none, before the heat guard |
-| plain-48 | 48 | default | none |
+| plain-48 | 48 | default | none, before the heat guard |
 | plain-48-s2, plain-48-s3 | 48 | 2, 3 | none |
 | e6a-base | 12 | 1 | none |
 | e6b, e6c, e6d | 12 | 1 | deterministic inference on Triton, FlashInfer, and Triton again |
@@ -63,7 +63,7 @@ A pause adds wall-clock time to the phase it falls in. So every time in this man
 - **Rollout times:** the rollout window ends at the timestamp of the rollout metrics line and lasts `perf/rollout_time`. A step counts when that window overlaps no pause.
 - **Whole-step times:** the window ends at the timestamp of the trainer metrics line and lasts `perf/step_time`. A step counts when that window overlaps no pause.
 
-The summary file stores both medians, all steps and clean steps, with the number of clean steps next to each. Under the heat guard, few whole steps escape a pause. So whole-step times in this manual come from `plain` and `plain-48`, which no pause touched.
+The summary file stores both medians, all steps and clean steps, with the number of clean steps next to each. Under the heat guard, few whole steps escape a pause. So whole-step times in this manual come from `plain` and `plain-48`. Both ran on 2026-10-17, before we added the heat guard, so no pause could touch them. The guard logged its first pause on 2026-10-18.
 
 A median over clean steps can still mislead. The default setting gave a 47.5 s rollout in `plain-48` and 59.1 s in the 6 clean steps of `e6a-base`. On the same 6 step numbers, `plain-48` took 60.9 s. The rollout time follows the answer length, so compare times on the same step numbers.
 
