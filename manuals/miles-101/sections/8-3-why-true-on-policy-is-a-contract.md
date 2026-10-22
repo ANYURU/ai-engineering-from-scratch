@@ -2,7 +2,7 @@
 
 > Bit-exact agreement needs the same kernels on both sides, so true on-policy mode works only for the models and GPUs it lists.
 
-GRPO assumes that the probability the engine gave a token is the probability the trainer computes for it. In every healthy run on our GB10, the two sides disagreed by 0.013 to 0.016 per token on average. This page explains where that gap comes from, and why closing it takes a contract and not a flag.
+GRPO assumes that the probability the engine gave a token is the probability the trainer computes for it. In every healthy Qwen3-0.6B run on our GB10, the two sides disagreed by 0.013 to 0.016 per token on average. This page explains where that gap comes from, and why closing it takes a contract and not a flag.
 
 When you finish this section, you can explain why true on-policy mode covers only some models and GPUs.
 
@@ -10,7 +10,7 @@ When you finish this section, you can explain why true on-policy mode covers onl
 
 The engine and the trainer hold the same weights after each update. They still run different programs. The engine is built for speed: it batches many requests, picks kernels by batch size, and fuses operations. The trainer is built for gradients: it runs a different attention kernel and a different order of operations.
 
-Floating-point addition gives slightly different results in a different order. The same long sum, added in two orders, can differ in its last bits. Across 28 layers and a vocabulary of 151,936 tokens, those bits add up to the gap we measured.
+Floating-point addition gives slightly different results in a different order. The same long sum, added in two orders, can differ in its last bits. Across 28 layers and a vocabulary of 151,936 tokens, those bits add up. Our reading is that this is the gap we measured.
 
 So the gap is not a bug in either side. It is the price of two programs that each do their own job well.
 
