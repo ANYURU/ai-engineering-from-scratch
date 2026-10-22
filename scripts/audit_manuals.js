@@ -66,7 +66,7 @@ function lexiconHits(text) {
 
 function proseIssues(span, add) {
   const raw = String(span.text);
-  const stripped = raw.replace(/`[^`]*`/g, '').replace(/\{\{[^}]*\}\}/g, '').replace(/[“"][^”"]*[”"]/g, '');
+  const stripped = raw.replace(/`[^`]*`/g, '').replace(/\]\([^)]*\)/g, ']').replace(/\{\{[^}]*\}\}/g, '').replace(/[“"][^”"]*[”"]/g, '');
   if (/[—–]/.test(stripped)) add(span.where, 'dash', 'em or en dash in prose: use a colon, comma, or period');
   if (stripped.includes(';')) add(span.where, 'semicolon', 'semicolon in prose: split the sentence');
   if (/\bmay\b/i.test(stripped)) add(span.where, 'may', '"may" as a verb: use "can" or state the condition');
