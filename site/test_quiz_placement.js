@@ -62,6 +62,12 @@ test('translated headings keep the English placement', () => {
   }
 });
 
+test('without Key Terms the post quiz closes the lesson content, after any exercises', () => {
+  const place = quizPlacement(['the-problem', 'the-concept', 'build-it', 'exercises', 'stretch-goals']);
+  assert.equal(place.post, 5);
+  assert.equal(place.check, 4);
+});
+
 test('the pre-lesson check is placed when a lesson has no Concept or Build heading', () => {
   const place = quizPlacement(['the-problem', 'the-system', 'how-it-runs', 'key-terms']);
   assert.equal(place.pre, 1);

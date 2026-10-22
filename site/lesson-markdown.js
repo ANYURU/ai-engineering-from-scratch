@@ -641,7 +641,7 @@
     var post = anchorIndex(source, QUIZ_ANCHORS.post);
     var check = anchorIndex(source, QUIZ_ANCHORS.check);
     if (pre < 0) pre = m >= 2 ? 1 : 0;
-    if (post < 0) post = m >= 3 ? m - 1 : m;
+    if (post < 0) post = m;
     if (post < pre) post = pre;
     if (check < 0 || check > post) {
       check = post - 1 > pre ? post - 1 : post;
