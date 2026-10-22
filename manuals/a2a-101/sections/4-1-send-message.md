@@ -43,7 +43,7 @@ The SDKs disagree on whether `historyLength` in the configuration trims the retu
 
 `SendMessage` returns a `SendMessageResponse` whose payload is a `oneof` of two members, `task` and `message` {{proto SendMessageResponse}}. The agent decides, and the specification gives it no rule. The agent is allowed to create a new `Task` and process the message asynchronously. It is also allowed to return a direct `Message` for a simple exchange {{spec §3.1.1}}.
 
-In the kit, `test-runner` and `deployer` create a task for every message. `code-reviewer` answers with a message when the request has no `text/x-diff` part and its text ends with a question mark ([capture/agents.py](manuals/a2a-101/capture/agents.py)). Once a task exists, the choice is over: from then on, the agent returns only `Task` objects in response to messages {{docs life-of-a-task}}.
+In the kit, `test-runner` and `deployer` create a task for every message. `code-reviewer` answers with a message when the request has no `text/x-diff` part and its text ends with a question mark ([the kit's agent code](manuals/a2a-101/capture/agents.py)). Once a task exists, the choice is over: from then on, the agent returns only `Task` objects in response to messages {{docs life-of-a-task}}.
 
 A message is the whole answer, with no id to poll, cancel, or subscribe to. It carries a `contextId` {{proto Message}}, so keep it for a follow-up. A task is a handle on work that can outlive the call. [Figure](#fig-message-or-task) puts the two answers from `code-reviewer` side by side. `SendStreamingMessage` makes the same choice in its first event, as [SendStreamingMessage and SubscribeToTask](#s-streaming-and-subscribe-to-task) shows.
 
@@ -52,7 +52,7 @@ id: fig-message-or-task
 kind: decision
 title: one method, two result shapes
 claim: The same `SendMessage` to `code-reviewer` returns a message for a question and a task for a diff, and only the task gives the client something to follow.
-caption: Read top down. The agent's own logic picks the shape, here the review_quick rule in capture/agents.py. Left, the reply in capture/out/02-message-reply.http. Right, the task in capture/out/06-input-required.http. Ids are shortened to 8 characters.
+caption: Read top down. The agent's own logic picks the shape, here the review_quick rule of the kit's agent code. Left, the captured message reply. Right, the captured input-required task. Ids are shortened to 8 characters.
 ```
 
 ## Returning at once and polling with GetTask

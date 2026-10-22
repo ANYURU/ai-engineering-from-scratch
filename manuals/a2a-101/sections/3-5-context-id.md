@@ -28,7 +28,7 @@ Only a task that is not terminal takes more messages {{spec §3.3.3}}. A message
 
 Once the review completes, a second round cannot reopen it. A refinement must start a new task in the same `contextId` {{docs life-of-a-task}}. The specification gives the client two fields for that. A client is allowed to send a `contextId` without a `taskId` to start a new task in an existing context {{spec §3.4.3}}. A client should use the `referenceTaskIds` field of the message to point to related tasks {{spec §3.4.3}}.
 
-The captures stop before such a follow-up. The kit's server would accept one: given a `contextId` and no `taskId`, its `send` creates a new task in that context ([capture/a2a_ref.py](manuals/a2a-101/capture/a2a_ref.py)). [Figure](#fig-context-and-tasks) draws the captured review beside the follow-up a client would send next.
+The captures stop before such a follow-up. The kit's server would accept one: given a `contextId` and no `taskId`, its `send` creates a new task in that context. [The kit's server code](manuals/a2a-101/capture/a2a_ref.py) shows this. [Figure](#fig-context-and-tasks) draws the captured review beside the follow-up a client would send next.
 
 ```figure
 id: fig-context-and-tasks

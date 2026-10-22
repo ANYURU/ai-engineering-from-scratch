@@ -25,7 +25,7 @@ id: fig-spec-layers
 kind: layers
 title: the A2A stack for test-runner
 claim: A2A defines the card, the bindings, the operations, and the objects, while test-runner's server parts and agent logic below the dashed line belong to its owner.
-caption: Read from the planner down. Above the dashed line sit the three layers of spec §1.3 with test-runner's real paths, from capture/out/01-agent-cards.http. Below it are the kit's own parts in capture/a2a_ref.py, and dashed boxes mark what a production agent adds.
+caption: Read from the planner down. Above the dashed line sit the three layers of spec §1.3 with test-runner's real paths from the captured agent cards. Below it are the kit's own parts, and dashed boxes mark what a production agent adds.
 ```
 
 ## The core rules

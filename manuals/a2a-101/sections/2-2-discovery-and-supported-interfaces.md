@@ -14,7 +14,7 @@ The spec names three ways to reach a card, and it standardizes the details of on
 - **Registry or catalog.** The client queries a curated catalog of agents {{spec §8.2}}, and the current specification sets no standard API for such a registry {{docs agent-discovery}}.
 - **Direct configuration.** The client starts from Agent Card URLs or card content that it already has {{spec §8.2}}, kept in code, a configuration file, or an environment variable {{docs agent-discovery}}.
 
-The planner's ports come from direct configuration in `capture/run.py`, and each card from the well-known path.
+The planner's ports come from direct configuration in [the kit's run script](manuals/a2a-101/capture/run.py), and each card from the well-known path.
 
 ```listing
 title: discovery is one GET on the well-known path
@@ -45,7 +45,7 @@ id: fig-finding-an-agent
 kind: flow
 title: from a host to a checked call
 claim: Three routes lead to one card, and a client takes the first interface it speaks and checks a capability flag before each optional operation.
-caption: Read top to bottom. The planner finds the code-reviewer card through configuration and the well-known path, takes interface 0, and reads two flags. The failed call is exchange 6 of capture/out/11-errors.http.
+caption: Read top to bottom. The planner finds the code-reviewer card through configuration and the well-known path, takes interface 0, and reads two flags. The failed call is exchange 6 of the error capture.
 ```
 
 ## Choosing from supportedInterfaces
@@ -108,7 +108,7 @@ HTTP/1.1 200 OK
 
 The task id does not exist, yet the error names the missing capability, so the call cost a round trip the card had answered.
 
-Skills, modes, and security fields say whether the agent fits the job and what it needs. The planner maps `run-tests` to `test-runner` and attaches a bearer token to every `deployer` call (`capture/planner.py`). [Part](#s-part) and [security schemes](#s-security-schemes-and-in-task-authorization) read those fields.
+Skills, modes, and security fields say whether the agent fits the job and what it needs. The planner maps `run-tests` to `test-runner` and attaches a bearer token to every `deployer` call ([the planner code](manuals/a2a-101/capture/planner.py)). [Part](#s-part) and [security schemes](#s-security-schemes-and-in-task-authorization) read those fields.
 
 ## Caching the card
 

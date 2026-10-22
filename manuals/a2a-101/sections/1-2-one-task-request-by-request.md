@@ -4,14 +4,14 @@
 
 Your planner wants the unit tests of `payments-api` run at commit `9f3c2e1`, and it wants to watch the log grow while they run. It already holds the card of `test-runner`, whose capabilities include `"streaming": true`, so it sends the request with `SendStreamingMessage`.
 
-This section follows that run frame by frame, from `capture/out/05-streaming.http`, and [figure](#fig-one-streamed-task) shows it. When you finish this section, you can read any task stream and say what each frame changed in the stored task.
+This section follows that run frame by frame, from [the streaming capture](manuals/a2a-101/capture/out/05-streaming.http), and [figure](#fig-one-streamed-task) shows it. When you finish this section, you can read any task stream and say what each frame changed in the stored task.
 
 ```figure
 id: fig-one-streamed-task
 kind: sequence
 title: one streamed task from the card read to the close
 claim: A streamed task opens with the task itself, reports its work as status and artifact frames, and ends when the server closes the stream after the terminal status.
-caption: Read top to bottom. Unnumbered rows come before the stream, and each numbered row is one data frame, numbered as in capture/out/05-streaming.http. Timestamps on the right come from the kit clock, and the task id is shortened to 8 characters.
+caption: Read top to bottom. Unnumbered rows come before the stream, and each numbered row is one data frame, numbered as in the streaming capture. Timestamps on the right come from the kit clock, and the task id is shortened to 8 characters.
 ```
 
 ## Before the first frame

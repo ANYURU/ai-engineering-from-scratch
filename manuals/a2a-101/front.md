@@ -32,7 +32,7 @@ Facts come from five sources, ranked by authority. When two of them disagree, th
 | 4 | the reference SDK, a2a-python 1.2.2 | what a production implementation does where the specification is silent | `sdk` and a source file |
 | 5 | the capture kit in `capture/` | every request, response, and stream frame the manual shows | the capture file name |
 
-The proto, the specification, and the documentation pages are vendored unchanged under `research/sources/`.
+The proto, the specification, and the documentation pages are vendored unchanged [in the repository](manuals/a2a-101/research/sources).
 
 The specification disagrees with itself or the proto on [the HTTP verb for `SubscribeToTask`](#s-json-rpc) ([conflict D1](#s-ref-sources)) and on [whether a send waits](#s-send-message) ([conflict D2](#s-ref-sources)). It also disagrees on [when a stream closes](#s-input-required-and-auth-required) ([conflict D3](#s-ref-sources)) and on [the name of the card's security field](#s-security-schemes-and-in-task-authorization) ([conflict D6](#s-ref-sources)). [The sources reference](#s-ref-sources) lists all forty conflicts with the section that discusses each.
 
@@ -46,7 +46,7 @@ The capture kit runs three remote agents and a recording client on your machine,
 | `code-reviewer` | 41242 | reviews a diff against a base branch | direct message replies, `TASK_STATE_INPUT_REQUIRED`, rejected content types, no push support |
 | `deployer` | 41243 | deploys a build to staging after an operator approves | bearer authentication, `TASK_STATE_AUTH_REQUIRED` with approval outside A2A, rejection, extended and signed cards |
 
-[A client](#s-a-client) walks through the real planner, `capture/planner.py`.
+[A client](#s-a-client) walks through [the real planner](manuals/a2a-101/capture/planner.py).
 
 Seeded ids and a fixed clock make two runs byte-identical. [The kit README](manuals/a2a-101/capture/README.md) lists where the kit differs from the reference SDK.
 

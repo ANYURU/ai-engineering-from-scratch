@@ -46,7 +46,7 @@ id: fig-two-json-bindings
 kind: comparison
 title: SendMessage and GetTask in two JSON bindings
 claim: JSON-RPC posts every operation to one URL and names it in the body, HTTP+JSON names it with a verb and a path, and gRPC calls an rpc.
-caption: Each row is one operation, headed by its rpc line from a2a.proto. Bold marks where each binding names the operation, and italic type names stand for the message that fills that place. Left, capture/out/03-blocking-task.http and 04-polling.http. Right, capture/out/16-rest-binding.http. Ids shortened to 8 characters.
+caption: Each row is one operation, headed by its rpc line from a2a.proto. Bold marks where each binding names the operation, and italic type names stand for the message that fills that place. Left, the blocking-task and polling captures. Right, the HTTP+JSON capture. Ids shortened to 8 characters.
 ```
 
 Requests and responses should use `application/a2a+json` {{spec §11.1}}, and the kit sends it on every body. The reference SDK sends its errors as `application/json` {{sdk src/a2a/utils/error_handlers.py}}, and the Java and Go servers send every body that way {{sdk-java transport/rest/src/main/java/org/a2aproject/sdk/transport/rest/handler/RestHandler.java at v1.4.0.Final}} {{sdk-go a2asrv/rest.go at v2.6.0}}. So send `application/a2a+json`, and accept both types when you read.

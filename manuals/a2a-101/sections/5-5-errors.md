@@ -11,7 +11,7 @@ id: fig-task-not-found
 kind: comparison
 title: TaskNotFoundError in two JSON bindings
 claim: The same TaskNotFoundError arrives as HTTP 200 with code -32001 in JSON-RPC and as HTTP 404 in HTTP+JSON, carrying the same ErrorInfo.
-caption: Left, GetTask over JSON-RPC from capture/out/11-errors.http. Right, the same lookup over HTTP+JSON from capture/out/16-rest-binding.http. The box at the bottom is the detail both replies carry. Ids shortened to 8 characters.
+caption: Left, GetTask over JSON-RPC from the error capture. Right, the same lookup over HTTP+JSON from the HTTP+JSON capture. The box at the bottom is the detail both replies carry. Ids shortened to 8 characters.
 ```
 
 ## The detail that names the error

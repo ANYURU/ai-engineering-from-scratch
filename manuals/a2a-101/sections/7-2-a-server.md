@@ -2,7 +2,7 @@
 
 > A server is a card, one handler per binding, three checks before any work, an executor, an owner-scoped task store, and one event queue that feeds streams and webhooks.
 
-The three agents in the kit come from one file, `capture/a2a_ref.py`, 675 lines of the Python standard library. Each agent serves a card, answers both JSON bindings, runs its own logic in a thread, and keeps its tasks in a dictionary. When you finish this section, you can name each part a server must build, and find it in `a2a_ref.py` and in the reference SDK.
+The three agents in the kit come from [one file](manuals/a2a-101/capture/a2a_ref.py) of 675 lines, written with the Python standard library only. Each agent serves a card, answers both JSON bindings, runs its own logic in a thread, and keeps its tasks in a dictionary. When you finish this section, you can name each part a server must build, and find it in that file and in the reference SDK.
 
 [Figure](#fig-server-parts) follows one `SendStreamingMessage` through those parts, from the HTTP request to the stream frames and the webhook POST.
 
@@ -11,7 +11,7 @@ id: fig-server-parts
 kind: structure
 title: the parts of a server, in the order a request meets them
 claim: A request passes authentication, the version check, and the capability check before Agent.send stores a task, and every event then leaves through one broadcast.
-caption: Read the left column top to bottom. Each box is a method in capture/a2a_ref.py. Rose boxes on the right are the errors each check returns, with their JSON-RPC codes from capture/out/11-errors.http. From capture/a2a_ref.py.
+caption: Read the left column top to bottom. Each box is a method of the kit's server. Rose boxes on the right are the errors each check returns, with their JSON-RPC codes from the error capture. From capture/a2a_ref.py.
 ```
 
 ## The card and one handler per binding

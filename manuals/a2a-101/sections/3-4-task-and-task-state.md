@@ -17,7 +17,7 @@ id: fig-task-object-model
 kind: structure
 title: the object model of one task
 claim: A task carries its own id, its context, one current status, its artifacts, and its history, and every message and artifact inside it is made of parts.
-caption: Read the task table from the top, in the order the blocking run filled it. The boxes on the right expand its last two rows, and the chips below show the four kinds of part. Values come from capture/out/03-blocking-task.http, ids shortened to 8 characters. The raw and url examples come from 06-input-required.http and 11-errors.http.
+caption: Read the task table from the top, in the order the blocking run filled it. The boxes on the right expand its last two rows, and the chips below show the four kinds of part. Values come from the blocking-task capture, ids shortened to 8 characters. The raw and url examples come from the input-required and error captures.
 ```
 
 ## TaskStatus
@@ -70,7 +70,7 @@ id: fig-task-states
 kind: state
 title: the nine task states and the transitions the kit makes
 claim: The kit's captures show nine transitions between task states, and none of them leaves a double-bordered terminal state.
-caption: Boxes are TaskState values with the TASK_STATE_ prefix dropped. Dashed arrows are the transitions the kit's agents make, in capture order, labelled with the capture that shows each one. Read them as one implementation's behavior, never as the protocol's rules. Blocking captures return only the final state, so their earlier transitions come from the history they return and from capture/agents.py.
+caption: Boxes are TaskState values with the TASK_STATE_ prefix dropped. Dashed arrows are the transitions the kit's agents make, in capture order, labelled with the capture that shows each one. Read them as one implementation's behavior, never as the protocol's rules. Blocking captures return only the final state, so their earlier transitions come from the history they return and from the kit's agent code.
 ```
 
 The deployer leaves `TASK_STATE_AUTH_REQUIRED` with no message from the client, as the specification allows {{spec §7.6.1}}, and rejects straight from `TASK_STATE_SUBMITTED`. The reference SDK enforces no table either {{sdk src/a2a/server/agent_execution/active_task.py}}, so accept any transition out of a state that is not terminal.
