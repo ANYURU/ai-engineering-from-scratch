@@ -6,7 +6,7 @@ You run evals and the scores change between runs. When you finish this section, 
 
 ## Know why outputs change
 
-The vLLM documentation says plainly that vLLM does not promise the same output by default, for the sake of speed. Two things change the result of one request:
+The vLLM documentation says plainly that vLLM does not promise the same output by default, for the sake of speed. Three things change the result of one request:
 
 - **The batch.** The kernels split their sums by the batch size. The same request adds its numbers in a different order in a batch of 3 than in a batch of 30. Floating-point sums depend on the order. A small difference in one logit can change a sampled token, and every later token then differs.
 - **The schedule.** In the default multiprocess server, the timing of requests decides which batch each one joins.
