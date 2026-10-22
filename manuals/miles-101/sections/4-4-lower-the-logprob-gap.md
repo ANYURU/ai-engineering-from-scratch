@@ -10,7 +10,7 @@ When you finish this section, you can turn on sampling replay and check that it 
 
 ## Why the engine number is higher
 
-Top-p keeps the smallest set of tokens whose probabilities add up to at least the top-p value. The engine then scales the kept probabilities so that they add up to 1 again. So for a kept token, the engine log probability is higher than a full-vocabulary score by minus the log of the kept mass. If the kept tokens hold 0.9 of the mass, the difference is about 0.105.
+Top-p keeps the smallest set of tokens whose probabilities add up to at least the top-p value. The engine then scales the kept probabilities so that they add up to 1 again. Take two sides that compute the same scores before the cut. For a kept token, the engine log probability is then higher than the full-vocabulary score by minus the log of the kept mass. If the kept tokens hold 0.9 of the mass, the difference is about 0.105. Top-k cuts the set in the same way, and the kernel gap comes on top of this.
 
 That difference is not noise. It is different for each token, and it always pushes the ratio between the trainer and the engine the same way. A 2026 issue report for another RL library describes this bias in its importance-sampling ratio. Sampling replay removes it, because the trainer then scores over the same kept set.
 
