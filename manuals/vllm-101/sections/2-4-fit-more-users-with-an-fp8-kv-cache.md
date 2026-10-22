@@ -79,7 +79,7 @@ Two things changed together: the KV data type and the backend. The table does no
 
 We did not measure output quality with an FP8 KV cache. With no scales in the checkpoint, vLLM uses a scale of 1.0 for the keys and values. That is the worst case for accuracy.
 
-The vLLM team tested uncalibrated FP8 KV caches in the blog post "The State of FP8 KV-Cache and Attention Quantization in vLLM" of April 2026. In their tests, most models stayed close to BF16. Some did not. They name Kimi-K2.5 on the FlashMLA backend as a model that needs calibrated scales. We did not measure these results ourselves.
+The post "The State of FP8 KV-Cache and Attention Quantization in vLLM" on the vLLM blog, of April 2026, tested uncalibrated FP8 KV caches. Its authors are from AWS and Red Hat. In their tests, most models stayed close to BF16. Some did not. They name Kimi-K2.5, which uses the FlashMLA backend, as a model that did not work well with uncalibrated scales. We did not measure these results ourselves.
 
 ### Check that your scales load
 
