@@ -25,7 +25,7 @@ Add the prefix `boxed_` to a math type, such as `boxed_math`, to grade only the 
 
 ## Plug in your own function
 
-Write the function in a Python file that the container can import:
+Save the function as `~/miles-lab/my_rewards.py` on the host. The container sees it as `/root/lab/my_rewards.py`:
 
 ```python
 import re
@@ -44,17 +44,25 @@ async def custom_rm(args, sample, **kwargs):
 
 This example grades a number answer. It compares the last number in the answer with the label as a value. So an answer of 142 does not match a label of 42. Change the extraction for answers that are not numbers.
 
-Then pass its import path:
+Then add two settings to the run of [section 1.1](#s-run-grpo-on-one-gpu). `PYTHONPATH` lets Miles import the file from the lab folder, and the flag names the function by its import path:
 
 ```bash
---custom-rm-path my_rewards.custom_rm
+-e PYTHONPATH=/root/lab -e MILES_EXTRA_ARGS="--custom-rm-path my_rewards.custom_rm"
 ```
+
+The launcher passes `PYTHONPATH` on to the Ray workers that score the answers. If Miles cannot find the file, the log shows `ModuleNotFoundError: No module named 'my_rewards'`. When the import works, the first `rollout 0` line shows a `rollout/raw_reward` that your function computed.
 
 Write the function with `async def`. The flag help shows a plain function, but Miles awaits the result, so a plain function fails. The function receives the run arguments and one sample, with the answer in `sample.response` and the label in `sample.label`. If it returns a dict, name the field that holds the reward with `--reward-key`. With `--group-rm`, Miles passes the whole group as a list of samples instead, and the function must return one reward for each sample.
 
 ## Test it before the run
 
-Run the function on ten answers that you have scored by hand. Include a correct answer, a wrong answer, an empty answer, and an answer cut at the length limit. A reward that crashes on an empty answer can stop the rollout of the whole step.
+Call the function inside the container before the run. This command scores one answer:
+
+```bash
+docker run --rm -v "$HOME/miles-lab:/root/lab" -e PYTHONPATH=/root/lab radixark/miles:latest python -c "import asyncio, types, my_rewards; s = types.SimpleNamespace(response='So the answer is 42.', label='42'); print(asyncio.run(my_rewards.custom_rm(None, s)))"
+```
+
+It should print `1.0`. Then run the function on ten answers that you have scored by hand. Include a correct answer, a wrong answer, an empty answer, and an answer cut at the length limit. A reward that crashes on an empty answer can stop the rollout of the whole step.
 
 ## Check the advantages of fractional rewards
 
@@ -70,4 +78,4 @@ If your reward gives fractions, find groups where every answer has the same rewa
 - Check that groups with equal fractional rewards get advantages of 0.
 ```
 
-Sources: Miles reward hub and reward arguments at main 08752a12; Miles issue 4019.
+Sources: Miles reward hub, function loader, and reward arguments at main 08752a12; Miles launcher PYTHONPATH handling in the Ray backend at main 08752a12; capture/gpu/miles_grpo.py; Miles issue 4019.
