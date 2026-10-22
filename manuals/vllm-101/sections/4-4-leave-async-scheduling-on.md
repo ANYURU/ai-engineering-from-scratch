@@ -4,7 +4,7 @@
 
 You read about async scheduling and you want to know whether to set it. When you finish this section, you can check whether your server runs with it, and name the settings that turn it off.
 
-**Our result:** two same-day runs with async scheduling on agreed within 1.8 percent, which sets our noise floor. We did not measure it turned off.
+**Our result:** on a throttled L4, turning async scheduling off made one user about 3 percent slower per token. Treat it as a lead, because the clock was low and we had two seeds.
 
 ## Know what it does
 
@@ -36,20 +36,32 @@ We ran the L4 load sweep twice on 2026-10-21 with `Qwen/Qwen3-8B`: once with no 
 
 At every concurrency, the seed ranges of the two runs overlapped for output, time per token, and P99 ITL. The output differed by at most 1.8 percent, and the time per token by at most 0.8 percent. The 64-user rows ran at about 1,000 MHz, at the edge of our clock floor.
 
-So the table shows how much two runs of the same setting differ on our L4 on one day. It does not show what async scheduling is worth. We did not run the sweep with `--no-async-scheduling`.
+So the table shows how much two runs of the same setting differ on our L4 on one day. It does not show what async scheduling is worth.
 
 The same no-flag sweep also matched our earlier run of 2026-10-17 within 0.5 percent of output at 1, 8, 32, and 64 users. On this card, a gap of a few percent between two configs is noise unless the seed ranges separate.
+
+## See what turning it off costs
+
+**We measured** `--no-async-scheduling` against the default on the shared GPU of our L4 node on 2026-10-22, with `Qwen/Qwen3-8B`. That GPU held a pool of 2,928 tokens, so we tested 1 and 4 users.
+
+| Users | Median TPOT, on / off | Output tok/s, on / off | Median SM clock, on / off | Seeds, on / off |
+|---|---|---|---|---|
+| 1 | 241.7 / 249.6 ms | 3.98 / 3.87 | 375 / 368 MHz | 2 / 2 |
+| 4 | 272.6 / 277.2 ms | 13.02 / 12.85 | 428 / 450 MHz | 2 / 1 |
+
+At one user, the time per token rose by 3.3 percent with async scheduling off, and the seed ranges did not overlap. That gap is larger than the 0.8 percent that two runs of one setting differed by. At four users, it rose by 1.7 percent, from one seed only.
+
+The GPU ran at 368 to 450 MHz, far below its full clock, and the off runs at one user had a slightly lower clock. So read this as a lead. The gain is small at these batch sizes, and we did not test it at a full clock or at high concurrency.
 
 ## Decide
 
 Set no flag, and let vLLM choose. If you add a speculation method or pipeline parallelism, read the log for the warning. If the warning appears, measure the time per token with and without the feature, because you lose async scheduling together with the feature.
 
-Not measured on our hardware. We have not run vLLM with `--no-async-scheduling` on the L4 or the GB10.
-
 ```takeaways
 - Async scheduling is on by default for most generate models, so set no flag.
 - N-gram, suffix, Medusa, and MLP speculator methods turn it off with only a warning.
 - On our L4, two same-day runs of one setting differed by under 2 percent of output.
+- Turning it off cost about 3 percent per token for one user in our throttled run.
 ```
 
-Sources: capture/gpu/summary/l4.json (load.vllm-b, load.vllm-async, load.vllm), the vLLM source at v0.31.0 (vllm/config/scheduler.py, vllm/config/vllm.py, vllm/v1/core/sched/async_scheduler.py), vLLM documentation at v0.31.0 (docs/design/model_runner_v2.md).
+Sources: capture/gpu/summary/l4.json (load.vllm-b, load.vllm-async, load.vllm), capture/gpu/summary/l4-gpu1.json (load.vllm-fast-b, load.vllm-no-async), the vLLM source at v0.31.0 (vllm/config/scheduler.py, vllm/config/vllm.py, vllm/v1/core/sched/async_scheduler.py), vLLM documentation at v0.31.0 (docs/design/model_runner_v2.md).
