@@ -11,7 +11,7 @@ When you finish this section, you can explain what the router does in a Miles ru
 | Router | How to select it | Routes by | Notes |
 |---|---|---|---|
 | SGLang router, a Rust service | the default | tokens | supports split prefill and decode |
-| Miles router, a Python service | `--use-miles-router` | text | no split prefill and decode, and marks an engine unhealthy after 3 failed checks by default |
+| Miles router, a Python service | `--use-miles-router` | text requests, each to the engine with the fewest open requests | no split prefill and decode, and marks an engine unhealthy after 3 failed checks by default |
 
 Miles starts one router for each model in the run, with no GPU of its own. Since release v0.1.1, Miles always starts its own router, and you cannot point a run at a router you started yourself.
 
@@ -39,7 +39,7 @@ With attention data parallelism on the engines, Miles makes the router aware of 
 - On one engine, keep the default. There is nothing to balance.
 - With many engines and single-turn prompts, keep the default.
 - With agent sessions, turn on the session server, and let Miles set the policy.
-- Use the Miles router only when you need text-based routing. It cannot route split prefill and decode.
+- Use the Miles router only when you need to send text requests. It cannot route split prefill and decode.
 
 When requests fail, read the router log next to the engine log. A request that fails at the router never reaches an engine.
 
