@@ -28,12 +28,14 @@ Some models need a matching engine setting. The Miles notes for GLM-5.3-Flash as
 
 ## What the Miles team reports
 
-The Miles team ran colocated MoE jobs with routing replay on GB300 GPUs and reported the gap per token:
+The Miles team ran colocated MoE jobs with routing replay on 8 nodes of 4 GB300 GPUs. The v0.1.1 release notes give the gap per token in their model notes:
 
 | Model | Steps | Gap with replay | Reward |
 |---|---|---|---|
 | Qwen3.8-Flash-Next | 5 | 0.0083 to 0.0131 | 0.47 to 0.75 |
 | GLM-5.3-Flash | 3 | 0.0085 to 0.0098 | 0.50 to 0.72 |
+
+The GLM-5.3-Flash page of the Miles documentation reports a longer run on 16 nodes of 4 GB300 GPUs. Its gap was 0.0068 to 0.0106 over the first 11 steps.
 
 These are short runs on hardware we do not have. Read them as the range a working setup reaches, not as a promise for your model.
 
@@ -47,4 +49,4 @@ If the engine pauses a request and later prefills it again under new weights, th
 - Check the engine setting that your model needs with replay.
 ```
 
-Sources: Miles routing replay arguments and release notes v0.1.1 at main 08752a12; Rollout Routing Replay paper, arXiv 2510.11370; Miles issue 3277.
+Sources: Miles routing replay arguments and release notes v0.1.1 at main 08752a12; Miles GLM-5.3-Flash model documentation; Rollout Routing Replay paper, arXiv 2510.11370; Miles issue 3277.
