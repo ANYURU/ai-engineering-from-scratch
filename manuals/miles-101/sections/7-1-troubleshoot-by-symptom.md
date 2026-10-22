@@ -92,4 +92,4 @@ caption: The five symptoms from our runs. The entries below add a check against 
 - Treat entries from the issue tracker as reports to check, not as results we measured.
 ```
 
-Sources: Miles training backend documentation at main 08752a12; SGLang memory sizing, as recorded in SGLang 101 section 3.2; capture/gpu/out-gb10/engine-died-503.log; capture/gpu/out-gb10/engine-died-count.txt; capture/gpu/out-gb10/503-bursts.txt; capture/gpu/out-gb10/ray-oom-4b.log; capture/gpu/out-gb10/thermostat.log; capture/gpu/summary/miles-gb10-lab.json; manuals/sglang-101/capture/gpu/out-miles/true-on-policy-error.log; Miles issues 3649, 3714, 4003, 4019, 4134, 4238.
+Sources: Miles training backend documentation at main 08752a12; SGLang memory sizing code in the image build 0.5.22.dev46; capture/gpu/out-gb10/engine-died-503.log; capture/gpu/out-gb10/engine-died-count.txt; capture/gpu/out-gb10/503-bursts.txt; capture/gpu/out-gb10/ray-oom-4b.log; capture/gpu/out-gb10/thermostat.log; capture/gpu/summary/miles-gb10-lab.json; manuals/sglang-101/capture/gpu/out-miles/true-on-policy-error.log; Miles issues 3649, 3714, 4003, 4019, 4134, 4238.
