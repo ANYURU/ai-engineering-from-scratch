@@ -30,7 +30,9 @@ Use this page to match your setup to ours before you compare a number. When you 
 
 | Model | Machine | Use |
 |---|---|---|
-| `Qwen/Qwen3-8B` | L4 | all L4 runs |
+| `Qwen/Qwen3-8B` | L4 | every L4 run except the FP8 weight run |
+| `Qwen/Qwen3-8B-FP8` | L4 | the FP8 weight run |
+| `Tengyunw/qwen3_8b_eagle3` | L4 | the EAGLE3 draft |
 | `Qwen/Qwen3-30B-A3B-Instruct-2507` | DGX Spark | all GB10 runs |
 
 ## The comparison engine and the client
