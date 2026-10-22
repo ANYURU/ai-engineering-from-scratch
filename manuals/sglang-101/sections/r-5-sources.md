@@ -9,7 +9,7 @@ The ranks match [the front matter](#s-front). When two sources disagree, the hig
 | Rank | Source | What the manual takes from it | Source key |
 |---|---|---|---|
 | 1 | the SGLang source at the tag, `baa9befa` | every default and every mechanism | the source files of each section, in the manual source |
-| 2 | the captured runs in `capture/out/` | every listing and every number marked as measured | the capture file name |
+| 2 | [the captured runs on the Mac](manuals/sglang-101/capture/out) | every listing and every number marked as measured | the capture file name |
 | 3 | SGLang issues and pull requests | incidents and the design history of each feature | `issue` and its number |
 | 4 | papers | the original design of RadixAttention and the methods SGLang implements | `paper` and a title |
 | 5 | the SGLang documentation at the tag | documented behaviour, checked against the code | `docs` and a heading |
@@ -22,7 +22,7 @@ The ranks match [the front matter](#s-front). When two sources disagree, the hig
 |---|---|
 | SGLang 0.5.22, tag `v0.5.22`, commit `baa9befa381511cd4d56f83980951e5a45fffc6d`, [github.com/sgl-project/sglang](https://github.com/sgl-project/sglang) | every section |
 | Miles 0.1.2, tag `v0.1.2`, commit `a22fd824`, [github.com/radixark/miles](https://github.com/radixark/miles) | [7.2](#s-sglang-as-an-rl-rollout-engine) |
-| The capture kit and `capture/out/`, recorded on 2026-10-16 | every section with a listing |
+| The capture kit and [its Mac runs](manuals/sglang-101/capture/out), recorded on 2026-10-16 | every section with a listing |
 
 ## Rank 3: pull requests
 

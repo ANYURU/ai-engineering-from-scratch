@@ -115,7 +115,7 @@ id: fig-3-3b
 kind: tree
 title: two groups of the shared-prefix benchmark in one tree
 claim: Two running requests share one system-prompt node, and the tree splits exactly where their questions start.
-caption: Read from the root down. Numbers on nodes are lock counts while two requests of group 1 run. Mechanism from RadixCache at v0.5.22, token counts from the benchmark settings in capture/out/bench-shared-prefix.txt.
+caption: Read from the root down. Numbers on nodes are lock counts while two requests of group 1 run. Mechanism from RadixCache at v0.5.22, token counts from the settings of our shared-prefix benchmark.
 ```
 
 ## Which tree you get at v0.5.22

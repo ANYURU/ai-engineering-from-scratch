@@ -2,7 +2,7 @@
 
 > These are the Prometheus series this manual reads, what each one measures, and the question each one answers in production.
 
-`--enable-metrics` turns on `/metrics`. Without the flag, the endpoint does not exist, and the default is off. Our default server exported 81 metric families with the prefix `sglang:` (capture/out/metrics.txt). [Section 5.2](#s-the-metrics-endpoint) explains which ones to alert on. This table keeps the ones the manual uses.
+`--enable-metrics` turns on `/metrics`. Without the flag, the endpoint does not exist, and the default is off. Our default server exported 81 metric families with the prefix `sglang:` ([the metrics capture](manuals/sglang-101/capture/out/metrics.txt)). [Section 5.2](#s-the-metrics-endpoint) explains which ones to alert on. This table keeps the ones the manual uses.
 
 ## Latency
 
@@ -41,6 +41,6 @@
 
 ## What our runs recorded
 
-After the shared-prefix benchmark, the default server reported `sglang:cache_hit_rate` 0.94, and the server with `--disable-radix-cache` reported 0.0 for the same benchmark (capture/out/metrics.txt, no-radix-cache-metrics.txt). The default server counted 286,102 prompt tokens, and 182,079 of them came from the cache. Each counter appears once per label set, so sum the rows before you divide.
+After the shared-prefix benchmark, [the default server](manuals/sglang-101/capture/out/metrics.txt) reported `sglang:cache_hit_rate` 0.94. [The server with `--disable-radix-cache`](manuals/sglang-101/capture/out/no-radix-cache-metrics.txt) reported 0.0 for the same benchmark. The default server counted 286,102 prompt tokens, and 182,079 of them came from the cache. Each counter appears once per label set, so sum the rows before you divide.
 
 Sources: python/sglang/srt/observability/ at v0.5.22; capture/out/metrics.txt, no-radix-cache-metrics.txt, small-pool-metrics.txt.

@@ -29,7 +29,7 @@ id: fig-2-1
 kind: flow
 title: the three processes of one SGLang server
 claim: One request crosses three processes over ZMQ, and only the scheduler touches the model, so text work never runs on the thread that launches GPU steps.
-caption: Read the numbered arrows in order. Blue boxes are SGLang processes, the olive box is the client. Process ids 5782 and 5909 are from capture/out/server-default.log.
+caption: Read the numbered arrows in order. Blue boxes are SGLang processes, the olive box is the client. Process ids 5782 and 5909 are from the default server log of our Mac run.
 ```
 
 With tensor parallelism, only rank 0 of the scheduler opens the ZMQ sockets. It broadcasts each request to the other ranks, so every GPU builds the same batch {{code}}. No rank decides on its own.

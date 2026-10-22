@@ -2,7 +2,7 @@
 
 > These are the flags this manual changes or explains, with the default the code sets, the value our Mac resolved, and when to change it.
 
-`sglang serve --help` lists 535 options at 0.5.22 (capture/out/serve-help.txt). Most of them never matter to you. The table below holds the ones this manual uses. Many defaults are `None` in the code. A startup hook replaces them with a value that depends on the GPU, the model, and the free memory. The "On our Mac" column shows that resolved value, from the `server_args` line of capture/out/server-default.log.
+`sglang serve --help` lists 535 options at 0.5.22 ([the captured help output](manuals/sglang-101/capture/out/serve-help.txt)). Most of them never matter to you. The table below holds the ones this manual uses. Many defaults are `None` in the code. A startup hook replaces them with a value that depends on the GPU, the model, and the free memory. The "On our Mac" column shows that resolved value, from the `server_args` line of [the default server log](manuals/sglang-101/capture/out/server-default.log).
 
 ## Memory and admission
 

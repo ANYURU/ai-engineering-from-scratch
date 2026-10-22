@@ -139,7 +139,7 @@ sglang serve --model-path Qwen/Qwen3-30B-A3B-Instruct-2507 --host 127.0.0.1 --po
 
 At a cap of 8 the single run reported a median first token of 677.61 ms. At a cap of 32 it reported 390.38 ms. More load gave a faster first token, and no queue explains that. One run is one sample, and one sample can be wrong for reasons you never see.
 
-So we ran the sweep the way a model team runs a training comparison. `capture/gpu/sweep.py` runs every cap from 1 to 64 three times, with seeds 1, 2, and 3. It passes `--output-details`, so each run keeps the TTFT and the token gaps of every request. `capture/gpu/summarize.py` reduces the three runs of each point to the median, the lowest, and the highest value.
+So we ran the sweep the way a model team runs a training comparison. [Our sweep script](manuals/sglang-101/capture/gpu/sweep.py) runs every cap from 1 to 64 three times, with seeds 1, 2, and 3. It passes `--output-details`, so each run keeps the TTFT and the token gaps of every request. [Our summary script](manuals/sglang-101/capture/gpu/summarize.py) reduces the three runs of each point to the median, the lowest, and the highest value.
 
 | Cap | Single kit run, median TTFT | Three seeds, median TTFT (lowest to highest) |
 |---|---|---|
@@ -219,7 +219,7 @@ The two settings measure two different servers. Fixed lengths measure bursts: a 
 
 On the GB10, BF16 throughput still rises at a cap of 64, because the KV pool holds 234,600 tokens. A throughput curve with no knee does not tell you where to stop. A latency target does.
 
-**Goodput:** the number of requests per second that finish inside the latency target. `capture/gpu/summarize.py` counts a request when its first token comes in under 1 s and its mean time per token is under 100 ms.
+**Goodput:** the number of requests per second that finish inside the latency target. Our summary script counts a request when its first token comes in under 1 s and its mean time per token is under 100 ms.
 
 | Cap | BF16 goodput | BF16 median TPOT | FP8 goodput | FP8 median TPOT |
 |---|---|---|---|---|
@@ -274,7 +274,7 @@ index, temperature.gpu, power.draw [W], power.limit [W], clocks.current.sm [MHz]
 
 The GPU was at 87 C with software thermal slowdown active, and its SM clock was 360 MHz of 2040. The L4 is a 72 W card with passive cooling, and the second card in the same chassis ran other work at the same time. We had measured a hot GPU, and the server under it was not the cause.
 
-Now `capture/gpu/sweep.py` samples `nvidia-smi` once a second into a `.gpu.csv` file beside each run. Before each run it waits up to 900 s for the GPU to cool below the `--cool` limit, 65 C by default. On this chassis the L4 never went below 69 C, so we ran with `--cool 72`. `capture/gpu/summarize.py` adds the median SM clock, the highest temperature, and the share of samples with a thermal slowdown bit to each point. The GB10 load sweep in [figure 5.1c](#fig-5-1c) ran before we added the sampler, so its tight bands are the only check on it.
+Now the sweep script samples `nvidia-smi` once a second into a `.gpu.csv` file beside each run. Before each run it waits up to 900 s for the GPU to cool below the `--cool` limit, 65 C by default. On this chassis the L4 never went below 69 C, so we ran with `--cool 72`. The summary script adds the median SM clock, the highest temperature, and the share of samples with a thermal slowdown bit to each point. The GB10 load sweep in [figure 5.1c](#fig-5-1c) ran before we added the sampler, so its tight bands are the only check on it.
 
 We ran the L4 sweep again with the same command and the cool-down. The throttled sweep is the rose line in the next figure.
 
