@@ -26,7 +26,7 @@ Eviction removes only cached tokens that no running request locks, the leaves of
 
 The SGLang docs give the same advice: start with `lru` and change it only against a measured hit rate {{docs}}. Frequency-based policies hurt when popularity shifts, because yesterday's popular prompt stays in memory and today's prompt pays for it. Change the policy only when you can name the workload that the new policy serves, and measure the hit rate before and after.
 
-A 2026 study of production traces from two companies supports that default. It tested 14 eviction policies, and the policies built for other caches gave little gain over LRU. Active sessions send their next turns at a regular pace, so recency predicts reuse well.
+A 2026 study of production traces from two companies supports that default. It tested 14 eviction policies, and the policies built for other caches gave little gain over LRU. In those traces, active sessions sent their next turns at a regular pace, so recency predicted reuse well.
 
 The study found gains in two narrow cases. One is quick eviction of prefixes that are used only once, when such prompts fill the cache. The other is eviction that weighs how much a miss costs to compute again. We did not measure these results ourselves. Of the SGLang policies, `slru` is the closest to the first case.
 
