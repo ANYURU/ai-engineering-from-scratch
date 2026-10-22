@@ -2,7 +2,7 @@
 
 > One sweep over concurrency finds the point where your latency starts to grow, and four defaults change the result.
 
-You changed a flag and you want to know if it helped. When you finish this section, you can run a concurrency sweep, read the knee, and avoid the four mistakes that make two runs disagree.
+You changed a flag and you want to know if it helped. When you finish this section, you can run a concurrency sweep, find the latency jump, and avoid the four mistakes that make two runs disagree.
 
 **Our result:** on our L4, output peaked near 275 tokens per second at 32 users and fell at 64 users.
 
