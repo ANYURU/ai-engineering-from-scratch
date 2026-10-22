@@ -34,6 +34,8 @@ The accept thresholds `--speculative-accept-threshold-single` and `--speculative
 
 `--speculative-algorithm` accepts `EAGLE`, `EAGLE3`, `NEXTN`, `STANDALONE`, `NGRAM`, `DFLASH`, `DSPARK`, and `UNO`. `NEXTN` is another name for `EAGLE`. For DeepSeek V3 and other models that include multi-token prediction layers in the checkpoint, SGLang sets the draft model path to the model path. `NGRAM` needs no draft model at all. It looks up repeated token sequences in the text it has already seen.
 
+With `NGRAM`, SGLang turns off mixed chunked prefill {{code}}. The docs page at v0.5.22 also says that `NGRAM` turns off the overlap scheduler and runs on CUDA only. The v0.5.22 code accepts CUDA, CPU, and XPU, and it turns the overlap off only on CPU {{code}}. Read `disable_overlap_schedule` from `GET /server_info` to see what your server runs. When you compare `NGRAM` with no speculation, run both with the same overlap setting.
+
 When you leave the shape unset, SGLang chooses `(num_steps, topk, num_draft_tokens)` from the model architecture.
 
 | Model | Default shape |
@@ -52,6 +54,13 @@ A throughput test with speculation on and no explicit limit measures a server th
 ## What to measure
 
 The scheduler logs `accept len` and `accept rate` on each decode log line, and `/metrics` exports `sglang:spec_accept_length` and `sglang:spec_accept_rate`. Measure them on your own prompts, because acceptance depends on the text and on the draft. A field report by David Noel Ng {{field David Noel Ng 2026-08}} on two GH200 measured 3.5 to 5.05 tokens on DeepSeek-V4-Flash after a loader fix.
+
+Run a sample of your own traffic with and without speculation. Keep your real output lengths, and pass `--disable-ignore-eos` to the benchmark client. With no traffic sample, `--dataset-name speed-bench` reads a local copy of the SPEED-Bench prompts at v0.5.22 {{code}}. Compare these numbers:
+
+1. The acceptance length, from `sglang:spec_accept_length`.
+2. The median TPOT and the output throughput.
+3. The P99 ITL and the P99 TTFT, because a gain in the median can hide a loss in the tail.
+4. The acceptance length of your longest answers alone. Each `/generate` response gives it as `spec_accept_length` in `meta_info`.
 
 Then sweep concurrency with speculation on and off, and find where the two lines cross. Ant Group {{field Ant Group 2025-09}} measured this on DeepSeek-R1 on H20. Longer drafts gained 21% at batch 1 and lost about 18% at batch 32.
 
@@ -156,11 +165,24 @@ caption: Violet is default TPOT divided by EAGLE-3 TPOT. Teal is EAGLE-3 output 
 
 The pool explains the difference. With 15 requests in the pool, the rest waited for a slot. At concurrency 32, the median time to first token was 8,040 ms with EAGLE-3 and 2,970 ms without it. On a card where the KV pool is the limit, the draft spends the memory that the batch needs.
 
+## Know the limits of our results
+
+Both sweeps used the `random` dataset of the benchmark client, with 512 tokens in, 128 tokens out, and `ignore_eos` on. At v0.5.22 that dataset takes the first turn of ShareGPT conversations, then cuts or repeats it to 512 tokens {{code}}. It is real text, but it is not your traffic.
+
+Other teams found that tests like ours can overstate the gain. We did not measure these effects ourselves:
+
+- A 2026 benchmark study by NVIDIA researchers, SPEED-Bench, found that synthetic prompts overstated speculative throughput by 23 percent on average. It also found that the best draft length fell to 1 as the batch grew.
+- The same study found that random token ids left 20 to 30 percent of the experts idle in some layers of an MoE target.
+- A 2026 study of EAGLE-3 and other drafts, Test-Time Speculation, found that the acceptance length falls as the answer grows. Within a few thousand output tokens it came close to 1, which means no gain.
+- A 2025 study of serving benchmarks found that speculation lowered the median TPOT by 1.3 times and raised the P99 TPOT by 1.16 times. TTFT also rose, because the draft runs its own prefill.
+
+So our gains hold for answers of 128 tokens on our test prompts. They do not predict the gain on long chat answers or on reasoning traces. Our reading of the GB10 result also depends on how real tokens choose their experts, and we did not measure the routing.
+
 ## Our position
 
 Treat speculative decoding as a latency tool for low and middle concurrency. Turn it on for interactive traffic with a few users per replica. Leave it off for batch jobs and high concurrency on a card where the KV pool is the limit, as on our L4. On the GB10, where the pool had room, speculation still gave 1.17 times the throughput at 64 users.
 
-Measure the cross point on your model before you accept that rule. On the mixture-of-experts model above, speculation still won at concurrency 32 on the GB10. On the dense model on the L4, it stopped winning at 32, because the draft took nearly 60 percent of the pool.
+Measure the cross point on your model before you accept that rule. On the mixture-of-experts model above, speculation still won at concurrency 32 on the GB10. On the dense model on the L4, it stopped winning at 32, because the draft took nearly 60 percent of the pool. Measure it with your own prompts and output lengths, with the list in the section on what to measure.
 
 Always set `--max-running-requests` yourself when speculation is on. Choose it from the concurrency where your sweep shows speculation still wins.
 
@@ -178,8 +200,9 @@ Use the draft layers that come with your model first. A model with multi-token p
 - Turn on speculative decoding for low-concurrency interactive traffic, and measure where it stops winning.
 - Set --max-running-requests explicitly whenever --speculative-algorithm is set.
 - Read accept len in the decode log on your own prompts before you trust a speedup.
+- Test speculation with real output lengths and --disable-ignore-eos, and compare P99 ITL and P99 TTFT, not only the median.
 - Check the draft model context length against your longest prompts.
 - Treat SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 as a removed check, and test long prompts yourself.
 ```
 
-Sources: capture/gpu/out-gb10/server-eagle3.log, capture/gpu/out-l4/server-eagle3-no-env.log, capture/gpu/out-l4/server-load-eagle3.log, capture/gpu/summary/l4.json, server-eagle3.command.txt, eagle3-bench-random-c1.txt, eagle3-bench-random-c8.txt, eagle3-bench-random-c32.txt, capture/gpu/summary/gb10.json, python/sglang/srt/configs/model_config.py (_derive_context_length), docs/cookbook/specbundle/specbundle_usage.mdx, python/sglang/srt/speculative/eagle_worker_v2.py (forward_batch_generation), speculative/eagle_utils.py (build_tree_kernel_efficient, eagle_sample), arg_groups/speculative_hook.py (_auto_choose_speculative_params, _handle_eagle_family, _handle_ngram, _resolve_speculative_algorithm_alias), arg_groups/fields/spec.py, managers/scheduler_components/metrics_reporter.py, and observability/metrics_collector.py at v0.5.22; issues #5274 and #6783; PR #33276; field reports by Ant Group on the LMSYS blog (2025-09-26) and David Noel Ng (2026-08-04); vendor reports by Google Cloud (2025-11-25) and Modal with Decagon (2025-11-13).
+Sources: capture/gpu/out-gb10/server-eagle3.log, capture/gpu/out-l4/server-eagle3-no-env.log, capture/gpu/out-l4/server-load-eagle3.log, capture/gpu/summary/l4.json, server-eagle3.command.txt, eagle3-bench-random-c1.txt, eagle3-bench-random-c8.txt, eagle3-bench-random-c32.txt, capture/gpu/summary/gb10.json, python/sglang/srt/configs/model_config.py (_derive_context_length), docs/cookbook/specbundle/specbundle_usage.mdx, python/sglang/srt/speculative/eagle_worker_v2.py (forward_batch_generation), speculative/eagle_utils.py (build_tree_kernel_efficient, eagle_sample), arg_groups/speculative_hook.py (_auto_choose_speculative_params, _handle_eagle_family, _handle_ngram, _disable_overlap_schedule_for_cpu, _resolve_speculative_algorithm_alias), arg_groups/fields/spec.py, managers/tokenizer_manager.py (speculative meta_info), python/sglang/benchmark/datasets/random.py (sample_random_requests), python/sglang/benchmark/datasets/speed_bench.py, python/sglang/benchmark/serving.py (--disable-ignore-eos), docs/docs/advanced_features/speculative_decoding.mdx (the NGRAM row), managers/scheduler_components/metrics_reporter.py, and observability/metrics_collector.py at v0.5.22; issues #5274 and #6783; PR #33276; field reports by Ant Group on the LMSYS blog (2025-09-26) and David Noel Ng (2026-08-04); vendor reports by Google Cloud (2025-11-25) and Modal with Decagon (2025-11-13); the 2026 benchmark study SPEED-Bench by NVIDIA researchers (synthetic prompts, draft length by batch size, expert use on random token ids), the 2026 study Test-Time Speculation on EAGLE-3 and other drafts, a 2025 study of serving benchmarks (speculation, median and P99 TPOT, TTFT).
