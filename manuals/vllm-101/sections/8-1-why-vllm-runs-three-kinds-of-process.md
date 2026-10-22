@@ -26,6 +26,14 @@ The vLLM design documents give a formula for the count. Add the API servers, the
 
 This matters when something goes wrong. A crash in a worker shows up in the engine core log. A slow tokenizer shows up as a long time to first token while the GPU is idle. When you read a log, first find which process wrote the line.
 
+```figure
+id: fig-8-1
+kind: tree
+title: six processes for four GPUs
+claim: A server with tensor parallel size 4 runs six processes: one API server, one engine core, and four GPU workers.
+caption: Read from the top down. Each worker owns one GPU. From the vLLM design documents at v0.31.0.
+```
+
 ## Why not threads
 
 Threads in one Python process share the interpreter lock, so they would not remove the wait. Separate processes also let vLLM restart or replace one part. The repository also has an experimental front end written in Rust. It replaces the Python API server and talks to the same engine core over the same sockets.
