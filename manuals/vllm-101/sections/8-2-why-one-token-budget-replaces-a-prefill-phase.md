@@ -8,10 +8,10 @@ Most explanations of LLM serving describe a prefill phase and a decode phase. Th
 
 The scheduler asks the same question about every request: how many tokens does this request still need to compute? A new request needs all of its prompt tokens. A running request needs one token, or more with speculative decoding. A comment in the scheduler source says the same in its own words. No decode phase and no prefill phase exist, only a count of tokens still to compute.
 
-In each step, the scheduler has a budget of tokens, set by `--max-num-batched-tokens`. The default is 2,048. It spends the budget in this order:
+In each step, the scheduler has a budget of tokens, set by `--max-num-batched-tokens`. For `vllm serve` on a GPU with less than 70 GiB, such as the L4, the default is 2,048. It spends the budget in this order:
 
 1. It gives each running request the tokens it needs, up to the budget.
-2. It admits waiting requests while budget and room for running requests remain. `--max-num-seqs` limits the running requests, and the default is 128.
+2. It admits waiting requests while budget and room for running requests remain. `--max-num-seqs` limits the running requests. For `vllm serve`, the default is 256 on a GPU with less than 70 GiB and 1,024 on a larger one.
 
 A long prompt that does not fit the rest of the budget gets a part of the budget now and the rest in later steps. That is chunked prefill. It is on by default, because the budget design needs nothing else to support it.
 
@@ -25,7 +25,7 @@ caption: Each row is one scheduler step. Prompt chunks are drawn to scale, and d
 
 ## Why decode goes first
 
-Running requests come first, so a user who already sees a stream keeps seeing it. A new prompt waits for the budget that is left. The vLLM documentation states the trade. A smaller budget gives a smoother stream, and a larger one gives a faster first token for long prompts. The default of 2,048 is a choice for the stream.
+Running requests come first, so a user who already sees a stream keeps seeing it. A new prompt waits for the budget that is left. The vLLM documentation states the trade. A smaller budget gives a smoother stream, and a larger one gives a faster first token for long prompts. The small default of 2,048 is a choice for the stream. GPUs with 70 GiB or more get 8,192, and [the long prompts page](#s-keep-long-prompts-from-stalling-short-ones) lists the rule.
 
 ## What happens when memory runs out
 

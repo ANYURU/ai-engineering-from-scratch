@@ -80,7 +80,7 @@ Read the lines in this order:
 4. **Model loading.** This line gives the memory that the weights took and the time to load them.
 5. **The KV cache size.** This line gives the tokens that fit in the cache and the number of full-length requests that fit at the same time. Part 2 starts from this line.
 
-The server is ready when the log shows `Application startup complete.`. On our DGX Spark, that took about eight minutes for a 57 GB model, and the weight load took 325 seconds of it.
+The server is ready when the log shows `Application startup complete.`. On our DGX Spark, that took about eight minutes for 57 GiB of weights, and the weight load took 325 seconds of it.
 
 ```figure
 id: fig-1-2

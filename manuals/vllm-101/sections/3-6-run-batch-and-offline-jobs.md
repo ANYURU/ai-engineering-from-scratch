@@ -40,14 +40,14 @@ The ceiling on your setup depends on the model, the prompt and answer lengths, a
 
 ## Raise the limits for a batch job
 
-Two server limits cap the batch:
+Two limits cap the batch. Their defaults depend on the GPU memory and on how you run vLLM:
 
-- `--max-num-seqs`, 128 by default, caps the requests that run at once.
-- `--max-num-batched-tokens`, 2,048 by default, caps the tokens in one step. The vLLM documentation suggests a value above 8,192 for throughput, most of all for small models on large GPUs.
+- `--max-num-seqs` caps the requests that run at once. The default is 256 on a GPU with less than 70 GiB and 1,024 on a larger one.
+- `--max-num-batched-tokens` caps the tokens in one step. For the server, the default is 2,048 on a GPU with less than 70 GiB. The offline `LLM` class starts at 8,192. The vLLM documentation suggests a value above 8,192 for throughput, most of all for small models on large GPUs.
 
 A larger token budget lets long prompts finish their prefill in fewer steps. Running streams get less of each step, which a batch job does not care about.
 
-Not measured on our hardware. Our sweeps of the token budget for this page are still running on the L4.
+We measured the budget on our DGX Spark, where 16,384 gave longer gaps between tokens at a low rate. [The long prompts page](#s-keep-long-prompts-from-stalling-short-ones) has the numbers. We did not measure it for a batch job.
 
 ## Check the run
 

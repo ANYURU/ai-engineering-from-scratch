@@ -4,7 +4,7 @@
 
 You changed a flag and you want to know if it helped. When you finish this section, you can run a concurrency sweep, read the knee, and avoid the four mistakes that make two runs disagree.
 
-**Our result:** on our L4, output peaked at 275 tokens per second at 32 users and fell at 64 users.
+**Our result:** on our L4, output peaked near 275 tokens per second at 32 users and fell at 64 users.
 
 ## Run one sweep
 
@@ -24,7 +24,7 @@ Each run prints a summary with four numbers. They are the output throughput, the
 
 ## Read the knee
 
-Here is the same sweep from our L4 with `Qwen/Qwen3-8B` in BF16. Each number is the median of three seeds. The pool was 24,096 tokens.
+Here is the same sweep from our L4 with `Qwen/Qwen3-8B` in BF16, run on 2026-10-17. Each number is the median of three seeds. The pool was 24,096 tokens.
 
 | Users | Output tok/s | Median TTFT | Median TPOT | P99 ITL | Median SM clock |
 |---|---|---|---|---|---|
@@ -43,7 +43,7 @@ id: fig-5-1
 kind: chart
 title: the knee of the sweep
 claim: On our L4, output rose to 275 tokens per second at 32 users and fell at 64 users, so 32 users is the knee.
-caption: Users double at each step on the axis. The band spans the lowest and highest of three runs. From capture/gpu/summary/l4.json.
+caption: Users double at each step on the axis. The band spans the lowest and highest of three runs. This is the repeat sweep of 2026-10-21, which peaked at 275.1 against 273.9 in the table. From capture/gpu/summary/l4.json.
 ```
 
 ## Avoid the four mistakes

@@ -8,20 +8,19 @@ Use this page to check a number from another section, or to repeat a run. When y
 
 - **Hardware and versions.** [The version pins page](#s-ref-version-pins) lists them.
 - **Client.** Every run used the SGLang 0.5.22 benchmark client. The vLLM runs used `--backend vllm`.
-- **Seeds.** Each point ran with seeds 1, 2, and 3. Tables give the median, and some columns give the lowest and the highest of the three.
+- **Seeds.** The runs to 2026-10-21 used seeds 1, 2, and 3. Most runs on 2026-10-22 used seeds 1 and 2, and the tables give the count. Tables give the median, and some columns give the lowest and the highest.
 - **Pools.** On the L4, vLLM ran with `--num-gpu-blocks-override 1506`, a pool of 24,096 tokens, against 24,094 for SGLang. On the GB10, vLLM ran with 14,685 blocks, a pool of 234,960 tokens. The SGLang pools on the GB10 were 233,303 tokens for load, 234,958 for waves, and 251,910 for mixed.
-- **Clocks.** A sampler recorded the SM clock and the temperature every second. The sweep tool can wait for the GPU to cool before a run, and repeat a run below a clock floor. The clock column shows the result for each point. The sections draw no conclusion from a point under 1,000 MHz.
-- **Dates.** The L4 load runs of `vllm` and `sglang` were on 2026-10-17, and the `vllm-b`, `vllm-async`, `vllm-eager`, and `vllm-seqs-16` load runs on 2026-10-21. The L4 rate and waves runs were on 2026-10-18. The L4 run without the prefix cache was on 2026-10-21. Every GB10 run in these tables was on 2026-10-21.
+- **Clocks.** A sampler recorded the SM clock and the temperature every second. The sweep tool can wait for the GPU to cool before a run, and repeat a run below a clock floor. The clock column shows the result for each point. On 2026-10-22, most runs had the SM clock locked at 900 MHz with `nvidia-smi -lgc`. A lock caps the clock, but a hot GPU still slows below it. The sections compare two points only at similar clocks, and they say so where a point ran below the lock or in a throttled session.
+- **Dates.** The L4 load runs of `vllm` and `sglang` were on 2026-10-17, and the `vllm-b`, `vllm-async`, `vllm-eager`, and `vllm-seqs-16` load runs on 2026-10-21. The L4 rate and waves runs were on 2026-10-18. The L4 run without the prefix cache was on 2026-10-21. Every GB10 run in these tables was on 2026-10-21. Every run in the three L4 tables for 2026-10-22 was on that day. The runs on the shared GPU of the L4 node had a pool of 2,928 tokens, so they tested 1 and 4 users only.
 
 ## Not run yet
 
-These runs are planned or running on the L4 and are not in these tables:
+These runs are planned and are not in these tables:
 
-- async scheduling off, with `--no-async-scheduling`.
-- `--max-num-batched-tokens` at 512, 2048, and 16384 on mixed prompts.
-- an FP8 KV cache, FP8 weights, and a small pool.
-- `-O0`, `-O1`, and `-O3`.
-- EAGLE3 with 1, 3, and 5 guesses, and n-gram speculation.
+- `--max-num-batched-tokens` at 512, 2048, and 16384 on mixed prompts on the L4. The GB10 has 2048 and 16384.
+- `-O1` on the L4.
+- a backend comparison with one KV data type.
+- a quality check of FP8 weights and of an FP8 KV cache.
 
 ## Tables
 
@@ -121,6 +120,51 @@ The config `vllm-async` passes `--async-scheduling`. For these models with no sp
 | 4,096 | `vllm` | 86.8 (85.6 to 89.4) | 375 ms | 80.8 ms | 230 (140 to 232) ms | 1,410 MHz |
 | 4,096 | `vllm-no-prefix-cache` | 19.6 (19.5 to 19.7) | 13,353 ms | 192.9 ms | 1,579 (1,531 to 1,589) ms | 675 MHz |
 | 4,096 | `sglang` | 88.4 (88.3 to 88.9) | 474 ms | 75.6 ms | 162 (82 to 214) ms | 1,440 MHz |
+
+### L4, throttled session: 512 prompt and 128 output tokens, 2026-10-22
+
+The GPU ran far below its full clock in this session. Compare these rows only with each other, at matching clocks.
+
+| Users | Config | Output tok/s (min to max) | Median TTFT | Median TPOT | P99 ITL (min to max) | Median SM clock | Seeds |
+|---|---|---|---|---|---|---|---|
+| 1 | `vllm-fast-b` | 10.6 (10.4 to 10.7) | 705 ms | 104.1 ms | 105 (105 to 105) ms | 210 MHz | 3 |
+| 1 | `vllm-O0` | 10.5 (10.3 to 10.6) | 707 ms | 106.5 ms | 107 (107 to 107) ms | 210 MHz | 2 |
+| 1 | `vllm-O3` | 10.6 (10.5 to 10.7) | 705 ms | 104.2 ms | 105 (105 to 105) ms | 210 MHz | 2 |
+| 1 | `vllm-kv-fp8-triton` | 10.8 (10.6 to 10.9) | 717 ms | 101.8 ms | 102 (102 to 102) ms | 210 MHz | 2 |
+| 32 | `vllm-fast-b` | 186.7 (185.4 to 187.1) | 4,181 ms | 142.7 ms | 1,705 (1,424 to 1,789) ms | 450 MHz | 3 |
+| 32 | `vllm-O0` | 191.5 (190.9 to 192.1) | 4,051 ms | 142.0 ms | 1,459 (1,354 to 1,565) ms | 548 MHz | 2 |
+| 32 | `vllm-O3` | 189.9 (188.5 to 191.2) | 4,086 ms | 143.8 ms | 1,602 (1,417 to 1,787) ms | 536 MHz | 2 |
+| 32 | `vllm-kv-fp8-triton` | 192.0 (183.3 to 200.7) | 4,267 ms | 138.0 ms | 1,672 (1,603 to 1,741) ms | 480 MHz | 2 |
+
+### L4, clock locked at 900 MHz: 512 prompt and 128 output tokens, 2026-10-22
+
+The lock caps the clock. A hot GPU still slows below it, as the 1-user runs of `vllm-lock-b` and `vllm-lock-small-pool` show.
+
+| Users | Config | Output tok/s (min to max) | Median TTFT | Median TPOT | P99 ITL (min to max) | Median SM clock | Seeds |
+|---|---|---|---|---|---|---|---|
+| 1 | `vllm-lock-b` | 11.2 (10.9 to 11.5) | 554 ms | 99.0 ms | 105 (105 to 105) ms | 210 MHz | 2 |
+| 1 | `vllm-lock-fp8` | 25.4 (24.5 to 26.3) | 239 ms | 35.2 ms | 48 (45 to 52) ms | 900 MHz | 2 |
+| 1 | `vllm-lock-eagle3-k1` | 22.4 (21.7 to 23.1) | 240 ms | 39.4 ms | 100 (84 to 115) ms | 900 MHz | 2 |
+| 1 | `vllm-lock-eagle3-k3` | 31.3 (31.2 to 31.4) | 255 ms | 27.8 ms | 78 (78 to 78) ms | 900 MHz | 2 |
+| 1 | `vllm-lock-eagle3-k5` | 31.7 (30.6 to 32.9) | 267 ms | 26.2 ms | 110 (83 to 136) ms | 900 MHz | 2 |
+| 1 | `vllm-lock-small-pool` | 11.6 (10.9 to 12.3) | 449 ms | 82.6 ms | 105 (105 to 105) ms | 281 MHz | 2 |
+| 32 | `vllm-lock-b` | 208.8 (206.8 to 210.8) | 3,090 ms | 119.9 ms | 1,406 (1,390 to 1,422) ms | 881 MHz | 2 |
+| 32 | `vllm-lock-fp8` | 284.7 (272.3 to 297.1) | 2,862 ms | 83.8 ms | 1,143 (1,027 to 1,260) ms | 900 MHz | 2 |
+| 32 | `vllm-lock-eagle3-k1` | 271.1 (261.2 to 281.0) | 1,004 ms | 100.4 ms | 818 (784 to 852) ms | 900 MHz | 2 |
+| 32 | `vllm-lock-eagle3-k3` | 333.6 (327.8 to 339.4) | 890 ms | 77.8 ms | 771 (763 to 780) ms | 900 MHz | 2 |
+| 32 | `vllm-lock-eagle3-k5` | 289.5 (280.4 to 298.5) | 1,071 ms | 83.7 ms | 915 (836 to 995) ms | 885 MHz | 2 |
+| 32 | `vllm-lock-small-pool` | 80.4 (79.8 to 81.0) | 31,568 ms | 120.6 ms | 768 (765 to 771) ms | 248 MHz | 2 |
+
+### L4, shared GPU with a pool of 2,928 tokens: 512 prompt and 128 output tokens, 2026-10-22
+
+| Users | Config | Output tok/s (min to max) | Median TTFT | Median TPOT | P99 ITL (min to max) | Median SM clock | Seeds |
+|---|---|---|---|---|---|---|---|
+| 1 | `vllm-fast-b` | 4.0 (3.9 to 4.0) | 1,437 ms | 241.7 ms | 274 (255 to 293) ms | 375 MHz | 2 |
+| 1 | `vllm-ngram` | 7.4 (7.3 to 7.5) | 1,428 ms | 76.6 ms | 284 (277 to 291) ms | 412 MHz | 2 |
+| 1 | `vllm-no-async` | 3.9 (3.8 to 3.9) | 1,467 ms | 249.6 ms | 283 (258 to 307) ms | 368 MHz | 2 |
+| 4 | `vllm-fast-b` | 13.0 (13.0 to 13.1) | 4,945 ms | 272.6 ms | 290 (286 to 295) ms | 428 MHz | 2 |
+| 4 | `vllm-ngram` | 19.2 (18.8 to 19.7) | 1,925 ms | 101.2 ms | 1,691 (1,669 to 1,713) ms | 442 MHz | 2 |
+| 4 | `vllm-no-async` | 12.8 (12.8 to 12.8) | 4,690 ms | 277.2 ms | 309 (309 to 309) ms | 450 MHz | 1 |
 
 ### GB10, load
 

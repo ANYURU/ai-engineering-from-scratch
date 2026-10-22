@@ -40,7 +40,7 @@ Two more pairs of counters tell you whether a feature pays:
 
 The vLLM metrics do not show the GPU clock or temperature. A hot or shared GPU runs slower, and every latency rises with no change in the vLLM metrics. Export `nvidia-smi` data or use the NVIDIA DCGM exporter next to the vLLM metrics.
 
-Not measured on our hardware. Our sweeps did not scrape `/metrics`. A run with a small pool, to show preemptions in the metrics, is planned.
+Not measured on our hardware. Our sweeps did not scrape `/metrics`. Our run with a small pool made requests wait in the queue, and its log had no preemption count. [The chat page](#s-tune-chat-for-many-users) shows that run.
 
 ```takeaways
 - Alert on the waiting count, the cache usage, preemptions, and the 99th percentile of TTFT and ITL.

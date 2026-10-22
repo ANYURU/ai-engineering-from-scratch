@@ -21,8 +21,8 @@ Defaults are for `vllm serve` at 0.31.0 on a CUDA GPU, read from the configurati
 
 | Flag | Default | What it sets | Page |
 |---|---|---|---|
-| `--max-num-batched-tokens` | 2048 | the token budget for one step | [token budget](#s-why-one-token-budget-replaces-a-prefill-phase) |
-| `--max-num-seqs` | 128 | the most requests that run at once | [token budget](#s-why-one-token-budget-replaces-a-prefill-phase) |
+| `--max-num-batched-tokens` | 2048 for `vllm serve` on a GPU under 70 GiB or an A100, 8192 from 70 GiB, 16384 from 160 GiB | the token budget for one step | [token budget](#s-why-one-token-budget-replaces-a-prefill-phase) |
+| `--max-num-seqs` | 256 on a GPU under 70 GiB, 1024 from 70 GiB | the most requests that run at once | [token budget](#s-why-one-token-budget-replaces-a-prefill-phase) |
 | `--enable-chunked-prefill` | on | splitting a long prompt across steps | [token budget](#s-why-one-token-budget-replaces-a-prefill-phase) |
 | `--async-scheduling` | on for most generate models | planning the next step while the GPU runs | [Model Runner V2](#s-what-model-runner-v2-changed) |
 | `--scheduling-policy` | `fcfs` | first come first served, or `priority` | [token budget](#s-why-one-token-budget-replaces-a-prefill-phase) |
