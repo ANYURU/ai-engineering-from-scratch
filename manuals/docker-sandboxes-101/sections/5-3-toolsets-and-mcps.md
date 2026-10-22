@@ -105,7 +105,7 @@ id: fig-5-3
 kind: flow
 title: what each toolset entry gives the model
 claim: Each `toolsets` entry becomes named tools in the model request: built-in types run in process, and `mcp` goes through a gateway, a child process, or a URL.
-caption: Read each row left to right, from the agent file entry to the tool names in the model request. Solid rows ran in capture/out/18-run-json.ndjson, with names from the tools array of capture/cassettes/18-files.yaml.gz. Dashed rows come from the docs Tool Configuration page and were not run.
+caption: Read each row left to right, from the agent file entry to the tool names in the model request. Solid rows ran in the JSON run capture, with names from the tools array of the cassette. Dashed rows come from the docs Tool Configuration page and were not run.
 ```
 
 ```takeaways

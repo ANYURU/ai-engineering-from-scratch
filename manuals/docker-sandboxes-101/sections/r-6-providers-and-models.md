@@ -2,7 +2,7 @@
 
 > Every provider id docker-agent 1.149.0 knows, the credential it reads, the `provider/model` reference form, the DMR endpoint order, the `auto` rule, and the keys that tune a model.
 
-`docker-agent doctor` printed 20 providers with their credential variables on the capture machine, every one `not set` (research/sources/probes/docker-agent-doctor.txt). The docs name 31 ids, and the schema description of `provider` lists the built-in aliases {{schema ProviderConfig}}. The table below is the union, in the order of the doctor output and then of the docs. The doctor prints canonical ids such as `fireworks-ai`, and the legacy ids stay accepted as aliases ([conflict C58](#s-ref-sources-and-the-conflicts-register)).
+`docker-agent doctor` printed 20 providers with their credential variables on the capture machine, every one `not set` ([our source record](manuals/docker-sandboxes-101/research/sources/probes/docker-agent-doctor.txt)). The docs name 31 ids, and the schema description of `provider` lists the built-in aliases {{schema ProviderConfig}}. The table below is the union, in the order of the doctor output and then of the docs. The doctor prints canonical ids such as `fireworks-ai`, and the legacy ids stay accepted as aliases ([conflict C58](#s-ref-sources-and-the-conflicts-register)).
 
 ## The provider ids
 
@@ -56,7 +56,7 @@ The doctor lists eleven ids that the docs tables do not count as providers, and 
 
 ## The auto rule
 
-`auto` picks the first cloud provider with a configured credential and then a locally pulled Docker Model Runner model {{docs-agent Set up a model}}. On the DMR side it prefers the model named in `model:` when that model is already pulled. Otherwise it takes the first available non-embedding model, instead of asking to pull `ai/qwen3:latest` {{docs-agent Docker Model Runner}}. It never picks a provider defined under `providers` {{docs-agent Provider Definitions}}. `DOCKER_AGENT_DEFAULT_MODEL` sets the model used when none is given {{docs-agent User settings}}. On the capture machine, with no credential and the runner unreachable, the doctor still printed `auto -> dmr/ai/qwen3:latest` and reported one issue (research/sources/probes/docker-agent-doctor.txt).
+`auto` picks the first cloud provider with a configured credential and then a locally pulled Docker Model Runner model {{docs-agent Set up a model}}. On the DMR side it prefers the model named in `model:` when that model is already pulled. Otherwise it takes the first available non-embedding model, instead of asking to pull `ai/qwen3:latest` {{docs-agent Docker Model Runner}}. It never picks a provider defined under `providers` {{docs-agent Provider Definitions}}. `DOCKER_AGENT_DEFAULT_MODEL` sets the model used when none is given {{docs-agent User settings}}. On the capture machine, with no credential and the runner unreachable, the doctor still printed `auto -> dmr/ai/qwen3:latest` and reported one issue ([our source record](manuals/docker-sandboxes-101/research/sources/probes/docker-agent-doctor.txt)).
 
 ## The DMR endpoint
 

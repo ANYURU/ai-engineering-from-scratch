@@ -92,7 +92,7 @@ models:
 
 `files.yaml` names `provider: dmr` with no `base_url`, and then Docker Agent finds the DMR endpoint by itself {{docs-agent Docker Model Runner}}. It runs `docker model status --json`, which `16-dry-run.txt` prints inside its error when no Docker daemon answers. An eval container has no `docker` CLI, so the same discovery fails there, as [eval](#s-session-db-sessions-diff-and-eval) shows.
 
-With an explicit `base_url`, `dmr.yaml` answered `Hello` (`25-run-dmr.txt`). That run is live in every capture, because an explicit `base_url` bypasses the `--record` proxy and leaves the cassette empty (`capture/README.md`). Set `base_url` when discovery cannot work, and leave it out when you want a cassette.
+With an explicit `base_url`, `dmr.yaml` answered `Hello` ([the capture](manuals/docker-sandboxes-101/capture/out/25-run-dmr.txt)). That run is live in every capture, because an explicit `base_url` bypasses the `--record` proxy and leaves the cassette empty ([kit notes](manuals/docker-sandboxes-101/capture/README.md)). Set `base_url` when discovery cannot work, and leave it out when you want a cassette.
 
 Provider ids changed too. `doctor` prints `fireworks-ai`, `togetherai`, and `moonshotai`, and the docs Models table lists `fireworks`, `together`, and `moonshot`. This manual prints the ids that `doctor` prints ([conflict C58](#s-ref-sources-and-the-conflicts-register)), and [the providers table](#s-ref-providers-and-models) has the rest. A named patch under `flavors` changes any of these blocks at run time with `--flavor` {{help-agent docker-agent run}}, and the capture ran none.
 

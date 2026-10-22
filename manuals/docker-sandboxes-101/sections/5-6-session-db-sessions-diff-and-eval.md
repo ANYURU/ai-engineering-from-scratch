@@ -49,7 +49,7 @@ def replay(name):
     return ["--fake", f"{CASSETTE_WORK}/{name}"]
 ```
 
-The recording found four rules that the help does not state (`capture/README.md`). `--record` takes its value only as `--record=PATH`, and a separate word is read as the agent reference. The path is relative to `--working-dir`, and `.yaml` is appended. With the `dmr` provider the recording proxy answers 400 unless the run also has `--models-gateway http://localhost:12434/engines`.
+The recording found four rules that the help does not state ([kit notes](manuals/docker-sandboxes-101/capture/README.md)). `--record` takes its value only as `--record=PATH`, and a separate word is read as the agent reference. The path is relative to `--working-dir`, and `.yaml` is appended. With the `dmr` provider the recording proxy answers 400 unless the run also has `--models-gateway http://localhost:12434/engines`.
 
 Replay matches each request by its body. When one turn issues two tool calls, the runtime runs them in parallel and appends the results in completion order. The next request body then differs, and the replay answers 500, "requested interaction not found". The kit therefore sends one tool call per message.
 

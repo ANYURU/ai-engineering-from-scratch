@@ -52,7 +52,7 @@ id: fig-4-1
 kind: structure
 title: a v3 descriptor and the image manifest that carries it
 claim: The frontend copies the hello-kit descriptor into one manifest annotation, derives six more annotations from its fields, and records its own release in built-by.
-caption: Read left to right. The left column is capture/fixtures/kits/hello-kit/kit.yaml, and each note says what the row becomes. The right column is the index and the arm64 manifest that the local registry returned, from capture/out/28-index.json and 28-manifest.json. Teal lines are the writes of the frontend.
+caption: Read left to right. The left column is the hello kit's kit.yaml, and each note says what the row becomes. The right column is the index and the arm64 manifest that the local registry returned, from the index and manifest captures. Teal lines are the writes of the frontend.
 ```
 
 ## What the frontend publishes

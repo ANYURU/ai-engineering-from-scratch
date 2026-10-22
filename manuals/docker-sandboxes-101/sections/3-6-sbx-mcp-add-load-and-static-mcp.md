@@ -36,7 +36,7 @@ lang: json
 }
 ```
 
-The help's own registry example did not resolve on 2026-10-08: the add of `https://registry.modelcontextprotocol.io/v0/servers/fetch-mcp/versions/latest` failed with `registry returned status 404` (capture/out/11-mcp-add-registry.txt). `--command` is the other input, and it runs on the host with all the permissions of your host user {{help-sbx sbx mcp add}}. A local server that starts a container uses host Docker, outside the engine boundary of [the microVM](#s-sbx-diagnose-and-the-microvm-boundary) {{docs-sbx Local stdio server}}.
+The help's own registry example did not resolve on 2026-10-08: the add of `https://registry.modelcontextprotocol.io/v0/servers/fetch-mcp/versions/latest` failed with `registry returned status 404` ([the capture](manuals/docker-sandboxes-101/capture/out/11-mcp-add-registry.txt)). `--command` is the other input, and it runs on the host with all the permissions of your host user {{help-sbx sbx mcp add}}. A local server that starts a container uses host Docker, outside the engine boundary of [the microVM](#s-sbx-diagnose-and-the-microvm-boundary) {{docs-sbx Local stdio server}}.
 
 OAuth metadata is discovered through RFC 9728 and RFC 8414, or supplied by hand with `--oauth-authorization-server`. `--client-id` names a pre-registered client, and dynamic registration follows RFC 7591. `--scope` records default scopes with a documented precedence, `--resource` sets the RFC 8707 indicator, and `--callback-port` pins the listener {{help-sbx sbx mcp add}}. Tokens stay on the host, and `sbx mcp auth [server|--all]`, `auth status`, and `auth rm` manage them {{help-sbx sbx mcp auth}}.
 
@@ -44,7 +44,7 @@ The deepwiki server needs none: `sbx mcp inspect` reports `requires_oauth: false
 
 ## One gateway per sandbox
 
-**MCP gateway:** an endpoint on the host that gives agents access to the registered MCP servers {{docs-sbx MCP gateway}}. Inside `m101-mcp` the environment holds `MCP_GATEWAY_URL=http://mcp-gateway.docker.internal/mcp` and `MCP_SENTINEL_TOKEN_NAME=proxy-managed` (capture/out/11-static-inside.txt). The docs list the agents that read that URL at start: Claude Code, Codex, Devin, Gemini, Kiro, and OpenCode {{docs-sbx Prerequisites}}. Docker Agent is absent from that list. A plain `shell` sandbox reached the gateway with curl all the same (capture/fixtures/mcp-probe.sh):
+**MCP gateway:** an endpoint on the host that gives agents access to the registered MCP servers {{docs-sbx MCP gateway}}. Inside `m101-mcp` the environment holds `MCP_GATEWAY_URL=http://mcp-gateway.docker.internal/mcp` and `MCP_SENTINEL_TOKEN_NAME=proxy-managed` ([the capture](manuals/docker-sandboxes-101/capture/out/11-static-inside.txt)). The docs list the agents that read that URL at start: Claude Code, Codex, Devin, Gemini, Kiro, and OpenCode {{docs-sbx Prerequisites}}. Docker Agent is absent from that list. A plain `shell` sandbox reached the gateway with curl all the same ([the capture](manuals/docker-sandboxes-101/capture/fixtures/mcp-probe.sh)):
 
 ```listing
 title: the initialize answer of the gateway inside m101-mcp
@@ -73,9 +73,9 @@ The docs separate it from the Desktop product: `sbx mcp` works without the Docke
 
 | Sandbox and moment | `tools/list` names | Capture |
 |---|---|---|
-| `m101-mcp`, static | `ask_wiki_question code-mode mcp-exec read_wiki_contents read_wiki_structure` | capture/out/11-gateway-probe-static.txt |
-| `m101-mcp-dyn`, before load | `code-mode mcp-add mcp-config-set mcp-exec mcp-find` | capture/out/11-gateway-probe-dynamic-before.txt |
-| `m101-mcp-dyn`, after load | `ask_wiki_question code-mode mcp-add mcp-config-set mcp-exec mcp-find read_wiki_contents read_wiki_structure` | capture/out/11-gateway-probe-dynamic-after.txt |
+| `m101-mcp`, static | `ask_wiki_question code-mode mcp-exec read_wiki_contents read_wiki_structure` | [capture](manuals/docker-sandboxes-101/capture/out/11-gateway-probe-static.txt) |
+| `m101-mcp-dyn`, before load | `code-mode mcp-add mcp-config-set mcp-exec mcp-find` | [capture](manuals/docker-sandboxes-101/capture/out/11-gateway-probe-dynamic-before.txt) |
+| `m101-mcp-dyn`, after load | `ask_wiki_question code-mode mcp-add mcp-config-set mcp-exec mcp-find read_wiki_contents read_wiki_structure` | [capture](manuals/docker-sandboxes-101/capture/out/11-gateway-probe-dynamic-after.txt) |
 
 ```listing
 title: loading a registered server into a running sandbox

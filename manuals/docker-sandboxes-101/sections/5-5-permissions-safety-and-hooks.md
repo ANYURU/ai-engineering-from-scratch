@@ -104,7 +104,7 @@ note: The third of three lines, one per call of the restricted run.
 
 `log-hook.sh` appends that line to a file and prints `"permission_decision":"allow"`. The stream shows it as `pre_tool_use_pre_yolo` with `"allowed": true` on all three calls, yet `rm` was denied and strict still asked for `pwd`. From a preempting hook, an allow verdict is only advice {{schema HookMatcherConfig}}. Its deny or ask would have ended the call.
 
-Two more hooks run on every call: `tool_input_transform` and `tool_response_transform` appear in each stream, although no file declares them. `redact_secrets`, `true` by default, installs a builtin on those events {{schema AgentConfig}}. A hook can also run several times at once. When one message asked for three commands, the hook ran three times at once, and two runs appended to the log file together (`capture/README.md`). Write each record in one write.
+Two more hooks run on every call: `tool_input_transform` and `tool_response_transform` appear in each stream, although no file declares them. `redact_secrets`, `true` by default, installs a builtin on those events {{schema AgentConfig}}. A hook can also run several times at once. When one message asked for three commands, the hook ran three times at once. Two runs appended to the log file together ([kit notes](manuals/docker-sandboxes-101/capture/README.md)). Write each record in one write.
 
 ```figure
 id: fig-5-5

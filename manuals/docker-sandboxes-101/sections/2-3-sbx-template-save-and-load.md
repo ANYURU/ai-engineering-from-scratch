@@ -104,7 +104,7 @@ id: fig-2-2
 kind: flow
 title: from a stopped sandbox to a template, a tar, and a new sandbox
 claim: A template moves from a stopped sandbox into the runtime image store, out as a tar, and into a new sandbox with --pull never -t.
-caption: Read left to right, then down. Solid teal arrows are durable writes into a store or a file. The solid ink arrow is the create call, and the dashed olive arrow is a copy you make outside sbx. From capture/out/07-template-save.txt, 07-template-ls.json, 07-template-tar-head.txt, and 07-template-run.txt. The load on another host is not recorded and follows the help text of sbx template load.
+caption: Read left to right, then down. Solid teal arrows are durable writes into a store or a file. The solid ink arrow is the create call, and the dashed olive arrow is a copy you make outside sbx. The solid steps come from the template captures. The load on another host is not recorded and follows the help text of sbx template load.
 ```
 
 In the cloud, `sbx --cloud template load FILE NAME` needs `--cpus` and `--memory-mib` that together name a billable shape {{help-sbx sbx template load}}. The shapes run from micro, 1 vCPU and 2048 MiB, to xl, 16 vCPU and 32768 MiB. `--capture-mode all` adds memory and a microVM checkpoint to the disk capture. Tier C was not recorded, so this manual shows no cloud listing, and [sbx --cloud](#s-sbx-cloud-run-move-and-ttl) cites the help text instead.

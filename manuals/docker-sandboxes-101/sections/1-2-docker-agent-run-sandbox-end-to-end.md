@@ -11,7 +11,7 @@ id: fig-1-3
 kind: sequence
 title: one docker-agent run --sandbox, step by step
 claim: docker-agent stages a kit, has sbx create the VM, and opens two hosts on the proxy, and the model call from inside then leaves through that proxy.
-caption: Read top to bottom, one numbered row per step, and row 8 is the failure that ends the run. Rows 1 to 8 come from capture/out/27-sandbox-allow.txt, 27-sandbox-run.txt, and 27-kit-cache.txt. Rows 9 to 15 come from 27-inside-run.txt and 27-sbx-rm.txt, and the chunk name in row 12 is the stream format of the cassette 18-files.
+caption: Read top to bottom, one numbered row per step, and row 8 is the failure that ends the run. Rows 1 to 8 come from the allow, run, and kit-cache captures. Rows 9 to 15 come from the inside run and the removal captures. The chunk name in row 12 is the stream format of the cassette.
 ```
 
 ## The agent file
@@ -101,11 +101,11 @@ memory     32 GiB
 
 The run set no `--models-gateway`. It allows `models.dev`, because without that host the first catalog lookup fails with `403 Blocked by network policy` {{docs-agent Auto-Kit}}. The next line repeats the host from step 1.
 
-**Auto-kit:** a directory that docker-agent stages on the host and mounts read-only into the VM at the same path {{docs-agent Auto-Kit}}. Here it is `.m101/cache/sandbox-kits/<hash>`, and its `manifest.json` holds only `agent_ref` and `built_at` (capture/out/27-kit-cache.txt). The workspace is read-write, and the agent file's directory, the kit, and the config directory are read-only.
+**Auto-kit:** a directory that docker-agent stages on the host and mounts read-only into the VM at the same path {{docs-agent Auto-Kit}}. Here it is `.m101/cache/sandbox-kits/<hash>`, and its `manifest.json` holds only `agent_ref` and `built_at` ([the capture](manuals/docker-sandboxes-101/capture/out/27-kit-cache.txt)). The workspace is read-write, and the agent file's directory, the kit, and the config directory are read-only.
 
 ## Step 4: an ordinary sandbox
 
-During the run, `sbx ls` lists `docker-agent-<hash>` with the agent `docker-agent`, the status `running`, and the same four workspaces, three of them `:ro` (capture/out/27-sbx-ls.txt). The sandbox is an ordinary one, and `sbx` lists and removes it like any other.
+During the run, `sbx ls` lists `docker-agent-<hash>` with the agent `docker-agent`, the status `running`, and the same four workspaces, three of them `:ro` ([the capture](manuals/docker-sandboxes-101/capture/out/27-sbx-ls.txt)). The sandbox is an ordinary one, and `sbx` lists and removes it like any other.
 
 ## Step 5: the session store fails
 
@@ -123,7 +123,7 @@ Error:
 [exit 1]
 ```
 
-The data directory sits on the `virtiofs` workspace mount, which `mount` lists as `rw`. A Python `sqlite3` write on the same mount fails the same way (capture/out/27-sqlite-probe.txt), so on this host SQLite cannot write through that mount. The run printed no safety mode, so [conflict C62](#s-ref-sources-and-the-conflicts-register) stays open. Docker Agent exits, but it does not stop or remove the sandbox VM {{docs-agent Sandbox Mode}}, and the VM stayed `running`.
+The data directory sits on the `virtiofs` workspace mount, which `mount` lists as `rw`. A Python `sqlite3` write on the same mount fails the same way ([the capture](manuals/docker-sandboxes-101/capture/out/27-sqlite-probe.txt)), so on this host SQLite cannot write through that mount. The run printed no safety mode, so [conflict C62](#s-ref-sources-and-the-conflicts-register) stays open. Docker Agent exits, but it does not stop or remove the sandbox VM {{docs-agent Sandbox Mode}}, and the VM stayed `running`.
 
 ## Step 6: the model call from inside
 
@@ -162,7 +162,7 @@ The working directory contains README.md with 1 line.
 [exit 0]
 ```
 
-The request to `host.docker.internal:12434` leaves through `HTTP_PROXY`, because that host is not in `NO_PROXY`. The sandbox proxy changes `host.docker.internal` to `localhost` before it forwards the request {{docs-sbx Accessing host services from a sandbox}}, and the rule from step 1 admits it. The answer is correct: the capture kit copies the same README into every workspace, and it holds the one line `hello` (capture/out/04-workspace.txt).
+The request to `host.docker.internal:12434` leaves through `HTTP_PROXY`, because that host is not in `NO_PROXY`. The sandbox proxy changes `host.docker.internal` to `localhost` before it forwards the request {{docs-sbx Accessing host services from a sandbox}}, and the rule from step 1 admits it. The answer is correct: the capture kit copies the same README into every workspace, and it holds the one line `hello` ([the capture](manuals/docker-sandboxes-101/capture/out/04-workspace.txt)).
 
 ## Step 7: remove the sandbox
 

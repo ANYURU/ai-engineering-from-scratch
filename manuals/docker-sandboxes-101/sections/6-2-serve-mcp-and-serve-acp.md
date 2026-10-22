@@ -36,9 +36,9 @@ data: {"jsonrpc":"2.0","id":2,"result":{"ttlMs":0,"cacheScope":"public","tools":
 data: {"jsonrpc":"2.0","id":3,"result":{"content":[{"type":"text","text":"{\"response\":\"pong\"}"}],"structuredContent":{"response":"pong"}}}
 ```
 
-The client asked for revision `2026-07-28`, which v1.129.0 added together with a stateless Streamable HTTP transport {{rel-agent v1.129.0}}. The server answered `2025-11-25`, so read the version from the result, never from your request. No response carried an `Mcp-Session-Id` header. Each answer came as one SSE `message` event, and the notification got `202 Accepted` (capture/out/23-mcp.http).
+The client asked for revision `2026-07-28`, which v1.129.0 added together with a stateless Streamable HTTP transport {{rel-agent v1.129.0}}. The server answered `2025-11-25`, so read the version from the result, never from your request. No response carried an `Mcp-Session-Id` header. Each answer came as one SSE `message` event, and the notification got `202 Accepted` ([the capture](manuals/docker-sandboxes-101/capture/out/23-mcp.http)).
 
-The tool takes one string, `message`, and returns `structuredContent.response`, with the same text as a JSON string in `content`. Its annotations mark it read-only and idempotent, and its title is the agent's `description`. The `tools/call` answer came as one event after the whole turn, with no progress notification before it. The kit README adds that the server answered on `/` as well as `/mcp` (capture/README.md). The docs register the stdio form in Claude Code with `claude mcp add --transport stdio`, followed by `-- docker agent serve mcp` and the agent reference {{docs-agent MCP Mode}}.
+The tool takes one string, `message`, and returns `structuredContent.response`, with the same text as a JSON string in `content`. Its annotations mark it read-only and idempotent, and its title is the agent's `description`. The `tools/call` answer came as one event after the whole turn, with no progress notification before it. The kit README adds that the server answered on `/` as well as `/mcp` ([the capture](manuals/docker-sandboxes-101/capture/README.md)). The docs register the stdio form in Claude Code with `claude mcp add --transport stdio`, followed by `-- docker agent serve mcp` and the agent reference {{docs-agent MCP Mode}}.
 
 ## serve acp: JSON-RPC lines to an editor
 
