@@ -21,6 +21,12 @@ The Miles documentation lists four ways to mix precisions:
 
 Start with mode 1. It changes only the checkpoint that the engine loads.
 
+Mode 1 is the easiest start, but it is not safe in every case. We have not tested these limits. They come from published reports:
+
+- A 2026 study found that FP8 rollout with BF16 training matched BF16 on rollouts below about 4K tokens. At 8K tokens it drifted away, and at 16K tokens it collapsed. It also failed sooner on tasks that were hard for the base model.
+- A post by the Miles team and its partners found that this mismatch grows with MoE model size, from 30B to 1T parameters. Their answer is FP8 on both sides, as in mode 2.
+- Another RL library warns about small models. There, the cost to quantize the weights at each weight update can be larger than the time that FP8 saves.
+
 ## Set up mode 1
 
 Give the engine an FP8 checkpoint and give the trainer the BF16 weights:
@@ -48,9 +54,9 @@ Measure the gap at step 0 and over the first steps, with and without FP8 rollout
 The documentation lists B200, B300, GB200, and GB300 for modes 3 and 4. Our GB10 is not on that list, and it is not on the block-wise FP8 list either, so we cannot test these modes as documented.
 
 ```takeaways
-- Start with FP8 rollout and BF16 training, which changes only the engine checkpoint.
+- Start with FP8 rollout and BF16 training, and expect trouble on long rollouts, hard tasks, and large MoE models.
 - Check the first weight update with the quantization tolerance on.
 - Add routing replay on a MoE model, and a capped importance-sampling correction when the gap grows.
 ```
 
-Sources: Miles low-precision documentation, weight update check arguments, and importance sampling arguments at main 08752a12.
+Sources: Miles low-precision documentation, weight update check arguments, and importance sampling arguments at main 08752a12; Jet-RL, arXiv 2601.14243; Unified FP8, LMSYS blog, 2025-11-25; SkyRL quantized rollouts documentation.
