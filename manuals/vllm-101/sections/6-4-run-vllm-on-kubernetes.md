@@ -99,7 +99,7 @@ This is enough for a few replicas of one model. A plain Service spreads requests
 
 | Layer | What it adds | Pick it when |
 |---|---|---|
-| vLLM production stack | a Helm chart, a router that keeps sessions on one replica, KV sharing through LMCache, and Grafana dashboards | you want the reference setup from the vLLM project |
+| vLLM production stack | a Helm chart, a router that keeps sessions on one replica, KV cache offloading through LMCache, and Grafana dashboards | you want the reference setup from the vLLM project |
 | llm-d | a router that reads vLLM metrics and KV cache events to pick a replica, prefill and decode split, wide expert parallelism | you run large models or split prefill and decode on a cluster |
 | KServe | a model-serving platform with a vLLM runtime, and an LLM resource built on llm-d | your company already runs KServe for other models |
 | AIBrix | a control plane with routing, LoRA management, and autoscaling on engine metrics | you need many models and adapters with one control plane |
