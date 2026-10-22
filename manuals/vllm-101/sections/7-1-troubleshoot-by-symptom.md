@@ -87,7 +87,7 @@ caption: Each row is one entry below, in the same order. Read the symptom, the f
 ### A request returns HTTP 400 about the maximum context length
 
 - **Cause:** the prompt tokens plus `max_tokens` are more than `--max-model-len`.
-- **Check:** the error says `This model's maximum context length is` and gives the counts.
+- **Check:** the error says `This model's maximum context length is` and gives the counts. When `max_tokens` alone is above the limit, the error says that `max_tokens` cannot be greater than `max_model_len`, as it did on our L4.
 - **Fix:** send a shorter prompt or a smaller `max_tokens`, or start the server with a larger maximum length if the pool allows it.
 
 ### Every request fails after an error in the engine
@@ -174,4 +174,4 @@ caption: Each row is one entry below, in the same order. Read the symptom, the f
 - Test one change at a time, with the same benchmark and clock.
 ```
 
-Sources: vLLM issues 44740, 46307, 58726, 59770, 60174, 60262, and 60830; the release notes for v0.30.0, v0.31.0, and v0.32.0; vLLM documentation at v0.31.0 (docs/usage/troubleshooting.md, docs/design/torch_compile.md, docs/configuration/optimization.md, docs/usage/reproducibility.md, docs/benchmarking/cli.md, docs/features/reasoning_outputs.md); the vLLM source at v0.31.0 (vllm/config/vllm.py, vllm/config/model.py, vllm/renderers/params.py, vllm/v1/engine/exceptions.py, vllm/envs.py); capture/gpu/out-gb10/server-load-vllm.log; Same Request, Different Answer: Quantization Amplifies Cache-Induced Divergence in LLM Serving (arXiv 2609.04748, 2026).
+Sources: vLLM issues 44740, 46307, 58726, 59770, 60174, 60262, and 60830; the release notes for v0.30.0, v0.31.0, and v0.32.0; vLLM documentation at v0.31.0 (docs/usage/troubleshooting.md, docs/design/torch_compile.md, docs/configuration/optimization.md, docs/usage/reproducibility.md, docs/benchmarking/cli.md, docs/features/reasoning_outputs.md); the vLLM source at v0.31.0 (vllm/config/vllm.py, vllm/config/model.py, vllm/renderers/params.py, vllm/v1/engine/exceptions.py, vllm/envs.py); capture/gpu/out-gb10/server-load-vllm.log; Same Request, Different Answer: Quantization Amplifies Cache-Induced Divergence in LLM Serving (arXiv 2609.04748, 2026), capture/gpu/out-l4/livecheck-2026-10-22.txt.
