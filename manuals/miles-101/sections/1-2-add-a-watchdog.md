@@ -71,7 +71,7 @@ checks  healthy offsets stopped  most checks in a row  dead engine stopped after
 
 ## Start the watchdog
 
-The script reads the last 60 seconds of the container log every 30 seconds. It stops the container when the count passes the limit in a set number of checks in a row. If Docker itself fails, the script says so. It exits with 2 when it cannot list the containers, or when the limit or the number of checks is not a whole number. A failed log read does not count as a check. The default is 6 checks, which is too few for a run you leave alone, so always pass 10 as the third value:
+The script reads the last 60 seconds of the container log every 30 seconds. It stops the container when the count passes the limit in a set number of checks in a row. If Docker itself fails, the script says so. It exits with 2 when it cannot list the containers. It also exits with 2 when the limit or the number of checks is not a whole number, or when the number of checks is 0. A failed log read does not count as a check. The default is 6 checks, which is too few for a run you leave alone, so always pass 10 as the third value:
 
 ```bash
 #!/bin/sh
@@ -83,6 +83,10 @@ for value in "$limit" "$checks"; do
     ''|*[!0-9]*|??????????*) echo "limit and checks must be whole numbers below one billion"; exit 2;;
   esac
 done
+if [ "$checks" -lt 1 ]; then
+  echo "checks must be 1 or more"
+  exit 2
+fi
 strikes=0
 while :; do
   if ! running=$(docker ps -q --filter "name=^${name}$"); then

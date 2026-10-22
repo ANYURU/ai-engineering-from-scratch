@@ -7,6 +7,10 @@ for value in "$limit" "$checks"; do
     ''|*[!0-9]*|??????????*) echo "limit and checks must be whole numbers below one billion"; exit 2;;
   esac
 done
+if [ "$checks" -lt 1 ]; then
+  echo "checks must be 1 or more"
+  exit 2
+fi
 strikes=0
 while :; do
   if ! running=$(docker ps -q --filter "name=^${name}$"); then

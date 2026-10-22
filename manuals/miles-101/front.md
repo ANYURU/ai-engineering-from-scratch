@@ -4,7 +4,7 @@
 
 ## What you run in the first 30 minutes
 
-Four commands start a run of reinforcement learning on one GPU. Run them from a clone of this repository. A small model learns grade-school math, and the log shows its reward go up. Section 1.1 explains each command.
+Four commands start a run of reinforcement learning on one GPU. Run them from a clone of this repository. A small model learns grade-school math, and the log shows its reward go up. Section 1.1 explains each command. The third command keeps its terminal busy until the run ends. While it runs, start the watchdog from [section 1.2](#s-add-a-watchdog) in a second terminal, because a run whose engine dies does not stop by itself.
 
 ```bash
 docker pull radixark/miles:latest
@@ -12,8 +12,6 @@ mkdir -p ~/miles-lab && cp manuals/miles-101/capture/gpu/miles_grpo.py ~/miles-l
 docker run --rm --name miles-plain --gpus all --ipc=host --shm-size 32g -v "$HOME/miles-lab:/root/lab" -e MILES_NUM_ROLLOUT=12 radixark/miles:latest python /root/lab/miles_grpo.py > plain.log 2>&1
 grep -o "'rollout/raw_reward': [0-9.]*" plain.log
 ```
-
-Before you leave the run alone, start the watchdog from [section 1.2](#s-add-a-watchdog) in a second terminal. A run whose engine dies does not stop by itself.
 
 ## What you can do after this manual
 
