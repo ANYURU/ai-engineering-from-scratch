@@ -46,7 +46,7 @@ Send turn 1 of a conversation, then turn 2 with turn 1 at its start. Read the pr
 curl -s localhost:8000/metrics | grep -E "^vllm:(external_)?prefix_cache_(queries|hits)_total"
 ```
 
-During turn 2, `vllm:prefix_cache_hits_total` rises by about the length of turn 1, rounded down to full 16-token blocks. With offload on, the startup log names the connector, `OffloadingConnector` for the native backend. A block that came back from CPU memory counts in the `vllm:external_prefix_cache_hits_total` counter.
+During turn 2, `vllm:prefix_cache_hits_total` rises by about the length of turn 1, rounded down to full 16-token blocks. We checked this on an L4 with Qwen3-0.6B. Turn 1 had 2,182 prompt tokens. In turn 2 the counter rose by 2,176, which is 136 full blocks. With offload on, the startup log names the connector, `OffloadingConnector` for the native backend. A block that came back from CPU memory counts in the `vllm:external_prefix_cache_hits_total` counter.
 
 ```takeaways
 - The prefix cache makes earlier turns free while their blocks stay in the pool.
@@ -54,4 +54,4 @@ During turn 2, `vllm:prefix_cache_hits_total` rises by about the length of turn 
 - Offload blocks to CPU memory when idle sessions do not fit the GPU pool.
 ```
 
-Sources: the vLLM source at v0.31.0 (vllm/config/cache.py, vllm/config/vllm.py, vllm/v1/kv_offload/base.py, vllm/v1/kv_offload/config.py, vllm/v1/kv_offload/factory.py, vllm/v1/metrics/loggers.py, vllm/distributed/kv_transfer/kv_connector/factory.py), vLLM documentation at v0.31.0 (docs/features/kv_offloading_usage.md, docs/design/prefix_caching.md).
+Sources: the vLLM source at v0.31.0 (vllm/config/cache.py, vllm/config/vllm.py, vllm/v1/kv_offload/base.py, vllm/v1/kv_offload/config.py, vllm/v1/kv_offload/factory.py, vllm/v1/metrics/loggers.py, vllm/distributed/kv_transfer/kv_connector/factory.py), vLLM documentation at v0.31.0 (docs/features/kv_offloading_usage.md, docs/design/prefix_caching.md), capture/gpu/out-l4/livecheck-2026-10-22.txt.
