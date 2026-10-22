@@ -4,6 +4,8 @@
 
 You changed a flag and you want to know if it helped. When you finish this section, you can run a concurrency sweep, read the knee, and avoid the four mistakes that make two runs disagree.
 
+**Our result:** on our L4, output peaked at 275 tokens per second at 32 users and fell at 64 users.
+
 ## Run one sweep
 
 Start the server in one terminal. In a second terminal, run the benchmark once for each concurrency:
@@ -35,6 +37,14 @@ Here is the same sweep from our L4 with `Qwen/Qwen3-8B` in BF16. Each number is 
 Up to 16 users, each new user adds output, and the time per token rises only from 60 to 70 ms. Between 16 and 32 users, the median first token goes from 0.3 s to 1.8 s, and the P99 ITL from 80 to 619 ms. That jump is the knee. Pick your production concurrency below it.
 
 At 64 users, the output fell. Two causes overlap here. At 640 tokens each, 64 users need more than the 24,096-token pool, so requests waited. The card was also hot, with a median clock of 1,013 MHz against 1,425 at 16 users. Our sweep cannot separate the two.
+
+```figure
+id: fig-5-1
+kind: chart
+title: the knee of the sweep
+claim: On our L4, output rose to 275 tokens per second at 32 users and fell at 64 users, so 32 users is the knee.
+caption: Users double at each step on the axis. The band spans the lowest and highest of three runs. From capture/gpu/summary/l4.json.
+```
 
 ## Avoid the four mistakes
 
