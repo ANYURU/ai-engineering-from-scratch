@@ -3047,16 +3047,6 @@
         return LEARNING_PATHS.find(function (path) { return path && path.id === id; }) || null;
       }
 
-      function inferLearningPath(target) {
-        if (!target || typeof LEARNING_PATHS === 'undefined' || !Array.isArray(LEARNING_PATHS)) return null;
-        var preferredIds = ['agent-skills', 'model-context-protocol'];
-        for (var i = 0; i < preferredIds.length; i++) {
-          var preferred = findLearningPath(preferredIds[i]);
-          if (preferred && learningPathContains(preferred, target)) return preferred;
-        }
-        return LEARNING_PATHS.find(function (path) { return learningPathContains(path, target); }) || null;
-      }
-
       function learningPathEntries(path, includeOptional) {
         if (!path) return [];
         var required = Array.isArray(path.lessons) ? path.lessons : [];
@@ -3382,10 +3372,9 @@
         certificationMode = !!(certificationTrack && certificationTrackContains(certificationTrack, lessonPath));
         certificationSupplementalMode = !!(certificationOriginTrack && !certificationMode);
         learningPath = !certificationMode && !certificationSupplementalMode
-          ? (requestedLearningPathId ? findLearningPath(requestedLearningPathId) : inferLearningPath(lessonPath))
+          ? findLearningPath(requestedLearningPathId)
           : null;
         learningPathMode = !!(learningPath && learningPathContains(learningPath, lessonPath));
-        if (learningPathMode && !incomingLearningPathId) replaceLearningPathInUrl(learningPath.id);
 
         syncCertificationQuizProgressVersion();
 
@@ -3554,7 +3543,8 @@
             pathReturnHref = 'learning-paths.html#career-route-' + encodeURIComponent(learningPath.id);
             pathReturnLabel = 'Back to career route';
           }
-          var pathHtml = '<div class="sidebar-phase-nav"><a href="' + pathReturnHref + '">&larr; ' + pathReturnLabel + '</a></div>';
+          var pathHtml = '<div class="sidebar-phase-nav"><a href="' + pathReturnHref + '">&larr; ' + pathReturnLabel + '</a>' +
+            '<a href="lesson?path=' + encodeURIComponent(lessonPath) + '">Phase view</a></div>';
           var requiredPathLessons = flatLessons.filter(function (item) { return item.required !== false; });
           var optionalPathLessons = flatLessons.filter(function (item) { return item.required === false; });
           pathHtml += '<div class="sidebar-phase-header">' + escapeHtml(learningPath.title || learningPath.id) + ' · ' + requiredPathLessons.length + ' lessons</div>';
