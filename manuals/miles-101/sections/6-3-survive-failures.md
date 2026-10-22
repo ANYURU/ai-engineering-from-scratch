@@ -23,12 +23,15 @@ Test a restart from a checkpoint on a short run, before the long run starts.
 ## Turn on fault tolerance
 
 ```bash
---use-fault-tolerance --ft-components rollout weight_update
+--use-fault-tolerance --ft-components rollout
 ```
 
-`--ft-components` picks what Miles watches and replaces: `rollout`, `train`, and `weight_update`. Without the flag, Miles watches `rollout` and `weight_update`.
+`--ft-components` picks what Miles watches and replaces: `rollout`, `train`, or both. Without the flag, Miles watches `rollout`. Each part has limits in the Miles version we ran:
 
-Rollout fault tolerance has a rule: the weight transfer must be `p2p`, and the layout must not be colocated. A rollout engine can stop in the middle of a weight update. Only that method can update a part of the engines, so the update can finish on the engines that are still alive.
+- Rollout fault tolerance does not work with a dedicated eval fleet, or with `--fully-async --colocate`.
+- Train fault tolerance turns on independent data-parallel groups, and those need the Megatron trainer.
+
+Miles main of 2026-10-20 changes this. It adds `weight_update` as a third part. It also allows rollout fault tolerance only with `p2p` weight transfer on a split layout. Read the flag help in your image before you copy a command.
 
 ## What the Miles team reports
 
@@ -36,13 +39,13 @@ The Miles team built a fault injector for its tests. Their release notes report 
 
 ## Known problems
 
-- A report in the Miles issue tracker shows that the launcher cleanup stops a Ray cluster that you started yourself. Run Miles on its own Ray cluster.
+- A report in the Miles issue tracker covers six agent example launchers. Each starts with a cleanup that stops every process with `sglang` in its command line. With `MILES_SCRIPT_EXTERNAL_RAY=1`, that cleanup also stops the Ray cluster that you started. With those launchers, remove the cleanup or give Miles its own Ray cluster.
 - After an engine dies without fault tolerance, the trainer keeps sending requests to it and never fails. Add a watchdog to every run.
 
 ```takeaways
 - Set checkpoints before fault tolerance, and test a restart on a short run.
-- Use p2p weight transfer and a split layout if you need rollout fault tolerance.
+- Read the fault tolerance limits in the flag help of your image before a long run.
 - Test an engine crash on your own setup before a long run.
 ```
 
-Sources: Miles fault tolerance, checkpoint, and weight update arguments at main 08752a12; Miles release notes v0.1.2; Miles issue 3649; capture/gpu/out-gb10/engine-died-503.log.
+Sources: Miles fault tolerance, checkpoint, and weight update arguments at main 08752a12, compared with main ee36bb2a of 2026-10-20; Miles release notes v0.1.2; Miles issue 3649; capture/gpu/out-gb10/engine-died-503.log.
