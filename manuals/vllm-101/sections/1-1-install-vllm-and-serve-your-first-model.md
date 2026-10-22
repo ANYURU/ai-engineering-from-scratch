@@ -82,6 +82,14 @@ Read the lines in this order:
 
 The server is ready when the log shows `Application startup complete.`. On our DGX Spark, that took about eight minutes for a 57 GB model, and the weight load took 325 seconds of it.
 
+```figure
+id: fig-1-2
+kind: structure
+title: the four startup lines
+claim: Four startup lines tell you the attention backend, the weight memory, the free KV memory, and the pool size before you send traffic.
+caption: Read each row from left to right: the log line, our value on the DGX Spark, and what it decides. From capture/gpu/out-gb10/server-load-vllm.log.
+```
+
 ## Send the first request
 
 Open a second terminal. Send one chat request with curl:
