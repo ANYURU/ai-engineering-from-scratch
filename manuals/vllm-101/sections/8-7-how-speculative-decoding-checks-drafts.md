@@ -12,6 +12,14 @@ A cheap proposer guesses the next few tokens. The target model then runs once ov
 
 The check is what keeps the output the same. With greedy sampling, a guess stays only if it equals the target's top token. With random sampling, the rejection rule keeps the output distribution equal to the target's distribution.
 
+```figure
+id: fig-8-7
+kind: sequence
+title: one verify pass
+claim: One target pass checks every guess, keeps the guesses up to the first rejection, and adds one token from the target.
+caption: Read top to bottom. The tokens are an example. From the vLLM source at v0.31.0.
+```
+
 ## The proposers
 
 vLLM 0.31.0 has several kinds of proposer, set with `--speculative-config`:
