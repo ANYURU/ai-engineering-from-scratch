@@ -2,7 +2,7 @@
 
 > This page defines each term the manual uses, with the matching SGLang term.
 
-Use this page when a section uses a term you do not know. When you finish this section, you can map each vLLM term to its SGLang counterpart.
+Use this page when a section uses a term you do not know.
 
 | Term | Meaning | SGLang term |
 |---|---|---|
@@ -24,10 +24,5 @@ Use this page when a section uses a term you do not know. When you finish this s
 | TTFT | time to first token | TTFT |
 | token budget | the most tokens the scheduler gives out in one step | the chunked prefill size and the running request limit together |
 | worker | the process that holds the weights for one GPU | the TP worker |
-
-```takeaways
-- The two engines use different names for the same ideas, most of all for the prefix cache and preemption.
-- A term with the same name, such as TPOT, can still be measured in a different way by each client.
-```
 
 Sources: vLLM documentation at v0.31.0 (docs/design/arch_overview.md, docs/design/prefix_caching.md), the SGLang 101 manual of this course.

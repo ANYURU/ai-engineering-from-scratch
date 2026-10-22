@@ -2,7 +2,7 @@
 
 > This page lists the versions of vLLM, PyTorch, CUDA, and the images that our runs used.
 
-Use this page to match your setup to ours before you compare a number. When you finish this section, you can find the version of each part that our runs used.
+Use this page to match your setup to ours before you compare a number.
 
 ## vLLM
 
@@ -42,10 +42,5 @@ Use this page to match your setup to ours before you compare a number. When you 
 | SGLang | 0.5.22, for the head-to-head runs |
 | Benchmark client | `sglang.benchmark.serving` from SGLang 0.5.22, with `--backend vllm` for the vLLM runs |
 | PyTorch of the client environment | 2.14.1 with CUDA 13.0 |
-
-```takeaways
-- Match the vLLM release, the GPU, and the attention backend before you compare a number with ours.
-- Our vLLM numbers came from the SGLang benchmark client, not from vllm bench serve.
-```
 
 Sources: the vLLM source at v0.31.0 (requirements/cuda.txt, docker/Dockerfile), the GitHub release list of vllm-project/vllm (fetched 2026-10-21), capture/gpu/summary/l4.json and gb10.json (environment), capture/gpu/out-gb10/server-load-vllm.log.

@@ -2,7 +2,7 @@
 
 > This page lists the vLLM metrics the manual uses and the page that uses each one.
 
-Use this page to find a metric that a section names. When you finish this section, you can find what each metric counts and where the manual uses it.
+Use this page to find a metric that a section names.
 
 vLLM exports the metrics at `/metrics` in the Prometheus format. Every name starts with `vllm:`.
 
@@ -45,10 +45,5 @@ Every counter shows on `/metrics` with a `_total` suffix, as these tables list i
 ## What our runs recorded
 
 Our benchmark client recorded TTFT, TPOT, ITL, and throughput for each request. A sampler recorded the GPU clock and temperature every second. We did not scrape `/metrics` during the sweeps.
-
-```takeaways
-- Start with the running count, the waiting count, and the cache usage.
-- Read the prefix-cache hits next to the queries to get a hit rate.
-```
 
 Sources: vLLM documentation at v0.31.0 (docs/design/metrics.md), the vLLM source at v0.31.0 (vllm/v1/metrics/loggers.py).

@@ -2,7 +2,7 @@
 
 > This page ranks the sources of the manual by authority.
 
-Use this page to judge how much weight a statement in the manual carries. When you finish this section, you can say where a fact came from and which source wins when two disagree.
+Use this page to judge how much weight a statement in the manual carries.
 
 When two sources disagree, the higher one wins, and the page says so.
 
@@ -19,10 +19,5 @@ When two sources disagree, the higher one wins, and the page says so.
 ## What we did not use
 
 We did not use benchmark numbers from vendors or from other teams as evidence for a decision. Where the manual reports a result from another team, it names the team once and says that the number is theirs.
-
-```takeaways
-- The source code at the pinned release wins over every other source.
-- A number in this manual is ours unless the page names another team.
-```
 
 Sources: this manual.

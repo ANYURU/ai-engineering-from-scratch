@@ -2,7 +2,7 @@
 
 > This page records the hardware, the versions, the seeds, the clocks, and the full tables behind each measurement.
 
-Use this page to check a number from another section, or to repeat a run. When you finish this section, you can find the method and the full data behind every measured claim in the manual.
+Use this page to check a number from another section, or to repeat a run.
 
 ## Method
 
@@ -231,10 +231,5 @@ The lock caps the clock. A hot GPU still slows below it, as the 1-user runs of `
 | 1 | `vllm` | 97.7 (96.3 to 99.6) | 1,185 ms | 157.6 ms | 394 (389 to 402) ms | 2,411 MHz |
 | 1 | `vllm-async` | 97.7 (96.8 to 99.7) | 1,212 ms | 157.9 ms | 405 (360 to 411) ms | 2,411 MHz |
 | 1 | `sglang` | 101.4 (100.3 to 104.2) | 1,275 ms | 149.7 ms | 159 (159 to 190) ms | 2,411 MHz |
-
-```takeaways
-- Read a number together with its seed range, its clock, and its date.
-- Compare two configs only at similar clocks and on matched pools.
-```
 
 Sources: capture/gpu/summary/l4.json, capture/gpu/summary/gb10.json, capture/gpu/out-l4/, capture/gpu/out-gb10/server-load-vllm.log.

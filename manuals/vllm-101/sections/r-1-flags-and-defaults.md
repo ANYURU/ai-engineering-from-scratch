@@ -2,7 +2,7 @@
 
 > This page lists the flags the manual uses, grouped by user job, with the default at 0.31.0.
 
-Use this page to look up a flag that a section names. When you finish this section, you can find the default of each flag and the page that explains it.
+Use this page to look up a flag that a section names.
 
 Defaults are for `vllm serve` at 0.31.0 on a CUDA GPU, read from the configuration classes in the source.
 
@@ -62,10 +62,5 @@ Defaults are for `vllm serve` at 0.31.0 on a CUDA GPU, read from the configurati
 |---|---|---|
 | `VLLM_ENABLE_V1_MULTIPROCESSING` | `1` | the engine core in its own process |
 | `VLLM_USE_V2_MODEL_RUNNER` | not set | a pinned choice of model runner |
-
-```takeaways
-- Defaults change between releases, so read them for the version you pin.
-- A flag you set wins over the optimization level.
-```
 
 Sources: the vLLM source at v0.31.0 (vllm/config/cache.py, vllm/config/scheduler.py, vllm/config/compilation.py, vllm/config/model.py, vllm/config/parallel.py, vllm/engine/arg_utils.py, vllm/envs.py).
