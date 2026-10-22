@@ -36,6 +36,41 @@ In a split layout, the weights leave the trainer GPUs after every update. `--upd
 
 Under `--colocate`, Miles uses a copy inside the GPU instead, and the transfer mode does not apply.
 
+## Choose the trainer
+
+This manual uses the FSDP trainer, because it loads a Hugging Face model folder as it is. Miles has two other trainers, and `--train-backend` picks one:
+
+| Trainer | Model input | Splits one model over GPUs | LoRA |
+|---|---|---|---|
+| `megatron`, the default | a Megatron `torch_dist` checkpoint, converted once from the Hugging Face folder | tensor, pipeline, context, and expert parallel | yes |
+| `fsdp` | the Hugging Face folder | no, data parallel only | no |
+| `torchtitan` | the Hugging Face folder, for the models that torchtitan implements | tensor, pipeline, context, and expert parallel | no |
+
+Some features in this manual work only on Megatron: fully async training with `--colocate`, train fault tolerance, MTP training, and the step-0 checks of `--ci-test`. The Miles documentation recommends Megatron for large models and for jobs on many nodes.
+
+**torch_dist:** the checkpoint format of Megatron. It does not depend on the parallel layout, so you can change the layout later without a new conversion.
+
+Convert a model once before the first Megatron run. The architecture flags come from the model file of Miles for that model, here `qwen3-4B`:
+
+```bash
+cd /root/miles
+MODEL_ARGS=$(python3 miles/utils/external_utils/model_args_utils.py qwen3-4B)
+PYTHONPATH=/root/Megatron-LM python3 tools/convert_hf_to_torch_dist.py $MODEL_ARGS --hf-checkpoint /root/lab/models/Qwen3-4B --save /root/lab/models/Qwen3-4B_torch_dist
+```
+
+Run these lines inside the container, with the lab folder mounted as in [section 1.1](#s-run-grpo-on-one-gpu). Our launcher builds an FSDP run only. For Megatron, start from a launcher of Miles for your model, in the `scripts` folder of the Miles source. We have not run the Megatron or the torchtitan trainer on our GB10.
+
+## Start a run on more than one node
+
+Every node must be in one Ray cluster before Miles submits the job. The launchers of Miles do it in one of two ways:
+
+- One command for each node role. A `worker` command joins the cluster of the head node and waits. A `train` command starts the head node, waits for all GPUs, and submits the job.
+- One command on the head node, which connects to the other hosts over ssh and adds them to the cluster.
+
+To use a Ray cluster that you started yourself, set `MILES_SCRIPT_EXTERNAL_RAY=1`. The launcher then skips its own `ray start` and only submits the job. Set `MASTER_ADDR` to the address of the head node on every node, so that Ray and the trainer use the right network interface. Then set the trainer size with `--actor-num-nodes` and `--actor-num-gpus-per-node`.
+
+[Section 6.3](#s-survive-failures) lists a known problem of some launchers with a Ray cluster of your own. We have not run Miles on more than one node.
+
 ## What to measure after the split
 
 - `perf/update_weights_time` against `perf/step_time`. On many machines the transfer is no longer a copy inside one GPU.
@@ -46,6 +81,7 @@ Under `--colocate`, Miles uses a copy inside the GPU instead, and the transfer m
 - Start colocated, and split only when rollout takes most of the step.
 - Keep broadcast until the weight transfer is a large share of the step.
 - Measure the update time and the idle time on both sides after a split.
+- Pick the trainer before you size the run, because only Megatron splits one model and trains LoRA.
 ```
 
-Sources: Miles main 08752a12 files miles/ray/placement_group.py, miles/utils/arguments.py, miles/backends/training_utils/weight_update/protocol.py, miles/backends/training_utils/weight_update/protocols/broadcast.py, miles/backends/training_utils/weight_update/protocols/delta.py, miles/backends/training_utils/metrics/perf.py, docs/advanced/disaggregated-rollout.md, docs/advanced/p2p-weight-transfer.md.
+Sources: Miles main 08752a12 files docs/user-guide/training-backend.md, docs/user-guide/launch-script.md, miles/utils/external_utils/command_utils/ray_backend/backend.py, miles/utils/lora/arguments.py, tools/convert_hf_to_torch_dist.py, scripts/models/qwen3-4B.py, miles/ray/placement_group.py, miles/utils/arguments.py, miles/backends/training_utils/weight_update/protocol.py, miles/backends/training_utils/weight_update/protocols/broadcast.py, miles/backends/training_utils/weight_update/protocols/delta.py, miles/backends/training_utils/metrics/perf.py, docs/advanced/disaggregated-rollout.md, docs/advanced/p2p-weight-transfer.md.
