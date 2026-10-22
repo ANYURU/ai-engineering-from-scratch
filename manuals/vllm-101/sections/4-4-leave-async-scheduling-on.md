@@ -14,14 +14,14 @@ With async scheduling, the scheduler picks the next batch while the GPU still ru
 
 ## Know when it is on
 
-In vLLM 0.31.0, the setting has three values. `--async-scheduling` turns it on, `--no-async-scheduling` turns it off, and no flag lets vLLM decide. When you set no flag, vLLM turns it on unless one of these holds:
+In vLLM 0.31.0, the setting has three values. `--async-scheduling` turns it on, `--no-async-scheduling` turns it off, and no flag lets vLLM decide. When you set no flag, vLLM turns it on unless, among other cases, one of these holds:
 
 - The model is a pooling model, such as an embedding model.
-- The speculation method is n-gram, suffix, Medusa, or MLP speculator. EAGLE methods, the GPU n-gram method, and a draft model keep it on.
+- The speculation method is n-gram, suffix, Medusa, or MLP speculator. EAGLE, MTP, DFlash, and DSpark methods, the GPU n-gram method, and a draft model keep it on.
 - Pipeline parallelism is on and the old model runner runs.
 - The executor does not support it.
 
-In those cases, vLLM turns it off and writes a warning to the log. The server runs, so the change is easy to miss. Read the startup log after you add a speculation method or change the parallel layout.
+In those cases, vLLM turns it off. For most of them it writes a warning to the log, but for a pooling model only a debug line. The server runs, so the change is easy to miss. Read the startup log after you add a speculation method or change the parallel layout.
 
 ## See what our runs show
 
@@ -49,9 +49,9 @@ The same no-flag sweep also matched our earlier run of 2026-10-17 within 0.5 per
 | 1 | 241.7 / 249.6 ms | 3.98 / 3.87 | 375 / 368 MHz | 2 / 2 |
 | 4 | 272.6 / 277.2 ms | 13.02 / 12.85 | 428 / 450 MHz | 2 / 1 |
 
-At one user, the time per token rose by 3.3 percent with async scheduling off, and the seed ranges did not overlap. That gap is larger than the 0.8 percent that two runs of one setting differed by. At four users, it rose by 1.7 percent, from one seed only.
+At one user, the time per token rose by 3.3 percent with async scheduling off, and the seed ranges did not overlap. That gap is larger than the 0.8 percent that two runs of one setting differed by. But that noise floor came from the other GPU at full clocks. At four users, it rose by 1.7 percent, from one seed only.
 
-The GPU ran at 368 to 450 MHz, far below its full clock, and the off runs at one user had a slightly lower clock. So read this as a lead. The gain is small at these batch sizes, and we did not test it at a full clock or at high concurrency.
+The GPU ran at 368 to 450 MHz, far below its full clock. The off runs at one user had a clock 2 percent lower, close to the size of the effect. So read this as a lead. The gain is small at these batch sizes, and we did not test it at a full clock or at high concurrency.
 
 ## Decide
 
