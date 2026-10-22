@@ -42,7 +42,7 @@ PR #32114 deleted the plain GPTQ CUDA kernel on 2026-09-10, and on a CUDA build 
 
 FP8 needs a scale for each tensor. The help text of `--quantization-param-path` says to supply the scales file when the KV cache dtype is FP8. Without it, every scale is 1.0, and accuracy can drop {{code}}. Run an accuracy check whenever you change the KV cache dtype.
 
-A scale of 1.0 is the worst case for accuracy. The vLLM team tested uncalibrated FP8 KV caches in 2026, and most models stayed close to BF16 in their tests. They named Kimi-K2.5 on the FlashMLA backend as a model that needs calibrated scales. We did not measure these results ourselves.
+The vLLM team treats a scale of 1.0 as the worst case for accuracy. They tested uncalibrated FP8 KV caches in 2026, and most models stayed close to BF16 in their tests. They named Kimi-K2.5 on the FlashMLA backend as a model that needs calibrated scales. We did not measure these results ourselves.
 
 Cloudflare published its check. On Kimi K2.6, BF16 against FP8 KV scored 94.24 and 94.09 on GSM8K, 89.11 and 89.04 on MMLU, and 80.29 and 79.29 on MMLU-Pro {{field Cloudflare 2026-08}}. Those are their numbers on their model, and your model can differ.
 
@@ -53,7 +53,7 @@ The warning `Using FP8 KV cache but no scaling factors provided` prints whenever
 First, look for scales in the checkpoint. Search the weight index for tensor names that end in `k_scale` or `v_scale`:
 
 ```bash
-grep -oE '"[^"]*(k|v)_scale"' model.safetensors.index.json | head
+grep -oE '"[^"]*(k|v)_scale"' model.safetensors.index.json | sort -u
 ```
 
 We ran this search on the index of `Qwen/Qwen3-30B-A3B-Instruct-2507-FP8` on 2026-10-22. It lists weight scales and no KV scales, so our FP8 server below used a KV scale of 1.0.
