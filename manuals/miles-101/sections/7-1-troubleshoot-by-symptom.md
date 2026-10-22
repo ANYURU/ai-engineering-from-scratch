@@ -6,6 +6,14 @@ The first five entries are failures we met on a GB10. The sixth uses our healthy
 
 When you finish this section, you can find the cause of a failed or wrong run from its first symptom.
 
+```figure
+id: fig-7-1
+kind: decision
+title: Start from what you see
+claim: Each of the five symptoms we hit has one first check and one fix.
+caption: The five symptoms from our runs. The entries below add six more from issue reports.
+```
+
 ## The GPU is idle and the log keeps growing
 
 - **Cause:** the rollout engine died, and the trainer keeps sending requests to it.
