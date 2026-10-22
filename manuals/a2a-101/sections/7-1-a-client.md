@@ -10,7 +10,7 @@ When you finish this section, you can write a client that delegates by skill and
 
 Before it sends anything, the planner reads the card on each port. It takes the interface whose `protocolBinding` is `JSONRPC` at `protocolVersion` `1.0`, and it files each skill id under the agent that offers it. It also notes each card's `streaming` flag and `securityRequirements`.
 
-The specification's rule is positional, to "select the first supported transport" {{spec §8.3.2}}. Both rules agree here, because JSON-RPC comes first on all three cards. [Discovery and supported interfaces](#s-discovery-and-supported-interfaces) gives the full selection rule.
+The rule of the specification is positional: the client selects the first transport that it supports {{spec §8.3.2}}. Both rules agree here, because JSON-RPC comes first on all three cards. [Discovery and supported interfaces](#s-discovery-and-supported-interfaces) gives the full selection rule.
 
 ## Delegate: send once, then switch on the reply
 
@@ -103,7 +103,7 @@ Against agents it does not control, a planner needs more than the kit's loop.
 label: read the card before the call
 source: spec §3.3.4
 ---
-"Clients SHOULD validate capability support by examining the Agent Card before attempting operations that require optional capabilities."
+A client should read the Agent Card to confirm that a capability is supported before it calls an operation that needs an optional capability.
 ```
 
 ```takeaways
