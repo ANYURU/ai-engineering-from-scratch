@@ -6,7 +6,7 @@ The engine samples each token from a cut-down set of the vocabulary when you use
 
 When you finish this section, you can turn on sampling replay and check that it lowers the gap.
 
-**Our result:** top-p and top-k replay lowered the median gap from 0.0153 to 0.0135, about 12 percent, on one seed.
+**Our result:** top-p and top-k replay lowered the median gap from 0.0153 to 0.0135, 11.5 percent, on one seed.
 
 ## Turn it on
 
@@ -18,7 +18,7 @@ Pass the sampler settings to the run:
 
 Miles turns on sampling replay by itself when `--rollout-top-p` is below 1 or `--rollout-top-k` is above 0. The engine then returns the set of tokens that each step could sample from. The trainer scores each token over that set only.
 
-Set a positive top-k whenever you set a top-p below 1, because Miles requires both for replay. Replay does not cover the KL loss and on-policy distillation yet.
+Set a positive top-k whenever you set a top-p below 1, because Miles requires both for replay. Miles refuses to start when replay is on together with a KL loss or on-policy distillation. It also refuses replay with `--recompute-logprobs-via-prefill`.
 
 ## Check the gap
 
