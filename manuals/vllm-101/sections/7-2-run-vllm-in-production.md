@@ -56,4 +56,4 @@ The vLLM project published dozens of security advisories in the weeks around 0.3
 - Read the security advisories before you pick a release.
 ```
 
-Sources: the release notes for v0.30.0, v0.31.0, and v0.32.0, the GitHub security advisories of vllm-project/vllm (2026-09-21 to 2026-10-21), vLLM documentation at v0.31.0 (docs/design/torch_compile.md, docs/serving/openai_compatible_server.md), the vLLM source at v0.31.0 (vllm/benchmarks/startup.py), capture/gpu/out-gb10/server-load-vllm.log.
+Sources: the release notes for v0.30.0, v0.31.0, and v0.32.0, the GitHub security advisories of vllm-project/vllm (2026-09-21 to 2026-10-21), vLLM documentation at v0.31.0 (docs/design/torch_compile.md, docs/serving/online_serving/openai_compatible_server.md), the vLLM source at v0.31.0 (vllm/benchmarks/startup.py), capture/gpu/out-gb10/server-load-vllm.log.
