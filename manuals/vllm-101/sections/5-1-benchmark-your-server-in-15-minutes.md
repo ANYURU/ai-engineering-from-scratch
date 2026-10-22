@@ -48,10 +48,24 @@ caption: Users double at each step on the axis. The band spans the lowest and hi
 
 ## Avoid the four mistakes
 
-1. **Reusing a seed.** With the random dataset and a fixed seed, a second run sends the same prompts. The prefix cache then serves part of them, and the second run looks faster. Use a new seed for each run. The `/reset_prefix_cache` route also clears the cache, but it exists only with `VLLM_SERVER_DEV_MODE=1`, and a server in that mode must not be exposed.
+1. **Reusing a warm cache.** With the random dataset and a fixed seed, a second run sends the same prompts. The prefix cache then serves part of them, and the second run looks faster. The next section gives the protocol.
 2. **Letting the model stop early.** Without `--ignore-eos`, some answers end before the output length. The run then measures fewer tokens than you asked for.
 3. **Skipping the warmup.** The first requests after a start pay for compiled kernels and cold caches. Use `--num-warmups` or send a few requests before you measure.
 4. **Ignoring the clock.** A GPU that is hot or shared runs slower. Record `nvidia-smi --query-gpu=clocks.sm,temperature.gpu --format=csv -l 1` during the run. Compare two runs only at similar clocks.
+
+## Reset the prefix cache between runs
+
+The prefix cache keeps the KV blocks of earlier prompts. It changes two things between runs: the speed, and sometimes the output of a greedy request. A 2026 study on vLLM 0.11 found that requests with a cache hit and requests without one gave different greedy outputs. We did not measure this effect ourselves.
+
+Use this protocol for every run that you compare:
+
+1. Start each run with an empty cache. Restart the server, or call `POST /reset_prefix_cache`. That route exists only with `VLLM_SERVER_DEV_MODE=1`, and a server in that mode must not be exposed.
+2. Use a new `--seed` for each run, so that the random dataset sends new prompts.
+3. Record the cached tokens. Read `vllm:prefix_cache_hits_total` and `vllm:prefix_cache_queries_total` before and after the run.
+4. For a count on each response, start the server with `--enable-prompt-tokens-details`. Then read `usage.prompt_tokens_details.cached_tokens` in each response.
+5. Write the cache setting and the cached tokens next to the result.
+
+`vllm bench sweep serve` resets the server caches between its runs for you.
 
 ## Choose a closed loop or a fixed rate
 
@@ -66,6 +80,7 @@ Our sweeps used the benchmark client of SGLang, `sglang.benchmark.serving`, with
 ```takeaways
 - Sweep concurrency and read throughput, TTFT, TPOT, and ITL together.
 - Use a new seed for each run, use --ignore-eos, and warm up first.
+- Reset the prefix cache and record the cached tokens for each run you compare.
 - Record the GPU clock, and compare runs only at similar clocks.
 - Run a fixed request rate as well as a closed loop before you set a capacity limit.
 ```
