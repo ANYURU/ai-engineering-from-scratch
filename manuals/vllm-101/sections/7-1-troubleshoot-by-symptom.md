@@ -6,6 +6,14 @@ Something is wrong and you know what you see, not why. When you finish this sect
 
 Find your symptom in the list. Each entry gives the likely cause, the check that confirms it, and the fix. Issue numbers refer to the vLLM repository, with their state at version 0.31.0.
 
+```figure
+id: fig-7-1
+kind: decision
+title: symptom to page
+claim: Start from the symptom, check one number or log line, and then go to the page that fixes it.
+caption: Each row is one symptom. The sections below give the detail for each. From our runs and the vLLM issues.
+```
+
 ## The server does not start
 
 ### The start stops with a message about the KV cache and the maximum length
