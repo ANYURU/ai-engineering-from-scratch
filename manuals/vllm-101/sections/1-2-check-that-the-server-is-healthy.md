@@ -61,7 +61,7 @@ If the first number is much smaller than you expected, another program holds GPU
 Run this command:
 
 ```bash
-curl -s http://localhost:8000/metrics | grep -E "^vllm:(num_requests_running|num_requests_waiting|kv_cache_usage_perc)"
+curl -s http://localhost:8000/metrics | grep -E "^vllm:(num_requests_running|num_requests_waiting|kv_cache_usage_perc)\{"
 ```
 
 You see three lines. With no traffic, the running and waiting counts are 0 and the KV cache usage is 0. Send a request in a second terminal and run the command again to see the counts change.
