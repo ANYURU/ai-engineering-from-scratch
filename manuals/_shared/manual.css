@@ -144,6 +144,8 @@
   color: var(--m-ink-mute);
 }
 .m-listing-title { flex: 1; color: var(--m-ink); font-weight: 700; text-transform: none; letter-spacing: 0.02em; }
+.m-evidence { font-size: 0.78em; font-weight: 400; color: var(--m-ink-soft, inherit); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; white-space: nowrap; }
+.m-listing-head .m-evidence { margin-left: 0.75em; text-transform: none; letter-spacing: 0; }
 .m-listing pre,
 .m-code {
   margin: 0;

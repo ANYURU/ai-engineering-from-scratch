@@ -175,6 +175,21 @@ test('figure captions drop the closing source sentence in the reader view', () =
   assert.equal(manuals.readerCaption('Read left to right.'), 'Read left to right.');
 });
 
+test('evidence is linked to the repository, never printed', () => {
+  const manual = manuals.loadManual(path.join(__dirname, '..', 'manuals', 'sglang-101'));
+  const html = manuals.printPage(manual);
+  const listing = html.match(/<figure class="m-listing">[\s\S]*?<\/figure>/)[0];
+  assert.match(listing, /<a class="m-evidence" href="https:\/\/github\.com\/rohitg00\/ai-engineering-from-scratch\/blob\/main\/manuals\/sglang-101\/capture\/[^"]+" target="_blank" rel="noopener">Full log<\/a>/);
+  assert.doesNotMatch(listing.replace(/href="[^"]*"/g, ''), /capture\//);
+  assert.match(html, /<a class="m-evidence" href="[^"]+\/summary\/l4\.json"[^>]*>Raw runs<\/a>/);
+  for (const [, kind, rel] of html.matchAll(/github\.com\/rohitg00\/ai-engineering-from-scratch\/(blob|tree)\/main\/([^"]+)"/g)) {
+    const full = path.join(__dirname, '..', rel);
+    assert.ok(fs.existsSync(full), rel);
+    assert.equal(fs.statSync(full).isDirectory(), kind === 'tree', rel);
+  }
+  assert.throws(() => manuals.evidenceUrl(path.join(__dirname, '..', 'manuals', 'sglang-101', 'capture', 'missing.log'), 'doc.md:1'), /evidence path manuals\/sglang-101\/capture\/missing\.log does not exist/);
+});
+
 test('numbers figures per part and renders the print edition', () => {
   const { dir } = fixture();
   const manual = manuals.loadManual(dir);

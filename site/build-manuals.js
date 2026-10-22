@@ -103,7 +103,7 @@ function fenceBlock(info, body, label) {
     ensure(items.length >= 2, `${label}: takeaways need at least two items`);
     return { type: 'takeaways', items };
   }
-  if (['palette', 'parts', 'figure-index', 'contents'].includes(info)) {
+  if (['palette', 'parts', 'figure-index', 'contents', 'lab-runs'].includes(info)) {
     ensure(!body.some(line => line.trim()), `${label}: a ${info} block must be empty`);
     return { type: info };
   }
@@ -229,6 +229,68 @@ function parseDocument(source, label) {
 
 function newInline() {
   return { refs: [], repoLinks: [] };
+}
+
+const REPO_URL = 'https://github.com/rohitg00/ai-engineering-from-scratch';
+
+function evidenceUrl(file, where) {
+  const rel = path.relative(ROOT, file);
+  if (rel.startsWith('..') || path.isAbsolute(rel)) return null;
+  ensure(fs.existsSync(file), `${where}: evidence path ${rel} does not exist`);
+  const kind = fs.statSync(file).isDirectory() ? 'tree' : 'blob';
+  return `${REPO_URL}/${kind}/main/${rel.split(path.sep).join('/')}`;
+}
+
+function evidenceLink(url, label) {
+  return url ? `<a class="m-evidence" href="${url}" target="_blank" rel="noopener">${label}</a>` : '';
+}
+
+function measuredEvidence(doc, manual) {
+  const last = doc.blocks[doc.blocks.length - 1];
+  const sources = last && last.type === 'paragraph' && /^Sources:\s/.test(last.text) ? last.text : '';
+  const paths = new Set((sources.match(/capture\/[A-Za-z0-9_./-]*[A-Za-z0-9_-]/g) || []));
+  const has = rel => paths.has(rel);
+  const folder = prefix => [...paths].some(rel => rel.startsWith(prefix));
+  let heading = '';
+  for (const block of doc.blocks) {
+    if (block.type === 'heading') heading = block.text;
+    if (block.type !== 'paragraph' || !/^\*\*We measured\*\*/.test(block.text)) continue;
+    const context = `${heading} ${block.text}`;
+    const l4 = /\bL4\b/.test(context);
+    const gb10 = /GB10|DGX Spark/.test(context);
+    const mac = /\bMac\b|Apple silicon/.test(context);
+    let rel = null;
+    if (/\breward\b/.test(block.text) && has('capture/gpu/summary/miles-gb10.json')) rel = 'capture/gpu/summary/miles-gb10.json';
+    else if (l4 && !gb10 && !mac) rel = has('capture/gpu/summary/l4.json') ? 'capture/gpu/summary/l4.json' : null;
+    else if (gb10 && !l4 && !mac) {
+      if (/Miles/.test(context) && has('capture/gpu/summary/miles-gb10.json')) rel = 'capture/gpu/summary/miles-gb10.json';
+      else if (has('capture/gpu/summary/gb10.json')) rel = 'capture/gpu/summary/gb10.json';
+    } else if (mac && !l4 && !gb10) rel = folder('capture/out/') ? 'capture/out' : null;
+    if (!rel && (l4 || gb10) && folder('capture/gpu/')) rel = 'capture/gpu';
+    if (!rel && !l4 && !gb10 && !mac) rel = folder('capture/gpu/') ? 'capture/gpu' : folder('capture/out/') ? 'capture/out' : null;
+    block.evidence = rel ? evidenceUrl(path.join(manual.dir, rel), docLine(doc, block.line)) : null;
+  }
+}
+
+function labRunsHtml(manual, where) {
+  const dir = path.join(manual.dir, 'capture', 'gpu', 'summary');
+  if (!fs.existsSync(dir)) return '';
+  const rows = [];
+  for (const name of fs.readdirSync(dir).filter(file => file.endsWith('.json')).sort()) {
+    const file = path.join(dir, name);
+    const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const link = evidenceLink(evidenceUrl(file, where), 'Raw runs');
+    if (data.profile && data.environment) {
+      for (const [sweep, configs] of Object.entries(data)) {
+        if (['profile', 'slo', 'environment', 'quantiles'].includes(sweep) || !configs || typeof configs !== 'object') continue;
+        const seeds = Math.max(0, ...Object.values(configs).flatMap(config => (config.points || []).map(point => (point.output_throughput && point.output_throughput.n) || 0)));
+        rows.push({ cells: [escapeHtml(sweep), escapeHtml(`${data.environment.gpu}${data.profile.includes('throttled') ? ', throttled' : ''}`), String(Object.keys(configs).length), seeds ? String(seeds) : 'see the section', link] });
+      }
+    } else {
+      rows.push({ cells: [escapeHtml(name.replace(/\.json$/, '')), 'see the section', String(Object.keys(data).length), 'see the section', link] });
+    }
+  }
+  return tableHtml(['Experiment', 'Hardware', 'Configurations', 'Seeds per point', 'Data'], rows);
 }
 
 function readerCaption(caption) {
@@ -490,7 +552,7 @@ function blockHtml(block, doc, manual, acc) {
         inline(block.text.replace(/^Sources:\s*/, ''));
         return '';
       }
-      return `<p${/^\*\*[^*]+:\*\*\s/.test(block.text) ? ' class="m-def"' : ''}>${inline(block.text)}</p>`;
+      return `<p${/^\*\*[^*]+:\*\*\s/.test(block.text) ? ' class="m-def"' : ''}>${inline(block.text)}${block.evidence ? ` ${evidenceLink(block.evidence, 'Raw runs')}` : ''}</p>`;
     }
     case 'list': {
       const tag = block.ordered ? 'ol' : 'ul';
@@ -507,7 +569,8 @@ function blockHtml(block, doc, manual, acc) {
     }
     case 'figure-index': return tableHtml(['Fig.', 'The claim it makes'], [...manual.figures.values()].map(figure => ({ accent: figure.accent, cells: [`<a class="m-xref" href="#${figure.id}">${figure.number}</a>`, figure.claimHtml] })));
     case 'contents': return tocHtml(manual, 'web');
-    case 'listing': return `<figure class="m-listing"><div class="m-listing-head"><span class="m-listing-title">${inline(block.title)}</span><span>${escapeHtml(block.lang)}</span></div><pre><code>${highlight(block.code, block.lang)}</code></pre>${block.note ? `<figcaption class="m-listing-note">${inline(block.note)}</figcaption>` : ''}</figure>`;
+    case 'lab-runs': return labRunsHtml(manual, where);
+    case 'listing': return `<figure class="m-listing"><div class="m-listing-head"><span class="m-listing-title">${inline(block.title)}</span><span>${escapeHtml(block.lang)}</span>${block.sourceFile ? evidenceLink(evidenceUrl(block.sourceFile, where), 'Full log') : ''}</div><pre><code>${highlight(block.code, block.lang)}</code></pre>${block.note ? `<figcaption class="m-listing-note">${inline(block.note)}</figcaption>` : ''}</figure>`;
     case 'takeaways': return `<aside class="m-takeaways"><div class="m-box-label">${TAKEAWAYS_LABEL}</div><ul>${block.items.map(item => `<li>${inline(item)}</li>`).join('')}</ul></aside>`;
     case 'rule': return `<aside class="m-rule"><div class="m-box-label">${escapeHtml(block.label)}</div><p>${inline(block.quote)}</p></aside>`;
     default: throw new Error(`${where}: unknown block ${block.type}`);
@@ -530,6 +593,7 @@ function renderAll(manual, acc) {
       block.captionHtml = inlineHtml(readerCaption(block.caption), docLine(doc, block.line), acc);
     }
   }
+  for (const doc of manual.documents) measuredEvidence(doc, manual);
   for (const doc of manual.documents) {
     doc.thesisHtml = doc.thesis ? inlineHtml(doc.thesis, docLine(doc, doc.thesisLine), acc) : '';
     doc.html = numberFigureLinks(doc.blocks.map(block => blockHtml(block, doc, manual, acc)).join('\n'), manual);
@@ -811,6 +875,7 @@ module.exports = {
   OUTCOME_PHRASE,
   SCHEMA,
   LISTING_LANGS,
+  evidenceUrl,
   inlineHtml,
   readerCaption,
   tableHtml,
