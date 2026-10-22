@@ -68,7 +68,7 @@ For example, Qwen publishes a 4-bit AWQ checkpoint of Qwen3-14B:
 vllm serve Qwen/Qwen3-14B-AWQ --max-model-len 8192
 ```
 
-We did not run any of these formats. A 4-bit model loses more accuracy than an FP8 model, and the loss depends on the model and the method. Test it on your own prompts.
+We did not run any of these formats. A 4-bit model can lose more accuracy than an FP8 model, and the loss depends on the model and the method. Test both formats on your own prompts.
 
 ## Check the accuracy
 
