@@ -5,7 +5,7 @@ const { figure } = require('../../../_shared/figkit.js');
 module.exports = figure('fig-8-3', {
   height: 360,
   title: 'Two fixes for two different halves',
-  desc: 'The trainer and the engine compute the same model with different kernels, so their log probabilities differ. Deterministic inference fixes only the engine half: the same input gives the same output for any batch. True on-policy mode fixes the gap itself by making both sides run the same kernels, which works only where its contract holds: FlashAttention 3 on GPUs with compute capability 8.0 to 9.0, and Qwen3 dense models.',
+  desc: 'The trainer and the engine compute the same model with different kernels, so their log probabilities differ. Deterministic inference fixes only the engine half: the same input gives the same output for any batch. True on-policy mode fixes the gap itself by making both sides run the same kernels, which works only where its contract holds: FlashAttention 3 on Hopper GPUs, compute capability 9.0, and Qwen3 dense models.',
 }, f => {
   const trainer = f.box({ x: 20, y: 40, w: 270, h: 76, hue: 'blue', title: 'trainer, FSDP', sub: ['its own attention kernel', 'its own matmul and sum order'] });
   const engine = f.box({ x: 350, y: 40, w: 270, h: 76, hue: 'violet', title: 'engine, SGLang', sub: ['its attention backend', 'sum order changes with batch'] });
@@ -21,7 +21,7 @@ module.exports = figure('fig-8-3', {
   f.text(20, 238, 'gap goes to zero, where the contract holds', { size: 11.5, hue: 'green' });
 
   f.kicker(20, 278, 'what the contract pins at Miles main');
-  f.text(20, 300, 'FlashAttention 3 on both sides, compute capability 8.0 to 9.0', { size: 12, serif: true });
+  f.text(20, 300, 'FlashAttention 3 on both sides, Hopper GPUs only', { size: 12, serif: true });
   f.text(20, 320, 'Qwen3 dense models only', { size: 12, serif: true });
   f.text(20, 344, 'A GB10 is compute capability 12.1, so the contract does not start there.', { size: 12, serif: true, hue: 'ink-soft' });
 });

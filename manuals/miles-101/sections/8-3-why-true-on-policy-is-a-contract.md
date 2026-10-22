@@ -18,7 +18,7 @@ So the gap is not a bug in either side. It is the price of two programs that eac
 
 Deterministic inference makes the engine give the same result for a request, whatever the batch around it. That makes the engine repeat itself. It does not make the engine compute like the trainer.
 
-Our runs show this directly. With deterministic inference on, two runs repeated their first step to six decimal places, and the gap stayed at 0.015. [Section 4.5](#s-use-deterministic-inference) has the numbers.
+Our runs show this directly. With deterministic inference on, two runs gave the same gap at step 0, to six decimal places, and the gap stayed at 0.015. [Section 4.5](#s-use-deterministic-inference) has the numbers.
 
 ```figure
 id: fig-8-3
