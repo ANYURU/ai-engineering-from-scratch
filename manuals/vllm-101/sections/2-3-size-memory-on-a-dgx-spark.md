@@ -4,6 +4,8 @@
 
 You run vLLM on a DGX Spark or another machine where the CPU and the GPU share memory. When you finish this section, you can pick a memory fraction that leaves room for the operating system. You also know why the first start takes minutes.
 
+**Our result:** with a fraction of 0.75, the weights took 56.93 GiB and the KV cache 31.32 GiB of the 121.7 GiB pool.
+
 ## Know what "GPU memory" means here
 
 The GB10 in a DGX Spark has no separate GPU memory. The CPU and the GPU use the same 128 GB of LPDDR5x. On our machine, the GPU reported 121.7 GiB in total, and the operating system, the page cache, and every other program use the same memory.
@@ -26,6 +28,14 @@ Our run with `Qwen/Qwen3-30B-A3B-Instruct-2507` in BF16 used a fraction of 0.75:
 At 96 KiB per token, the 31.32 GiB holds about 342,000 tokens. That is enough for more than 500 users with 640 tokens each. Our sweeps then fixed the pool at 234,960 tokens, to match the SGLang server on the same machine. The fraction left about 30 GiB for the operating system and every other program.
 
 We ran one fraction only. A sweep of the fraction against the KV pool and the swap activity is planned and not run yet.
+
+```figure
+id: fig-2-3
+kind: layers
+title: one pool on a DGX Spark
+claim: With a fraction of 0.75, vLLM takes 91.3 of the 121.7 GiB that the CPU and the GPU share on a DGX Spark.
+caption: The bar is the whole memory, drawn to scale. The blue rule marks the share of vLLM. From capture/gpu/out-gb10/server-load-vllm.log.
+```
 
 ## Expect a slow first start
 
