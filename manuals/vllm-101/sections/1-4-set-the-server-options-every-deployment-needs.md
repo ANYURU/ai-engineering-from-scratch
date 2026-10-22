@@ -4,7 +4,7 @@
 
 Your first server works, and now other programs must call it. When you finish this section, you can set the address, the model name, the API key, the chat template, and the logging.
 
-We did not measure these options. This page comes from the vLLM documentation and the source at 0.31.0.
+We did not measure the speed of these options. We checked the address, the model name, the API key, the YAML file, and the removed log flag on an L4 with the small Qwen3-0.6B. The rest comes from the vLLM documentation and the source at 0.31.0.
 
 ## Pick the address and the port
 
@@ -41,7 +41,9 @@ When the server is ready, send a request with the key from a second terminal:
 curl http://localhost:8000/v1/models -H "Authorization: Bearer change-me"
 ```
 
-The key protects only the routes under `/v1`, `/v2`, and `/inference`. Other routes on the same port, such as `/invocations`, `/metrics`, and `/health`, stay open. So the key does not make the server safe on a public network. Put a gateway in front of it, as [the production page](#s-run-vllm-in-production) says.
+The key protects only the routes under `/v1`, `/v2`, `/inference`, and `/cohere`. Other routes on the same port, such as `/invocations`, `/metrics`, and `/health`, stay open. We checked this on an L4. Without the key, `/v1/models` returned 401. `/health` and `/metrics` returned 200, and so did a chat request to `/invocations`.
+
+So the key does not make the server safe on a public network. Put a gateway in front of it, as [the production page](#s-run-vllm-in-production) says.
 
 ## Fix the chat template
 
@@ -87,4 +89,4 @@ Then call `/v1/models` with and without the key. Without it, the server returns 
 - Use an API key and a gateway, because the key protects only some routes.
 ```
 
-Sources: vLLM documentation at v0.31.0 (docs/configuration/serve_args.md, docs/usage/usage_stats.md, docs/usage/security.md, docs/usage/troubleshooting.md), the vLLM source at v0.31.0 (vllm/entrypoints/launchers/cli_args.py, vllm/entrypoints/launchers/launcher.py, vllm/engine/arg_utils.py, vllm/config/model.py, vllm/envs.py), capture/gpu/out-gb10/server-load-vllm.log.
+Sources: vLLM documentation at v0.31.0 (docs/configuration/serve_args.md, docs/usage/usage_stats.md, docs/usage/security.md, docs/usage/troubleshooting.md), the vLLM source at v0.31.0 (vllm/entrypoints/launchers/cli_args.py, vllm/entrypoints/launchers/launcher.py, vllm/engine/arg_utils.py, vllm/config/model.py, vllm/envs.py), capture/gpu/out-gb10/server-load-vllm.log, capture/gpu/out-l4/livecheck-2026-10-22.txt.
