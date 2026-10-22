@@ -32,7 +32,7 @@ Open chat copies little. For that work, most guesses fail, and each step writes 
 
 ## See what our run shows
 
-**We measured** the time per token with and without n-gram speculation on the shared GPU of our L4 node, with `Qwen/Qwen3-8B`, on 2026-10-22. That GPU held a pool of 2,928 tokens, so we tested 1 and 4 users with two seeds each. The prompts came from the random dataset of the benchmark tool, with 512 tokens in and 128 tokens out.
+**We measured** the time per token with and without n-gram speculation in [the shared-GPU session](#l4-sessions) of our L4 node, with `Qwen/Qwen3-8B`, on 2026-10-22. That GPU held a pool of 2,928 tokens, so we tested 1 and 4 users with two seeds each. The prompts came from the random dataset of the benchmark tool, with 512 tokens in and 128 tokens out.
 
 ```figure
 id: fig-4-2
@@ -42,18 +42,18 @@ claim: On our L4, n-gram speculation cut the median time per token to about a th
 caption: Each bar is the median of two runs. Lower is faster. From capture/gpu/summary/l4-gpu1.json.
 ```
 
-| Users | Median TPOT, none / n-gram | Output tok/s, none / n-gram | P99 ITL, none / n-gram | Median SM clock, none / n-gram |
+| Users, L4 shared-GPU session | Median TPOT, none / n-gram | Output tok/s, none / n-gram | P99 ITL, none / n-gram | Median SM clock, none / n-gram |
 |---|---|---|---|---|
 | 1 | 241.7 / 76.6 ms | 3.98 / 7.39 | 274 / 284 ms | 375 / 413 MHz |
 | 4 | 272.6 / 101.3 ms | 13.02 / 19.22 | 290 / 1,691 ms | 428 / 443 MHz |
 
-The GPU ran at 375 to 443 MHz, far below its full clock, because the card is shared and hot. The times are slow for that reason. Read the ratio between the two columns, not the absolute times. The n-gram runs had a clock about 10 percent higher, which is small next to the threefold gain.
+The GPU ran at 375 to 443 MHz, far below its full clock, because the GPU is shared and throttled. The times are slow for that reason. Read the ratio between the two columns, not the absolute times. The n-gram runs had a clock about 10 percent higher, which is small next to the threefold gain.
 
 At one user, output rose by 86 percent. At four users it rose by 48 percent, and the worst token gap grew from 290 to 1,691 ms. We did not trace the cause of that gap.
 
 We did not record the acceptance counters, so we cannot say how many guesses matched. Treat our gain as a result for random prompts and 128-token outputs only. On your own prompts, the gain depends on how much the output copies the input.
 
-Other teams report the same limits, and we did not measure them ourselves. A 2026 study of speculative decoding in vLLM found that the acceptance length changes a lot between requests and between datasets. A 2025 study of serving benchmarks found that speculation can lower the median time per token and raise the P99 at the same time. Our P99 ITL at four users shows the second effect.
+Another team reports the same limit, and we did not measure it ourselves. The paper "Speculative Decoding: Performance or Illusion?", posted at the end of 2025, studied speculation in vLLM. It found that the acceptance length changes a lot between requests and between datasets. Our own run also shows that a lower median can hide a worse tail. At four users the median time per token fell, and the P99 ITL rose.
 
 ## Know what it costs
 
@@ -72,9 +72,8 @@ Divide the accepted tokens by the draft tokens. A high share means that your out
 
 ```takeaways
 - Try n-gram speculation for edits, quotes, code changes, and extraction.
-- Measure on your own prompts, because our gain comes from random prompts with 128-token outputs.
-- Watch the P99 ITL, which grew almost sixfold at four users in our run.
-- Expect async scheduling to turn off when you add it.
+- Measure the acceptance rate and the P99 ITL on your own prompts.
+- Read the log for the warning that async scheduling is off.
 ```
 
-Sources: capture/gpu/summary/l4-gpu1.json (load.vllm-fast-b, load.vllm-ngram), the vLLM source at v0.31.0 (vllm/config/vllm.py, vllm/v1/spec_decode/), vLLM documentation at v0.31.0 (docs/features/speculative_decoding), a 2026 study of speculative decoding in vLLM (acceptance length across requests and datasets), a 2025 study of serving benchmarks (speculation, median and P99 TPOT).
+Sources: capture/gpu/summary/l4-gpu1.json (load.vllm-fast-b, load.vllm-ngram), the vLLM source at v0.31.0 (vllm/config/vllm.py, vllm/v1/spec_decode/), vLLM documentation at v0.31.0 (docs/features/speculative_decoding), Speculative Decoding: Performance or Illusion? (arXiv 2601.11580).
