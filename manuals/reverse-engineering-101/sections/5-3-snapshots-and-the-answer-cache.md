@@ -2,7 +2,7 @@
 
 > A snapshot caches exact answers under a query id bound to the target digest and the profile digest, and the dispatch of one mutating call turns the cache off.
 
-The capture ran `rea function fixtures/ledger-arm64-O1 NAME --provider ghidra` four times, once per function, and each run took between 7.9 and 9.0 seconds (`capture/out/00-commands.txt`). Every run imported the same 33,872 bytes into a fresh Ghidra project and threw the project away. You want the second question about the same file to be free. When you finish this section, you can say which calls a snapshot can answer and build the query id by hand. You can also predict when rea refuses to replay or to save.
+The capture ran `rea function fixtures/ledger-arm64-O1 NAME --provider ghidra` four times, once per function, and each run took between 7.9 and 9.0 seconds ([the capture](manuals/reverse-engineering-101/capture/out/00-commands.txt)). Every run imported the same 33,872 bytes into a fresh Ghidra project and threw the project away. You want the second question about the same file to be free. When you finish this section, you can say which calls a snapshot can answer and build the query id by hand. You can also predict when rea refuses to replay or to save.
 
 ## Three things called a snapshot
 
@@ -63,14 +63,14 @@ The replayed record names the path of the target that is open now. The function 
 
 On a miss the provider runs, and the result is bound to the profile and the target. An Evidence record is then created and recorded, and a cache entry is stored under the id.
 
-The capture shows no replay, because no two of its 25 MCP calls had the same operation and parameters. The first Ghidra-backed call after `open_binary` was `list_procedures`, and it took between 6 and 7 seconds while the headless import ran. Every later analysis call on that target took under 100 ms (`capture/out/10-mcp-session.txt`). Those later calls were fast because the bridge was already running, not because of the cache. A repeat of `analyze_function` with `"procedure": "_percent_change"` would have been the first replay.
+The capture shows no replay, because no two of its 25 MCP calls had the same operation and parameters. The first Ghidra-backed call after `open_binary` was `list_procedures`, and it took between 6 and 7 seconds while the headless import ran. Every later analysis call on that target took under 100 ms ([the capture](manuals/reverse-engineering-101/capture/out/10-mcp-session.txt)). Those later calls were fast because the bridge was already running, not because of the cache. A repeat of `analyze_function` with `"procedure": "_percent_change"` would have been the first replay.
 
 ```figure
 id: fig-5-4
 kind: decision
 title: one analyze_function call through the snapshot cache
 claim: A cacheable call becomes a query id over target, binding, operation, and parameters, and a mutating call turns the cache off before it reaches Ghidra.
-caption: Read top to bottom. The dashed reply is a replay, and the solid call is a provider run. The dashed amber arrow is the state change that a mutating call makes before its dispatch. Values are from capture/out/10-mcp-09-analyze-function-percent-change-O1.json and 10-mcp-04-binary-session.json.
+caption: Read top to bottom. The dashed reply is a replay, and the solid call is a provider run. The dashed amber arrow is the state change that a mutating call makes before its dispatch. Values are from the function capture and the session capture.
 ```
 
 ## Save and load

@@ -2,7 +2,7 @@
 
 > An unknown is a durable record with its own id and revision chain, and an empty list in any result tells you to check coverage.
 
-The `_percent_change` dossier in `capture/out/10-mcp-09-analyze-function-percent-change-O1.json` lists `"callees": []`. An agent reads that line and writes that the function calls nothing. The record supports less than that. It says which calls Ghidra resolved, and rea has a record type for what is still open. When you finish this section, you can read the fields of a ResidualUnknown, open one with `record_unknown`, and say what an empty list proves.
+The `_percent_change` [dossier](manuals/reverse-engineering-101/capture/out/10-mcp-09-analyze-function-percent-change-O1.json) lists `"callees": []`. An agent reads that line and writes that the function calls nothing. The record supports less than that. It says which calls Ghidra resolved, and rea has a record type for what is still open. When you finish this section, you can read the fields of a ResidualUnknown, open one with `record_unknown`, and say what an empty list proves.
 
 ## What an empty list proves
 
@@ -101,7 +101,7 @@ id: fig-5-2
 kind: structure
 title: a ResidualUnknown and its revision chain
 claim: An unknown keeps its id across revisions, each revision names the digest of the one before, and each change writes its own Evidence record.
-caption: Read left to right. Revision 1 is the unknown that registerFunctionComparisonTool.ts records for the _total comparison in capture/out/10-mcp-21-compare-functions-total.json. The right column shows the fields that an update_unknown call changes.
+caption: Read left to right. Revision 1 is the unknown that registerFunctionComparisonTool.ts records for the _total comparison in the comparison capture. The right column shows the fields that an update_unknown call changes.
 ```
 
 ## Unknowns that rea opens itself
