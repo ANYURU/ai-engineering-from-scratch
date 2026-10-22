@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" role="img" aria-labelledby="fig-1-3b-title fig-1-3b-desc" font-family="JetBrains Mono, ui-monospace, monospace">
   <title id="fig-1-3b-title">Answers get shorter as the model learns</title>
-  <desc id="fig-1-3b-desc">Mean answer length in tokens per step for three seeds. The cap is 1,024 tokens. Answers start near 720 tokens and end near 600, so fewer answers hit the cap.</desc>
+  <desc id="fig-1-3b-desc">Mean answer length in tokens per step for three seeds. The cap is 1,024 tokens. Answers start near 720 tokens and end near 460, so fewer answers hit the cap.</desc>
   <line x1="60" y1="245" x2="620" y2="245" stroke="var(--m-ink-mute, #6f6f6a)" stroke-width="1" stroke-opacity="0.25"/>
   <text x="54" y="249" font-size="11" text-anchor="end" fill="var(--m-ink-soft, #4a4a4a)">400</text>
   <line x1="60" y1="203" x2="620" y2="203" stroke="var(--m-ink-mute, #6f6f6a)" stroke-width="1" stroke-opacity="0.25"/>

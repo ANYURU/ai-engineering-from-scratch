@@ -73,7 +73,7 @@ caption: Mean reward per step for three seeds of the same run.
 id: fig-1-3b
 kind: chart
 title: Answers get shorter as the model learns
-claim: The mean answer length falls from about 720 to about 600 tokens, so fewer answers hit the 1,024-token cap.
+claim: The mean answer length falls from about 720 to about 460 tokens, so fewer answers hit the 1,024-token cap.
 caption: Mean answer length per step for the same three seeds.
 ```
 

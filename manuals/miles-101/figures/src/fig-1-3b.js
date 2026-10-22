@@ -14,7 +14,7 @@ const seeds = [
 module.exports = figure('fig-1-3b', {
   height: 340,
   title: 'Answers get shorter as the model learns',
-  desc: 'Mean answer length in tokens per step for three seeds. The cap is 1,024 tokens. Answers start near 720 tokens and end near 600, so fewer answers hit the cap.',
+  desc: 'Mean answer length in tokens per step for three seeds. The cap is 1,024 tokens. Answers start near 720 tokens and end near 460, so fewer answers hit the cap.',
 }, f => {
   const c = chart(f, { x: 60, y: 56, w: 560, h: 210, xDomain: [0, 47], yDomain: [350, 850], xTicks: [0, 12, 24, 36, 47], yTicks: [400, 500, 600, 700, 800], xLabel: 'step', yLabel: 'mean answer length, tokens' });
   for (const s of seeds) {
