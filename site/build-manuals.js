@@ -322,7 +322,9 @@ function linkHtml(label, href, where, acc) {
   ensure(!/^[a-z][a-z0-9+.-]*:/i.test(href) && !href.startsWith('/'), `${where}: unsupported link target "${href}"`);
   const [target, fragment] = href.split('#');
   acc.repoLinks.push({ path: target, where });
-  return `<a href="${escapeHtml(githubSourceUrl(target) + (fragment ? `#${fragment}` : ''))}" rel="noopener">${label}</a>`;
+  const full = path.join(ROOT, target);
+  const view = fs.existsSync(full) && fs.statSync(full).isFile() ? 'blob' : 'tree';
+  return `<a href="${escapeHtml(githubSourceUrl(target, view) + (fragment ? `#${fragment}` : ''))}" rel="noopener">${label}</a>`;
 }
 
 function highlightJson(line) {
