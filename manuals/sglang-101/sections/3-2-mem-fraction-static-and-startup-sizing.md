@@ -141,7 +141,7 @@ The bursts are dated 2026-10-16, the day of our first test and sweep starts on t
 
 The fraction does not bound all the memory that SGLang takes at startup. One user served a 27B model with SGLang on a DGX Spark. The user reported 25 to 40 GB of short-lived allocations outside the memory accounting of SGLang. The FlashInfer autotuner and the CUDA graph capture made them. Run directly on the host, the server froze the machine, and it needed a power cycle. The user then ran it in a container with a memory cap and `--mem-fraction-static 0.50`.
 
-That is a field report, and we did not measure it ourselves. Our guard log above shows a fast growth at startup, but it does not separate the pool from the other allocations.
+That is a field report from before v0.5.22, and it does not name its SGLang version. Treat it as a warning, not as a fact about v0.5.22. We did not measure it ourselves. Our guard log above shows a fast growth at startup, but it does not separate the pool from the other allocations.
 
 On a GB10 that other programs share, start SGLang in a container with a memory limit. Start below the fraction of 0.7 that our kit used. Log the free memory of the machine once a second during startup. Raise the fraction only after you saw the peak.
 
