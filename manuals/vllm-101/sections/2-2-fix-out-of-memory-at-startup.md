@@ -13,7 +13,7 @@ vLLM does four things before it serves a request:
 3. It captures CUDA graphs.
 4. It gives the KV cache the rest of its share of the GPU.
 
-The share is `--gpu-memory-utilization`. The default is 0.92, so vLLM claims 92 percent of the total GPU memory for itself. The number is a limit for one vLLM instance. It is not a fraction of the memory that is free when the server starts.
+The share is `--gpu-memory-utilization`. The default is 0.92, so vLLM claims 92 percent of the total GPU memory for itself. The number is a limit for one vLLM instance. It is not a fraction of the memory that is free when the server starts. On unified memory, such as a DGX Spark, it is not always a hard limit, as [the DGX Spark page](#s-size-memory-on-a-dgx-spark) explains.
 
 ## Find your failure in the log
 
