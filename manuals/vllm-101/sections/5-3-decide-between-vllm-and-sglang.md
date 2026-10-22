@@ -4,6 +4,8 @@
 
 You are choosing a serving engine and you want a measurement, not a reputation. When you finish this section, you can match your traffic to one of our head-to-heads and say how far the result goes.
 
+**Our result:** on our L4, throughput matched within 3 percent up to 32 users. On our DGX Spark, the worst token gap of vLLM was about twice that of SGLang from 32 users.
+
 ## Know what we compared
 
 We ran vLLM 0.31.0 and SGLang 0.5.22 with their defaults on two machines:
@@ -35,6 +37,22 @@ Each point is the median of three seeds, from one benchmark client for both engi
 **Mixture of experts, DGX Spark.** At 64 users, vLLM gave 239.3 tok/s and SGLang 245.1, inside the seed spread. The P99 ITL was 528 ms on vLLM and 271 ms on SGLang, and 478 against 220 ms at 32 users. The seed ranges did not overlap. The median first token was also longer on vLLM at every load from 2 users.
 
 **Long prompts at a low rate, DGX Spark.** With prompts of about 1,000 to 4,000 tokens at 0.5 requests per second, vLLM had the lower P99 ITL, 571 against 922 ms. At 1 and 2 requests per second, SGLang had the lower one. For this sweep the SGLang pool was 7 percent larger than the vLLM pool, so read this row with care.
+
+```figure
+id: fig-5-3
+kind: chart
+title: throughput on the L4
+claim: On our L4 with Qwen3-8B, vLLM and SGLang wrote the same output within 3 percent up to 32 users.
+caption: Both servers had the same KV pool. Bands span three runs. From capture/gpu/summary/l4.json.
+```
+
+```figure
+id: fig-5-3b
+kind: chart
+title: the worst token gap on the GB10
+claim: On our DGX Spark, the 99th percentile token gap of vLLM was more than twice that of SGLang at 32 users.
+caption: A higher line is a choppier stream. Bands span three runs. From capture/gpu/summary/gb10.json.
+```
 
 ## Decide
 
