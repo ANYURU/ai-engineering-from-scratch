@@ -82,6 +82,18 @@
     "issue": null,
     "docs": null
   },
+  "capture": {
+    "run": [
+      "python3",
+      "capture/run.py"
+    ],
+    "check": [
+      "python3",
+      "capture/run.py",
+      "--check"
+    ],
+    "timeoutSeconds": 300
+  },
   "front": "front.md",
   "parts": [
     {

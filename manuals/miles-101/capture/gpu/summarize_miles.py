@@ -69,8 +69,10 @@ def parse(path):
 def load_pauses(path):
     pauses = []
     opened = None
-    if not path or not Path(path).exists():
+    if not path:
         return pauses
+    if not Path(path).exists():
+        raise FileNotFoundError(f"pause log {path} does not exist")
     for line in Path(path).read_text().splitlines():
         match = re.match(r"(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)Z (.*)$", line)
         if not match:

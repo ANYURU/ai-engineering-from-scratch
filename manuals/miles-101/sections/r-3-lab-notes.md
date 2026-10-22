@@ -52,18 +52,24 @@ Four runs failed and are left out of every table: two true on-policy runs that s
 
 ## The heat guard
 
-The GB10 runs hot under sustained load, so a script pauses the Miles container when the GPU reaches 84 C. It resumes the container when the GPU is at 74 C or below after at least 45 seconds, or after 120 seconds at most. On its first day the limits were 80 C and 68 C, and they changed to 84 C and 74 C that morning.
+The GB10 runs hot under sustained load, so a script pauses the Miles container when the GPU reaches 84 C. It resumes the container when the GPU is at 74 C or below after at least 45 seconds, or after 120 seconds at most. On its first day the limits were 80 C and 68 C, and they changed to 84 C and 74 C that morning. When the guard stops, it resumes a paused container first, so no run stays paused.
 
 The pause log holds 1,005 pauses, each with its resume, up to 2026-10-22.
 
 ## The timing rule
 
-A pause adds wall-clock time to the phase it falls in. So every time in this manual comes from steps that no pause touched:
+A pause adds wall-clock time to the phase it falls in. So every time in this manual comes from steps that no pause touched, with one exception. The DAPO filter run of section 3.2 had no clean step, so its rollout times take the pause time out of each step instead:
 
 - **Rollout times:** the rollout window ends at the timestamp of the rollout metrics line and lasts `perf/rollout_time`. A step counts when that window overlaps no pause.
 - **Whole-step times:** the window ends at the timestamp of the trainer metrics line and lasts `perf/step_time`. A step counts when that window overlaps no pause.
 
 The summary file stores both medians, all steps and clean steps, with the number of clean steps next to each. Under the heat guard, few whole steps escape a pause. So whole-step times in this manual come from `plain` and `plain-48`. Both ran before we added the heat guard, so no pause could touch them. `plain-48` ended at 00:11 on 2026-10-18, and the guard logged its first pause at 10:57 that day.
+
+## Check the stored outputs
+
+The capture kit checks the stored outputs without a GPU. It replays the watchdog rule on the stored error times of the 16-answer run. It also marks the pauses again from the pause log, and it computes every median again from the stored steps. The raw run logs stay on the GB10. With those logs, the kit can also build the summary again and compare it with the stored one.
+
+## Compare the same steps
 
 A median over clean steps can still mislead. The default setting gave a 47.5 s rollout in `plain-48` and 59.1 s in the 6 clean steps of `e6a-base`. On the same 6 step numbers, `plain-48` took 60.9 s. The rollout time follows the answer length, so compare times on the same step numbers.
 
@@ -77,9 +83,9 @@ These numbers rest on one run and are labelled as leads where they appear:
 - The reward and the rollout cost of the DAPO filter, in section 3.2. Its rollout times take the pause time out, because no step was clean.
 
 ```takeaways
-- Every time in this manual comes from steps that no heat-guard pause touched.
+- Times come from steps that no pause touched, except the DAPO filter rollouts.
 - Compare times on the same step numbers, because the rollout time follows the answer length.
 - Treat the results listed as leads as directions, not sizes.
 ```
 
-Sources: capture/gpu/heat-guard.sh; capture/gpu/out-gb10/image-identity.txt; capture/gpu/miles_grpo.py; capture/gpu/summarize_miles.py; capture/gpu/summary/miles-gb10-lab.json; capture/gpu/out-gb10/thermostat.log; capture/gpu/out-gb10/unpaused-timing.txt; capture/gpu/out-gb10/ray-oom-4b.log.
+Sources: capture/gpu/heat-guard.sh; capture/run.py; capture/gpu/watchdog_replay.py; capture/gpu/out-gb10/image-identity.txt; capture/gpu/miles_grpo.py; capture/gpu/summarize_miles.py; capture/gpu/summary/miles-gb10-lab.json; capture/gpu/out-gb10/thermostat.log; capture/gpu/out-gb10/unpaused-timing.txt; capture/gpu/out-gb10/ray-oom-4b.log.

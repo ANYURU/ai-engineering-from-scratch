@@ -71,7 +71,7 @@ checks  healthy offsets stopped  most checks in a row  dead engine stopped after
 
 ## Start the watchdog
 
-The script reads the last 60 seconds of the container log every 30 seconds. It stops the container when the count passes the limit in a set number of checks in a row. The default is 6:
+The script reads the last 60 seconds of the container log every 30 seconds. It stops the container when the count passes the limit in a set number of checks in a row. If Docker itself fails, the script says so. It exits with 2 when it cannot list the containers, and a failed log read does not count as a check. The default is 6 checks, which is too few for a run you leave alone, so always pass 10 as the third value:
 
 ```bash
 #!/bin/sh
@@ -79,12 +79,21 @@ name=${1:-miles-plain}
 limit=${2:-100}
 checks=${3:-6}
 strikes=0
-while docker ps -q --filter "name=^${name}$" | grep -q .; do
-  errors=$(docker logs --since 60s "$name" 2>&1 | grep -c "503 Service Unavailable")
-  if [ "$errors" -gt "$limit" ]; then
-    strikes=$((strikes + 1))
+while :; do
+  if ! running=$(docker ps -q --filter "name=^${name}$"); then
+    echo "$(date -u +%FT%TZ) $name: docker ps failed, the watchdog cannot see the run and stops"
+    exit 2
+  fi
+  [ -n "$running" ] || break
+  if logs=$(docker logs --since 60s "$name" 2>&1); then
+    errors=$(printf '%s\n' "$logs" | grep -c "503 Service Unavailable")
+    if [ "$errors" -gt "$limit" ]; then
+      strikes=$((strikes + 1))
+    else
+      strikes=0
+    fi
   else
-    strikes=0
+    echo "$(date -u +%FT%TZ) $name: docker logs failed, this check does not count"
   fi
   if [ "$strikes" -ge "$checks" ]; then
     echo "$(date -u +%FT%TZ) $name: more than $limit errors from the rollout engine in each of $checks checks, last $errors in 60 s, stopping the run"
@@ -119,7 +128,7 @@ $ echo $?
 1
 ```
 
-The watchdog stopped the container 183 s after it started, and exited with 1. This test used the default of 6 checks. With 10 checks, the same rule needs four more checks, so it stops about two minutes later. A script that starts runs one after another can read that exit code and skip to the next run.
+The watchdog stopped the container 183 s after it started, and exited with 1. This test used the default of 6 checks. With 10 checks, the same rule needs four more checks, so it stops about two minutes later. A script that starts runs one after another can read that exit code and skip to the next run. An exit code of 2 means that the watchdog lost Docker, and the run has no guard.
 
 The second container prints the error for 60 s and then stays quiet for two minutes. It does this three times, like the bursts of a busy engine. The watchdog let it run to its end after 541 s, and exited with 0. Its quiet gaps of two minutes are longer than the real gaps of 45 s, so test with the replay above too.
 
