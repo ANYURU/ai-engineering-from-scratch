@@ -42,7 +42,7 @@ The other event types of the file include `team_info`, `toolset_info`, `tool_cal
 
 ## The model in every recording
 
-The docs call `ai/qwen3` "the model Docker Agent reaches for by default" {{docs-agent Set Up a Model}}. With no Model Runner, `doctor` resolves `auto` to the 8B tag `ai/qwen3:latest` (`16-doctor.txt`). On the recording Mac, two pulls of that tag ended with a digest mismatch after the last 5.03 GB blob (`25-model-pull-latest.txt`). Every agent file of the kit therefore names `ai/qwen3:4b`, the 4B tag of the same repository. It is a thinking model, so it streams a few thousand reasoning tokens before each answer. `--exec` prints them, and the kit cuts them to one line such as `[... 299 lines of model reasoning cut by run.py ...]` (`18-run-exec.txt`).
+The docs call `ai/qwen3` the model that Docker Agent uses by default {{docs-agent Set Up a Model}}. With no Model Runner, `doctor` resolves `auto` to the 8B tag `ai/qwen3:latest` (`16-doctor.txt`). On the recording Mac, two pulls of that tag ended with a digest mismatch after the last 5.03 GB blob (`25-model-pull-latest.txt`). Every agent file of the kit therefore names `ai/qwen3:4b`, the 4B tag of the same repository. It is a thinking model, so it streams a few thousand reasoning tokens before each answer. `--exec` prints them, and the kit cuts them to one line such as `[... 299 lines of model reasoning cut by run.py ...]` (`18-run-exec.txt`).
 
 ## doctor and models
 
@@ -87,7 +87,7 @@ No issues found.
 [exit 0]
 ```
 
-With no runner, `auto` still names `dmr/ai/qwen3:latest`, and the issue line says why nothing can run. With the runner up, `auto` takes the one pulled model, as the provider page says: auto-selection "prefers a locally-installed model" {{docs-agent Docker Model Runner}}. `models list` printed one row, `dmr ai/qwen3:latest`, even with no daemon (`16-models.txt`). `setup` is the interactive fix. Its four paths are a provider key in `~/.config/cagent/.env`, a Model Runner pull, a custom OpenAI-compatible endpoint, and the Claude Code harness {{help-agent docker-agent setup}}.
+With no runner, `auto` still names `dmr/ai/qwen3:latest`, and the issue line says why nothing can run. With the runner up, `auto` takes the one pulled model, as the provider page says: auto-selection prefers a model that is installed locally {{docs-agent Docker Model Runner}}. `models list` printed one row, `dmr ai/qwen3:latest`, even with no daemon (`16-models.txt`). `setup` is the interactive fix. Its four paths are a provider key in `~/.config/cagent/.env`, a Model Runner pull, a custom OpenAI-compatible endpoint, and the Claude Code harness {{help-agent docker-agent setup}}.
 
 ## new
 

@@ -8,11 +8,11 @@ When you finish this section, you can name the owner of each part of a sandboxed
 
 ## What sbx owns
 
-**Sandbox:** a microVM that `sbx` creates for one agent. "Every sandbox runs inside a lightweight microVM with its own Linux kernel" {{docs-sbx Isolation layers}}, and it has a private Docker Engine. Inside `m101-demo`, the capture reads Linux 7.0.14 on Ubuntu 26.04.1 and Docker Engine 29.8.1 (capture/out/04-guest.txt). The workspace appears at the same absolute path, and "containers started by the agent never appear in your host's `docker ps`" {{docs-sbx Develop and test locally}}.
+**Sandbox:** a microVM that `sbx` creates for one agent. Each sandbox runs in a small microVM with its own Linux kernel {{docs-sbx Isolation layers}}, and it has a private Docker Engine. Inside `m101-demo`, the capture reads Linux 7.0.14 on Ubuntu 26.04.1 and Docker Engine 29.8.1 (capture/out/04-guest.txt). The workspace appears at the same absolute path, and containers that the agent starts never show up in `docker ps` on your host {{docs-sbx Develop and test locally}}.
 
-**sandboxd:** the host daemon behind every local `sbx` command, reached at `$HOME/Library/Application Support/com.docker.sandboxes/sandboxes/sandboxd/sandboxd.sock` (capture/out/02-daemon-status.txt). "You don't need Docker Desktop or Docker Engine to use `sbx`" {{docs-sbx Install Docker Sandboxes}}. You do need a Docker sign-in with `sbx login`, and `sbx diagnose` reports it as `Authentication — authenticated` (capture/out/02-diagnose.txt). [Conflict C15](#s-ref-sources-and-the-conflicts-register) records why both claims hold.
+**sandboxd:** the host daemon behind every local `sbx` command, reached at `$HOME/Library/Application Support/com.docker.sandboxes/sandboxes/sandboxd/sandboxd.sock` (capture/out/02-daemon-status.txt). `sbx` runs without Docker Desktop and without Docker Engine {{docs-sbx Install Docker Sandboxes}}. You do need a Docker sign-in with `sbx login`, and `sbx diagnose` reports it as `Authentication — authenticated` (capture/out/02-diagnose.txt). [Conflict C15](#s-ref-sources-and-the-conflicts-register) records why both claims hold.
 
-The daemon also runs the proxy, and one of its two log categories is `proxy` {{help-sbx sbx daemon log-level set}}. "All outbound TCP traffic from the sandbox routes through a proxy on your host" {{docs-sbx Architecture}}. On macOS, `sbx secret set` keeps each key in the system Keychain {{docs-sbx Where secrets are stored}}. The proxy adds the key to a request after the request leaves the VM, so the VM sees only the placeholder `proxy-managed` (capture/out/04-env.txt). [The proxy](#s-sbx-policy-log-and-the-proxy) and [secrets](#s-sbx-secret-set-import-and-set-custom) take each one apart, and [figure](#fig-1-1) shows who owns what.
+The daemon also runs the proxy, and one of its two log categories is `proxy` {{help-sbx sbx daemon log-level set}}. Every outbound TCP connection from the sandbox goes through a proxy on your host {{docs-sbx Architecture}}. On macOS, `sbx secret set` keeps each key in the system Keychain {{docs-sbx Where secrets are stored}}. The proxy adds the key to a request after the request leaves the VM, so the VM sees only the placeholder `proxy-managed` (capture/out/04-env.txt). [The proxy](#s-sbx-policy-log-and-the-proxy) and [secrets](#s-sbx-secret-set-import-and-set-custom) take each one apart, and [figure](#fig-1-1) shows who owns what.
 
 ```figure
 id: fig-1-1
@@ -50,11 +50,11 @@ Management Commands:
 
 ## The agents sbx runs
 
-`sbx run` accepts eleven agent names: claude, codex, copilot, cursor, devin, docker-agent, droid, gemini, kiro, opencode, and shell {{help-sbx sbx run}}. `sbx create` has eight of them as subcommands and leaves out copilot, droid, and kiro. Those three moved to public kits, and since v0.43.0 they "can be launched by name again" {{rel-sbx v0.43.0}}. `sbx create docker-agent` also answers to the alias `cagent` {{help-sbx sbx create docker-agent}}. `shell` gives you "a Bash login shell inside a sandbox with no pre-installed agent binary" {{docs-sbx Shell}}. [Conflict C9](#s-ref-sources-and-the-conflicts-register) lists the shorter agent lists in older posts.
+`sbx run` accepts eleven agent names: claude, codex, copilot, cursor, devin, docker-agent, droid, gemini, kiro, opencode, and shell {{help-sbx sbx run}}. `sbx create` has eight of them as subcommands and leaves out copilot, droid, and kiro. Those three moved to public kits, and since v0.43.0 you can start them by name again {{rel-sbx v0.43.0}}. `sbx create docker-agent` also answers to the alias `cagent` {{help-sbx sbx create docker-agent}}. `shell` gives you a Bash login shell in a sandbox, with no agent binary installed {{docs-sbx Shell}}. [Conflict C9](#s-ref-sources-and-the-conflicts-register) lists the shorter agent lists in older posts.
 
 ## What docker-agent owns
 
-**Agent file:** a YAML file that names agents, their models, their toolsets, and the rules between them. Docker Agent is "an open-source framework for building teams of specialized AI agents" {{docs-agent Docker Agent}}. Its `run` command drives the loop: a model call, the tool calls the model asks for, and the sub-agents it delegates to. [The agent loop lesson](phases/14-agent-engineering/01-the-agent-loop) explains that loop, and [Part 6](#p-6) serves and shares the same file.
+**Agent file:** a YAML file that names agents, their models, their toolsets, and the rules between them. Docker Agent is an open-source framework for teams of specialized AI agents {{docs-agent Docker Agent}}. Its `run` command drives the loop: a model call, the tool calls the model asks for, and the sub-agents it delegates to. [The agent loop lesson](phases/14-agent-engineering/01-the-agent-loop) explains that loop, and [Part 6](#p-6) serves and shares the same file.
 
 The `docker-agent` binary isolates nothing by itself. On the host, its `shell` toolset runs commands "in the user's environment" (capture/out/16-toolsets.txt).
 
@@ -87,7 +87,7 @@ Advanced Commands:
 
 `sbx run docker-agent ~/my-project` starts from sbx. The sandbox uses `docker/sandbox-templates:docker-agent` and runs `docker-agent run --yolo` when you pass no arguments {{docs-sbx Docker Agent}}. Only project-level configuration in the workspace reaches it.
 
-`docker-agent run --sandbox agent.yaml` starts from your agent file. Here `docker-agent` "orchestrates the installed `sbx` CLI" {{docs-agent Sandbox Mode}}, and `--template` defaults to `docker/docker-agent-sbx-templates:latest` {{help-agent docker-agent run}}. Two paths use two images, as [conflict C61](#s-ref-sources-and-the-conflicts-register) rules. The capture kit recorded only the second path, and [the next section](#s-docker-agent-run-sandbox-end-to-end) follows it.
+`docker-agent run --sandbox agent.yaml` starts from your agent file. Here `docker-agent` drives the `sbx` CLI that you installed {{docs-agent Sandbox Mode}}, and `--template` defaults to `docker/docker-agent-sbx-templates:latest` {{help-agent docker-agent run}}. Two paths use two images, as [conflict C61](#s-ref-sources-and-the-conflicts-register) rules. The capture kit recorded only the second path, and [the next section](#s-docker-agent-run-sandbox-end-to-end) follows it.
 
 ```figure
 id: fig-1-2
@@ -99,7 +99,7 @@ caption: Read across each row. Path A comes from the docs page Docker Agent unde
 
 ## Two agent binaries on one machine
 
-Docker Desktop 4.94.0 bundles "Docker Agent v1.144.0" {{docs-desktop 4.94.0}} as the CLI plugin `docker agent`. Homebrew installs v1.149.0 as `docker-agent`, which the docs say "can be used as a standalone binary" {{docs-agent Docker Agent}}.
+Docker Desktop 4.94.0 bundles Docker Agent v1.144.0 {{docs-desktop 4.94.0}} as the CLI plugin `docker agent`. Homebrew installs v1.149.0 as `docker-agent`, and the docs say that it also works as a standalone binary {{docs-agent Docker Agent}}.
 
 ```listing
 title: two agent binaries on the capture Mac
@@ -120,7 +120,7 @@ Commit: Homebrew
 
 The hints that v1.149.0 prints still say `docker agent sandbox allow <host>` (capture/out/16-sandbox-list.txt), and on this Mac that command runs v1.144.0. This manual writes `docker-agent` in every command and pins v1.149.0, as [conflict C48](#s-ref-sources-and-the-conflicts-register) rules. A third build runs inside the sandbox template, as [the next section](#s-docker-agent-run-sandbox-end-to-end) shows.
 
-The same plugin list holds `sandbox v0.13.0`, and `docker sandbox` prints only its removal notice (capture/out/29-docker-sandbox.txt). [The migration section](#s-from-docker-sandbox-and-cagent-to-sbx-and-docker-agent) maps its commands. The list also holds `ai v1.31.0`, the plugin behind `docker ai`, which the docs call Gordon, "Docker's built-in AI assistant" {{docs-agent Docker Agent}}. Gordon is outside this manual.
+The same plugin list holds `sandbox v0.13.0`, and `docker sandbox` prints only its removal notice (capture/out/29-docker-sandbox.txt). [The migration section](#s-from-docker-sandbox-and-cagent-to-sbx-and-docker-agent) maps its commands. The list also holds `ai v1.31.0`, the plugin behind `docker ai`, which the docs call Gordon, the AI assistant built into Docker {{docs-agent Docker Agent}}. Gordon is outside this manual.
 
 ```takeaways
 - Install `sbx`, sign in with `sbx login`, and run sandboxes without Docker Desktop.
