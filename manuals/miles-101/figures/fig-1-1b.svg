@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" role="img" aria-labelledby="fig-1-1b-title fig-1-1b-desc" font-family="JetBrains Mono, ui-monospace, monospace">
   <title id="fig-1-1b-title">Where the time of one step goes</title>
-  <desc id="fig-1-1b-desc">Median seconds per phase over 48 steps with no heat pause, Qwen3-0.6B on one GB10: rollout 47.5, log probabilities 23.4, train 100.3, release 0.76, resume 0.87, and weight update 0.64.</desc>
+  <desc id="fig-1-1b-desc">Median seconds per phase over 48 steps with no heat pause, Qwen3-0.6B on one GB10: rollout 47.5, log probabilities 23.4, train 100.3, trainer offload 0.76, trainer onload 0.87, and weight update 0.64.</desc>
   <line x1="60" y1="260" x2="620" y2="260" stroke="var(--m-ink-mute, #6f6f6a)" stroke-width="1" stroke-opacity="0.25"/>
   <text x="54" y="264" font-size="11" text-anchor="end" fill="var(--m-ink-soft, #4a4a4a)">0</text>
   <line x1="60" y1="210" x2="620" y2="210" stroke="var(--m-ink-mute, #6f6f6a)" stroke-width="1" stroke-opacity="0.25"/>
@@ -25,10 +25,10 @@
   <text x="293.33" y="277" font-size="11" text-anchor="middle" fill="var(--m-ink-soft, #4a4a4a)">train</text>
   <rect x="361" y="258.49" width="51.33" height="1.51" fill="var(--m-amber-fill, #f5ecd9)" stroke="var(--m-amber-ink, #85590c)"/>
   <text x="386.67" y="252.49" font-size="11" text-anchor="middle" fill="var(--m-amber-ink, #85590c)">0.76 s</text>
-  <text x="386.67" y="277" font-size="11" text-anchor="middle" fill="var(--m-ink-soft, #4a4a4a)">release</text>
+  <text x="386.67" y="277" font-size="11" text-anchor="middle" fill="var(--m-ink-soft, #4a4a4a)">offload</text>
   <rect x="454.33" y="258.27" width="51.33" height="1.73" fill="var(--m-amber-fill, #f5ecd9)" stroke="var(--m-amber-ink, #85590c)"/>
   <text x="480" y="252.27" font-size="11" text-anchor="middle" fill="var(--m-amber-ink, #85590c)">0.87 s</text>
-  <text x="480" y="277" font-size="11" text-anchor="middle" fill="var(--m-ink-soft, #4a4a4a)">resume</text>
+  <text x="480" y="277" font-size="11" text-anchor="middle" fill="var(--m-ink-soft, #4a4a4a)">onload</text>
   <rect x="547.67" y="258.72" width="51.33" height="1.28" fill="var(--m-amber-fill, #f5ecd9)" stroke="var(--m-amber-ink, #85590c)"/>
   <text x="573.33" y="252.72" font-size="11" text-anchor="middle" fill="var(--m-amber-ink, #85590c)">0.64 s</text>
   <text x="573.33" y="277" font-size="11" text-anchor="middle" fill="var(--m-ink-soft, #4a4a4a)">update</text>
