@@ -18,7 +18,7 @@ Remove causes first, because every reweighting adds variance to the gradient.
 
 | Method | Kind | Cause it targets | How to turn it on |
 |---|---|---|---|
-| Sampling replay | removes | top-p and top-k sampling | set `--rollout-top-p` below 1 or `--rollout-top-k` above 0 |
+| Sampling replay | removes | top-p and top-k sampling | a positive `--rollout-top-k`, with or without `--rollout-top-p` below 1 |
 | Routing replay | removes | MoE expert choices | `--use-rollout-routing-replay` |
 | Token-in, token-out sessions | removes | text round trips between turns | `--use-session-server` |
 | True on-policy mode | removes | all kernel differences | the contract in [section 8.3](#s-why-true-on-policy-is-a-contract) |
