@@ -6,6 +6,8 @@ The engine samples each token from a cut-down set of the vocabulary when you use
 
 When you finish this section, you can turn on sampling replay and check that it lowers the gap.
 
+**Our result:** top-p and top-k replay lowered the median gap from 0.0153 to 0.0135, about 12 percent, on one seed.
+
 ## Turn it on
 
 Pass the sampler settings to the run:
@@ -41,6 +43,14 @@ e11-topp-topk          flashinfer         False                           flashi
 **We measured** a gap 11.5 percent lower with replay. No step of the replay run reached the lowest step of the run without it. The reward stayed in the same range.
 
 This is one seed of 12 steps on Qwen3-0.6B. The step ranges did not overlap, so we report the direction. Run a second seed before you report the size for your own model.
+
+```figure
+id: fig-4-4
+kind: chart
+title: Replaying the sampled tokens lowers the gap
+claim: With top-p and top-k replay, the gap was lower at every one of the 12 steps.
+caption: The logprob gap per step for two 12-step runs with seed 1.
+```
 
 ## What replay does not fix
 
