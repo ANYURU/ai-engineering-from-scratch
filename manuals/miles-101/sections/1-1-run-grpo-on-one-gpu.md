@@ -74,7 +74,7 @@ The launcher downloads `Qwen/Qwen3-0.6B` and the `zhuzilin/gsm8k` dataset into t
 
 ## Read the settings the launcher uses
 
-The launcher passes 29 flags to Miles. Most of them keep their defaults. These are the ones that shape the run:
+The launcher passes 36 flags to Miles. Most of them keep their defaults. These are the ones that shape the run:
 
 | Flag | Value | What it decides |
 |---|---|---|
