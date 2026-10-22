@@ -18,7 +18,7 @@ $ rea function fixtures/ledger-arm64-O1 _percent_change --provider ghidra --form
 [exit 0] (… s) -> 06-function-percent-change.json
 ```
 
-`function` takes a path and a procedure, and it runs the MCP operation `analyze_function` with `{ procedure }` as its parameters. `--provider ghidra` names the engine, and `--format json` and `--filter-output` are read at the executable boundary before the command runs. Without `--format`, the terminal output is TOON, and exit `0` means "The operation completed. Its result may include partial evidence, warnings or unresolved questions." {{cli Output and exit status}}. [Figure](#fig-1-2) follows the call through the system.
+`function` takes a path and a procedure, and it runs the MCP operation `analyze_function` with `{ procedure }` as its parameters. `--provider ghidra` names the engine, and `--format json` and `--filter-output` are read at the executable boundary before the command runs. Without `--format`, the terminal output is TOON, and exit `0` means that the operation finished. The result can still hold partial evidence, warnings, or open questions {{cli Output and exit status}}. [Figure](#fig-1-2) follows the call through the system.
 
 ```figure
 id: fig-1-2

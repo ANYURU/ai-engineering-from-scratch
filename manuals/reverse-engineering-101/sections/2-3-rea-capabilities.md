@@ -150,13 +150,15 @@ The `ghidra` candidate is `available`, and its `diagnostics` repeat the eight ch
 
 Each unavailable candidate still lists its operations, 37 for Hopper, 13 for IDA, and 13 for Kuna. The Hopper and IDA groups have `available: true` except Hopper's `search_bytes`, which has `available: false` and the reason "Masked byte search has not been verified for Hopper.". Every Kuna group has `available: false` with the code `not_configured` and the reason of the candidate. Kuna was not run for this manual, because its recorded coverage is on Linux only and the capture host is a Mac.
 
-Availability of the engine and availability of an operation are two different facts. The docs put the rule in one sentence: "These commands describe binary-session providers and auxiliary capabilities." {{cli Choose a provider}}. With `--provider ghidra` or `provider_id: "ghidra"`, only the Ghidra block applies.
+Availability of the engine and availability of an operation are two different facts. The docs keep the two apart: these commands describe the providers of binary sessions and the auxiliary capabilities {{cli Choose a provider}}. With `--provider ghidra` or `provider_id: "ghidra"`, only the Ghidra block applies.
 
 ## Limitations are part of the declaration
 
 Every Ghidra operation carries four shared limitations before its own. The session serves operations only after default auto-analysis completes. The Program and the project are ephemeral. Cancelling a request terminates the database and discards annotations. Addresses are lowercase `0x` hexadecimal in the default space (capture/out/02-capabilities.json).
 
-Then each group adds its own, and these are the sentences to read before you trust an empty list. `list_strings` says: "an empty search does not establish that text is absent from the artifact." `procedure_callers` declares no limitation of its own. Its answer carries `relationship_coverage`, and the Ghidra diagnostic in that field says that only resolved call references are returned and that "unresolved computed or indirect calls remain unknown" (capture/out/06-function-percent-change.json). The design rule behind all of them is "Missing coverage is unknown, not absence." {{design Define the contract}}.
+Then each group adds its own, and these are the sentences to read before you trust an empty list. `list_strings` says that an empty search does not prove the text is missing from the file. `procedure_callers` declares no limitation of its own.
+
+Its answer carries `relationship_coverage`. The Ghidra diagnostic in that field says that rea returns only resolved call references. Computed or indirect calls that Ghidra did not resolve stay unknown (capture/out/06-function-percent-change.json). The design rule behind all of them: missing coverage means unknown, not absent {{design Define the contract}}.
 
 ## A second vocabulary in tools/list
 

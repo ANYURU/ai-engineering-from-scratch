@@ -65,7 +65,7 @@ Every field answers a question you will ask in production:
 - `num_retractions` is 0. [Section 2.3](#s-admission-and-retraction) explains what a nonzero value costs.
 - `cached_tokens` is 2 of 5 prompt tokens, all on the device and none from host memory.
 
-Two cached tokens on the first request of our kit is a small mystery with a clean answer. Before it accepts traffic, the server warms up with the prompt "The capital city of France is" {{code}}. Our prompt was "The capital of France is". The first two tokens matched the warm-up in the radix tree. The cache does not care which user sent a prefix.
+Two cached tokens on the first request of our kit is a small mystery with a clean answer. Before it accepts traffic, the server warms up with the prompt `The capital city of France is` {{code}}. Our prompt was `The capital of France is`. The first two tokens matched the warm-up in the radix tree. The cache does not care which user sent a prefix.
 
 ## What the OpenAI response tells you
 

@@ -75,7 +75,7 @@ note: The args array of the new entry is cut.
 }
 ```
 
-Setup reported `ready` with the action `configured_claude_code` (capture/out/18-setup-claude-duplicate.json). The entry also carries the Ghidra directory and the resolved JDK home of the capture Mac. Its command is a path in the npx cache, because the kit started rea from that path directly. The install docs say "Do not register paths inside npm's temporary package cache." {{install Package runners and global installation}}. Run setup as `npx -y rea-agents@6.7.0 setup` to get the pinned `npx` form, or from a global install.
+Setup reported `ready` with the action `configured_claude_code` (capture/out/18-setup-claude-duplicate.json). The entry also carries the Ghidra directory and the resolved JDK home of the capture Mac. Its command is a path in the npx cache, because the kit started rea from that path directly. The install docs tell you not to register a path inside the temporary package cache of npm {{install Package runners and global installation}}. Run setup as `npx -y rea-agents@6.7.0 setup` to get the pinned `npx` form, or from a global install.
 
 Run every setup with `--dry-run` first and read the plan. Then run it again without that flag and approve the changes it lists.
 
@@ -250,7 +250,7 @@ caption: Read left to right in seconds. The grey bar is the client default and t
 
 When the client gives up during startup, the pending query can have been interrupted. A second `open_binary` on the same target reuses the current client instead of starting fresh. The documented recovery stays on the same connection {{mcp Ghidra first-query deadlines and recovery}}. Export a bundle if retained records matter, then call `close_binary` and check its result. Then call `open_binary` with the same path and `provider_id: "ghidra"`, and retry the first query with a longer client deadline.
 
-The docs add that "No macOS cold-start recovery was exercised." {{mcp Ghidra first-query deadlines and recovery}}, so the Mac that recorded this manual has no recorded recovery run either. `close_binary` itself took 491 ms here and shut the Ghidra process down with the ephemeral project. Both tool descriptions say when to close: `open_binary` ends with "Call close_binary when the investigation is finished.", and `close_binary` starts with "When the investigation is finished".
+The docs add that recovery from a cold start was not tested on macOS {{mcp Ghidra first-query deadlines and recovery}}. So the Mac that recorded this manual has no recorded recovery run either. `close_binary` itself took 491 ms here and shut the Ghidra process down with the ephemeral project. Both tool descriptions say when to close: `open_binary` ends with `Call close_binary when the investigation is finished.`, and `close_binary` starts with `When the investigation is finished`.
 
 ```takeaways
 - Register `npx -y rea-agents@6.7.0 mcp` with one exact version and restart the client.

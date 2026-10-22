@@ -12,11 +12,11 @@ When you finish this section, you can name what rea adds to Ghidra, what it neve
 
 The id is `ev_` and a SHA-256 of the semantic content. The same observation of the same bytes gets the same id on any machine. The id covers `relationship_coverage` also when its value is `null`. So a record from an older rea can fail the check in a newer one ([section 5.4](#s-evidence-bundles-export-and-import)). `confidence` is one of `observed`, `derived`, or `inferred`, and `authority` says what kind of source backs the fact.
 
-The MCP docs state the rule for tools: "Evidence-producing tools return the complete canonical Evidence record in both text and structured content." {{mcp Tool results}}. [Section 1.2](#s-rea-function-end-to-end) reads one record field by field, and [Part 5](#p-5) covers the record in full.
+The MCP docs set the rule for tools. A tool that produces evidence returns the full canonical Evidence record twice: once as text and once as structured content {{mcp Tool results}}. [Section 1.2](#s-rea-function-end-to-end) reads one record field by field, and [Part 5](#p-5) covers the record in full.
 
 **Provider:** an analysis engine behind one interface. `GhidraProvider implements AnalysisProviderCandidate` and offers `identity()`, `capabilities()`, `inspectAvailability()`, `inspectTargetSupport(target)`, `resolveAnalysisProfile(...)`, and `createClient(...)`. At 6.7.0 the session holds four deep providers, `hopper`, `ghidra`, `ida`, and `kuna`, plus auxiliary providers that need no engine. This manual uses only `ghidra`. Kuna is a program that you install yourself, its recorded coverage is on Linux, and the capture Mac reports it `not_configured`.
 
-The registry sorts candidates by id and selects one without starting it, and "Registration order never affects selection or caller-visible output". Once bound, a provider stays bound: "A selected provider is never replaced automatically after a runtime failure." {{mcp Identity and discovery}}.
+The registry sorts candidates by id and selects one without starting it. The order of registration never changes the choice or what the caller sees. Once bound, a provider stays bound: rea does not swap in another provider after a runtime failure {{mcp Identity and discovery}}.
 
 **Adapter:** the way a caller reaches the session. The one-shot CLI has 153 commands and one alias, and the MCP server has 207 tools and 6 prompts. The capture's `server_identity.catalog.counts` reports those numbers (capture/out/02-capabilities.json). Both adapters share one `BinarySession`, which "Owns the single active target shared by CLI and MCP adapters". CLI names use hyphens and MCP names use `_` between words. The native family breaks the rule: `rea function` calls `analyze_function`, `rea decompile` calls `procedure_pseudo_code`, and `rea analyze` calls `binary_overview`.
 
@@ -56,7 +56,9 @@ caption: Read each stack from the top down. The counts come from capture/out/02-
 
 ## What rea leaves to Ghidra
 
-rea has no disassembler and no decompiler of its own. For a native executable it starts `analyzeHeadless` on a fresh temporary project and imports a private copy of the file. It lets Ghidra's default auto-analysis run, and then it asks questions over a socket. The answers are Ghidra's. The function dossier "combines Ghidra FunctionManager, Listing, ReferenceManager, BasicBlockModel, and decompiler observations", as every `analyze_function` record says in its limitations (capture/out/06-function-percent-change.json). The provider docs draw the same line: "pseudocode is Ghidra decompiler output. Neither is original source" {{ghidra Admitted function-analysis semantics}}.
+rea has no disassembler and no decompiler of its own. For a native executable it starts `analyzeHeadless` on a fresh temporary project and imports a private copy of the file. It lets Ghidra's default auto-analysis run, and then it asks questions over a socket. The answers are Ghidra's.
+
+Every `analyze_function` record says in its limitations that the function dossier joins what the Ghidra FunctionManager, Listing, ReferenceManager, BasicBlockModel, and decompiler reported (capture/out/06-function-percent-change.json). The provider docs draw the same line. The pseudocode is what the Ghidra decompiler produced, and neither it nor the assembly is the original source {{ghidra Admitted function-analysis semantics}}.
 
 **Bridge:** `ReaGhidraBridge.java`, a `GhidraScript` that `analyzeHeadless` runs as its last post-script and that then serves requests on a Unix socket. A request is one JSON line, `{ id, token, method, params }`, and a reply is `{ id, ok: true, result }` or `{ id, ok: false, error }`. The bridge answers 17 inventory methods and 13 function methods through one Java `switch`. [Part 4](#p-4) follows each of them.
 

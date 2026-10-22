@@ -52,7 +52,7 @@ caption: Read left to right, one column per phase of train.py. A filled cell mea
 
 ## What stock SGLang gives the trainer
 
-The rental works through SGLang HTTP endpoints that exist in stock v0.5.22 {{code}}. SGLang's RL guide states the design rule as "Be a library, not a framework" {{docs}}. Miles drives each engine as an ordinary `sglang serve` process over HTTP.
+The rental works through SGLang HTTP endpoints that exist in stock v0.5.22 {{code}}. The RL guide of SGLang states the design rule. SGLang acts as a library that the trainer calls, not as a framework that owns the loop {{docs}}. Miles drives each engine as an ordinary `sglang serve` process over HTTP.
 
 **Memory release:** `POST /release_memory_occupation` frees GPU memory by tag, and `POST /resume_memory_occupation` gives it back. The server needs `--enable-memory-saver`, which is off by default. The tags are `kv_cache`, `weights`, and `cuda_graph`. The docs list only the first two, and the code accepts all three, so the code wins. The memory saver frees physical memory but keeps the virtual addresses, so captured CUDA graphs stay valid without a new capture. The call asserts that the server is idle, so pause generation first.
 
@@ -231,7 +231,7 @@ What happened next is the part to remember. The rollout engine was gone, but the
 
 ## Miles runs on its own SGLang
 
-Miles does not use the SGLang release that the rest of this manual describes. Its Docker image builds on `lmsysorg/sglang:v0.5.21` and checks out the `sglang-miles` branch. The v0.1.2 release lock pins SGLang commit `b84bec5761a6`. The Miles docs say it plainly: "installing stock `sglang` or upstream Megatron-LM next to Miles does not work." {{docs}}
+Miles does not use the SGLang release that the rest of this manual describes. Its Docker image builds on `lmsysorg/sglang:v0.5.21` and checks out the `sglang-miles` branch. The v0.1.2 release lock pins SGLang commit `b84bec5761a6`. The Miles docs say it plainly: stock `sglang` or upstream Megatron-LM installed next to Miles does not work {{docs}}.
 
 At least four things that Miles calls do not exist at v0.5.22: the `/pull_weights` endpoint for disk-delta, `register_lora_adapter`, `get_parallelism_info`, and the `--true-on-policy-contract` flag.
 
