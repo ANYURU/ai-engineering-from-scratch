@@ -3,7 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { githubSourceUrl } = require('./build.js');
+const { githubSourceUrl, sourceRepository } = require('./build.js');
 const { localPath, within } = require('./build-projects.js');
 const figkit = require('../manuals/_shared/figkit.js');
 const { validateSvg } = require('../manuals/_shared/svg.js');
@@ -231,12 +231,29 @@ function newInline() {
   return { refs: [], repoLinks: [] };
 }
 
+let evidenceRevisionCache = null;
+
+function evidenceRevision(env = process.env) {
+  const sha = String(env.VERCEL_GIT_COMMIT_SHA || '').trim();
+  if (/^[0-9a-f]{7,40}$/i.test(sha)) return sha;
+  if (env === process.env && evidenceRevisionCache) return evidenceRevisionCache;
+  let head = '';
+  try {
+    head = require('child_process').execSync('git rev-parse HEAD', { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+  } catch (e) { head = ''; }
+  const revision = /^[0-9a-f]{40}$/.test(head) ? head : 'main';
+  if (env === process.env) evidenceRevisionCache = revision;
+  return revision;
+}
+
 function evidenceUrl(file, where) {
   const rel = path.relative(ROOT, file);
   if (rel.startsWith('..') || path.isAbsolute(rel)) return null;
   ensure(fs.existsSync(file), `${where}: evidence path ${rel} does not exist`);
   const kind = fs.statSync(file).isDirectory() ? 'tree' : 'blob';
-  return githubSourceUrl(rel.split(path.sep).join('/'), kind);
+  const { owner, repo } = sourceRepository();
+  const cleanPath = rel.split(path.sep).map(encodeURIComponent).join('/');
+  return `https://github.com/${owner}/${repo}/${kind}/${encodeURIComponent(evidenceRevision())}/${cleanPath}`;
 }
 
 function evidenceLink(url, label) {
@@ -329,6 +346,9 @@ function linkHtml(label, href, where, acc) {
   const [target, fragment] = href.split('#');
   acc.repoLinks.push({ path: target, where });
   const full = path.join(ROOT, target);
+  if (/^manuals\/[^/]+\/capture(?:\/|$)/.test(target)) {
+    return `<a href="${escapeHtml(evidenceUrl(full, where) + (fragment ? `#${fragment}` : ''))}" target="_blank" rel="noopener">${label}</a>`;
+  }
   const view = fs.existsSync(full) && fs.statSync(full).isFile() ? 'blob' : 'tree';
   return `<a href="${escapeHtml(githubSourceUrl(target, view) + (fragment ? `#${fragment}` : ''))}" rel="noopener">${label}</a>`;
 }
@@ -884,6 +904,7 @@ module.exports = {
   SCHEMA,
   LISTING_LANGS,
   evidenceUrl,
+  evidenceRevision,
   inlineHtml,
   readerCaption,
   tableHtml,

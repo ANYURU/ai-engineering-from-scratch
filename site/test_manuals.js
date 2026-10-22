@@ -180,7 +180,7 @@ test('evidence is linked to the repository, never printed', () => {
   const manual = manuals.loadManual(path.join(__dirname, '..', 'manuals', 'sglang-101'));
   const html = manuals.printPage(manual);
   const listing = html.match(/<figure class="m-listing">[\s\S]*?<\/figure>/)[0];
-  assert.match(listing, /<a class="m-evidence" href="https:\/\/github\.com\/rohitg00\/ai-engineering-from-scratch\/blob\/main\/manuals\/sglang-101\/capture\/[^"]+" target="_blank" rel="noopener">Full log<\/a>/);
+  assert.match(listing, /<a class="m-evidence" href="https:\/\/github\.com\/rohitg00\/ai-engineering-from-scratch\/blob\/[0-9a-f]{40}\/manuals\/sglang-101\/capture\/[^"]+" target="_blank" rel="noopener">Full log<\/a>/);
   assert.doesNotMatch(listing.replace(/href="[^"]*"/g, ''), /capture\//);
   assert.match(html, /<a class="m-evidence" href="[^"]+\/summary\/l4\.json"[^>]*>Raw runs<\/a>/);
   assert.match(html, /<a class="m-evidence" href="[^"]+\/summary\/l4-throttled\.json"[^>]*>Raw runs<\/a>/);
@@ -192,6 +192,9 @@ test('evidence is linked to the repository, never printed', () => {
     assert.equal(fs.statSync(full).isDirectory(), kind === 'tree', rel);
   }
   assert.throws(() => manuals.evidenceUrl(path.join(__dirname, '..', 'manuals', 'sglang-101', 'capture', 'missing.log'), 'doc.md:1'), /evidence path manuals\/sglang-101\/capture\/missing\.log does not exist/);
+  assert.equal(manuals.evidenceRevision({ VERCEL_GIT_COMMIT_SHA: 'ABC1234def' }), 'ABC1234def');
+  assert.match(manuals.evidenceRevision({}), /^(?:[0-9a-f]{40}|main)$/);
+  assert.match(manuals.evidenceUrl(path.join(__dirname, '..', 'manuals', 'sglang-101', 'capture', 'gpu'), 'doc.md:1'), /\/tree\/(?:[0-9a-f]{40}|main)\/manuals\/sglang-101\/capture\/gpu$/);
 });
 
 test('numbers figures per part and renders the print edition', () => {
@@ -422,4 +425,13 @@ test('print and web editions carry the author, license, and colophon', () => {
   const page = fs.readFileSync(path.join(site, 'manual-demo-101.html'), 'utf8');
   assert.match(page, /id="colophon"/);
   assert.match(page, /<footer class="site-footer">/);
+});
+
+test('capture links in prose are pinned evidence links and reference tables print no capture file names', () => {
+  const acc = manuals.newInline();
+  const html = manuals.inlineHtml('See [output](manuals/reverse-engineering-101/capture/out/01-doctor-ghidra.json).', 'doc.md:1', acc);
+  assert.match(html, /href="https:\/\/github\.com\/[^/]+\/[^/]+\/blob\/(?:[0-9a-f]{40}|main)\/manuals\/reverse-engineering-101\/capture\/out\/01-doctor-ghidra\.json" target="_blank" rel="noopener">output<\/a>/);
+  const table = fs.readFileSync(path.join(__dirname, '..', 'manuals', 'reverse-engineering-101', 'sections', 'r-1-commands-and-tools.md'), 'utf8');
+  assert.doesNotMatch(table, /Capture file/);
+  assert.doesNotMatch(table, /\|\s*`\d\d-[^`]*\.json`\s*\|/);
 });
