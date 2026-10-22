@@ -4,9 +4,9 @@
 
 We left a run alone for an hour. When we came back, the GPU was idle and the log had grown to 147 MB. The rollout engine had died during startup, and the run had sent requests to it ever since.
 
-When you finish this section, you can recognize a run whose engine died. You can also start a watchdog that stops that run within a minute.
+When you finish this section, you can recognize a run whose engine died. You can also start a watchdog that stops that run within a few minutes.
 
-**Our result:** a run whose engine died logged 200,533 HTTP 503 errors in 63 minutes and never failed. The watchdog stopped a test of the same error in 60 s.
+**Our result:** a run whose engine died logged 200,533 HTTP 503 errors in 63 minutes and never failed. The watchdog stopped a test of the same error in 183 s. It let a test with one-minute bursts of the error run to its end.
 
 ## What a dead engine looks like
 
@@ -45,22 +45,33 @@ claim: Without a watchdog, a dead engine left the job running for 63 minutes wit
 caption: The top track is our failed run. The bottom track is the watchdog test on a container that writes the same error.
 ```
 
-## Why one count is enough
+## Why the watchdog waits for six checks
 
-In our 14 runs that finished, the log held no `503 Service Unavailable` line at all. In the failed run, every minute held at least 1,838 of them. A limit of 100 errors in 60 seconds is far from both, so the watchdog does not stop a healthy run.
+In our 17 runs that ended normally, the log held no `503 Service Unavailable` line at all. Our 16-answer run of [section 3.1](#s-train-math-on-gsm8k) logged 22,357 of them. They came in bursts of up to 60 s, with up to 2,209 in one minute. The client retried each request, and the run finished all its steps.
+
+In the failed run, the errors never stopped. Every minute held at least 1,838 of them, for 63 minutes.
+
+A count alone cannot tell these two runs apart, but the time can. So the watchdog stops a run only when it finds more than 100 errors in six checks in a row. That is about three minutes of errors without a break, three times our longest healthy burst.
 
 ## Start the watchdog
 
-The script reads the last 60 seconds of the container log every 30 seconds. It stops the container when the count passes the limit:
+The script reads the last 60 seconds of the container log every 30 seconds. It stops the container when the count passes the limit in six checks in a row:
 
 ```bash
 #!/bin/sh
 name=${1:-miles-plain}
 limit=${2:-100}
+checks=${3:-6}
+strikes=0
 while docker ps -q --filter "name=^${name}$" | grep -q .; do
   errors=$(docker logs --since 60s "$name" 2>&1 | grep -c "503 Service Unavailable")
   if [ "$errors" -gt "$limit" ]; then
-    echo "$(date -u +%FT%TZ) $name: $errors errors from the rollout engine in 60 s, stopping the run"
+    strikes=$((strikes + 1))
+  else
+    strikes=0
+  fi
+  if [ "$strikes" -ge "$checks" ]; then
+    echo "$(date -u +%FT%TZ) $name: more than $limit errors from the rollout engine in each of $checks checks, last $errors in 60 s, stopping the run"
     docker stop "$name"
     exit 1
   fi
@@ -72,27 +83,29 @@ echo "$(date -u +%FT%TZ) $name: the run ended"
 Save it as `~/miles-lab/watchdog.sh`. Start it in a second terminal right after the run starts, with the container name from [section 1.1](#s-run-grpo-on-one-gpu):
 
 ```bash
-sh ~/miles-lab/watchdog.sh miles-plain 100
+sh ~/miles-lab/watchdog.sh miles-plain 100 6
 ```
 
 ## Test the watchdog first
 
-Test it on a container that prints the error on purpose. It needs no GPU:
+Test it on two containers that print the error on purpose. They need no GPU. The first prints ten error lines each second and never stops, like a dead engine:
 
 ```listing
-title: the watchdog stops a container that prints the error
+title: the watchdog stops a container that never stops printing the error
 source: capture/gpu/out-gb10/watchdog-test.txt
 lang: text
-note: The test container prints ten error lines each second.
+note: The container prints ten error lines each second.
 ---
-$ sh capture/gpu/watchdog.sh wd-test 100
-2026-10-22T07:03:16Z wd-test: 149 errors from the rollout engine in 60 s, stopping the run
-wd-test
+$ sh capture/gpu/watchdog.sh wd-dead 100
+2026-10-22T15:41:09Z wd-dead: more than 100 errors from the rollout engine in each of 6 checks, last 578 in 60 s, stopping the run
+wd-dead
 $ echo $?
 1
 ```
 
-The watchdog found 149 errors on its first check, stopped the container, and exited with 1. A script that starts runs one after another can read that exit code and skip to the next run.
+The watchdog stopped the container 183 s after it started, and exited with 1. A script that starts runs one after another can read that exit code and skip to the next run.
+
+The second container prints the error for 60 s and then stays quiet for two minutes. It does this three times, like the bursts of a busy engine. The watchdog let it run to its end after 541 s, and exited with 0.
 
 The watchdog only stops the run. To find out why the engine died, read the engine lines above the first error. [Section 7.1](#s-troubleshoot-by-symptom) lists the causes we met.
 

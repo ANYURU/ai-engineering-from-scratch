@@ -5,7 +5,7 @@ const { figure } = require('../../../_shared/figkit.js');
 module.exports = figure('fig-1-2', {
   height: 330,
   title: 'A dead engine does not stop the job',
-  desc: 'Two runs on one time axis. Without a watchdog, the engine stopped at start, and the rollout loop then logged 200,533 HTTP 503 errors over 63 minutes while the GPU did nothing, until we stopped the container. With watchdog.sh, a test container that logged the same error stopped after 149 errors in 60 seconds.',
+  desc: 'Two runs on one time axis. Without a watchdog, the engine stopped at start, and the rollout loop then logged 200,533 HTTP 503 errors over 63 minutes while the GPU did nothing, until we stopped the container. With watchdog.sh, a test container that logged the same error without a break stopped after 183 seconds, when six checks in a row found more than 100 errors. A healthy 16-answer run logged bursts of this error of up to 60 seconds, which the watchdog lets pass.',
 }, f => {
   const x0 = 150;
   const w = 470;
@@ -24,12 +24,12 @@ module.exports = figure('fig-1-2', {
   f.text(px(63), 124, 'we stopped it at 63 min', { size: 11, anchor: 'end', serif: true, hue: 'ink-soft' });
 
   f.text(20, 172, 'watchdog.sh', { size: 12, weight: 700 });
-  f.text(20, 190, 'counts 503 lines', { size: 11, serif: true, hue: 'ink-soft' });
-  f.rect(px(0), 152, px(1) - px(0), 44, { hue: 'rose', dash: 'dashed' });
-  f.arrow([px(1) + 2, 174], [px(9), 174], { style: 'state' });
+  f.text(20, 190, 'needs 6 bad checks', { size: 11, serif: true, hue: 'ink-soft' });
+  f.rect(px(0), 152, px(3.05) - px(0), 44, { hue: 'rose', dash: 'dashed' });
+  f.arrow([px(3.05) + 2, 174], [px(9), 174], { style: 'state' });
   f.text(px(9) + 2, 214, 'the watchdog stops the container', { size: 11, serif: true, hue: 'amber' });
-  f.box({ x: px(9) + 2, y: 152, w: 250, h: 44, hue: 'amber', title: 'exit 1 after 60 s', sub: ['149 errors, limit 100 a minute'] });
+  f.box({ x: px(9) + 2, y: 152, w: 250, h: 44, hue: 'amber', title: 'exit 1 after 183 s', sub: ['more than 100 errors in six checks'] });
 
   f.text(20, 290, 'Start every unattended run with a watchdog. The job alone never fails.', { size: 12, serif: true });
-  f.text(20, 312, 'The healthy runs logged no 503 lines, so a limit of 100 a minute is safe.', { size: 12, serif: true, hue: 'ink-soft' });
+  f.text(20, 312, 'Healthy bursts lasted up to 60 s, so the watchdog waits about three minutes.', { size: 12, serif: true, hue: 'ink-soft' });
 });
