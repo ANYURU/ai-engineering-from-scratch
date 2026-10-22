@@ -34,6 +34,12 @@ caption: Each row is one symptom. The sections below give the detail for each. F
 - **Check:** find the line that names the attention backend, and the FlashInfer error after it.
 - **Fix:** add `--attention-backend TRITON_ATTN`.
 
+### A DGX Spark runs out of memory although the fraction leaves room
+
+- **Cause:** on unified memory, `--gpu-memory-utilization` does not always limit what vLLM takes. A field report saw about 101 GiB taken at a fraction of 0.50. Issue 44740 reports a KV cache that was too large with MTP speculation on the GB10, and it is open.
+- **Check:** compare the `Available KV cache memory` line with the share you expect, and watch `free -g` during the start.
+- **Fix:** set the cache size in bytes with `--kv-cache-memory-bytes`. [The DGX Spark page](#s-size-memory-on-a-dgx-spark) has the details.
+
 ### The first start on a DGX Spark takes many minutes
 
 - **Cause:** the weight load copies each tensor from the file map, and that copy is slow on the GB10. Issue 58726 tracks this, and it is open.
@@ -100,9 +106,9 @@ caption: Each row is one symptom. The sections below give the detail for each. F
 
 ### The output changes from run to run
 
-- **Cause:** vLLM does not promise the same output by default. The batch that a request joins changes the order of the sums.
-- **Check:** send the same request alone twice. If the answers match, the batch causes the change.
-- **Fix:** offline, set `VLLM_ENABLE_V1_MULTIPROCESSING=0`. Online, only the batch-invariant mode helps. [The reproducibility page](#s-get-reproducible-outputs) covers it.
+- **Cause:** vLLM does not promise the same output by default. The batch that a request joins changes the order of the sums. A prefix-cache hit can also change a greedy output.
+- **Check:** send the same request alone twice. If the answers match, the batch causes the change. If they differ, the second request can hit the prefix cache. Repeat the test with `--no-enable-prefix-caching`. If the answers now match, the cache causes the change.
+- **Fix:** offline, set `VLLM_ENABLE_V1_MULTIPROCESSING=0`. Online, the batch-invariant mode helps, but at 0.31.0 it does not cover every path. Reset the prefix cache between runs that you compare. [The reproducibility page](#s-get-reproducible-outputs) covers it.
 
 ## The benchmark is wrong
 
@@ -110,7 +116,7 @@ caption: Each row is one symptom. The sections below give the detail for each. F
 
 - **Cause:** with a fixed seed, the random dataset sends the same prompts again, and the prefix cache serves them.
 - **Check:** `vllm:prefix_cache_hits_total` rises during the second run.
-- **Fix:** use a new seed for each run. The `POST /reset_prefix_cache` route exists only with `VLLM_SERVER_DEV_MODE=1`, so use it only on a server that is not exposed.
+- **Fix:** reset the prefix cache before each run, use a new seed, and record the cached tokens. [The benchmark page](#s-benchmark-your-server-in-15-minutes) gives the protocol. The `POST /reset_prefix_cache` route exists only with `VLLM_SERVER_DEV_MODE=1`, so use it only on a server that is not exposed.
 
 ```takeaways
 - Read the last log lines and the waiting and cache metrics before you change a flag.
