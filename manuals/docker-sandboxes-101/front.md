@@ -24,7 +24,7 @@ The manual pins `sbx` v0.47.0 at commit `0411f50e`, released 2026-10-05, and `do
 
 Facts come from seven sources, ranked by authority. When two of them disagree, the higher one wins and the text says so.
 
-| Rank | Source | What the manual takes from it | Cited as |
+| Rank | Source | What the manual takes from it | Source key |
 |---|---|---|---|
 | 1 | the help text of `sbx` 0.47.0 and `docker-agent` 1.149.0, as the binaries print it | every command, flag, default, and path | `help-sbx` or `help-agent` and a command |
 | 2 | `agent-schema.json` at v1.149.0 | every key, type, and default of the agent file | `schema` and a definition |
@@ -34,7 +34,7 @@ Facts come from seven sources, ranked by authority. When two of them disagree, t
 | 6 | Docker blog posts and talks | history and positioning, never a rule | `blog` or `talk` and a date |
 | 7 | the capture kit in `capture/` | every command output, file, and record shown | the capture file name |
 
-Sources 1 to 5 are vendored under `research/sources/`, so the audit checks each quote word for word. Blog posts and talks are not vendored, and their quotes are not checked.
+Sources 1 to 5 are vendored under `research/sources/`, so each rule can be checked against its source. The manual states every rule in its own words. Blog posts and talks are not vendored.
 
 The sources disagree in many places. The largest are the kit generations ([conflict C13](#s-ref-sources-and-the-conflicts-register)) and the agent names and template image of each launch path ([C9 and C61](#s-ref-sources-and-the-conflicts-register)). Others are host secrets that `sbx` never injects ([C7](#s-ref-sources-and-the-conflicts-register)) and the two agent binaries on one Mac ([C48](#s-ref-sources-and-the-conflicts-register)). [The sources reference](#s-ref-sources-and-the-conflicts-register) lists every conflict with the ruling this manual prints.
 
@@ -60,7 +60,7 @@ Most runs of tier M replay a recorded cassette with `--fake`, so a check compare
 
 `$CAPTURE` stands for the capture directory and `$HOME` for the home directory. Values that change on every run appear as tokens such as `<uuid>`, `<hash>`, `<ts>`, and `<port>`. The command lines of tier M leave out `--config-dir`, `--data-dir`, and `--cache-dir`, which point at `capture/work/`.
 
-Citations name a place: {{help-sbx sbx run}} a command in the help text, {{schema AgentConfig}} a definition in the schema, and {{kitspec §3.4}} a section of the kit spec. A docs citation such as {{docs-sbx Network access policies}} names a page or heading, and {{rel-sbx v0.43.0}} names a release. A listing copies lines from a capture file unchanged, and a `…` marks a cut that the note explains.
+Each section records its sources in the manual source, where the audit checks every quote and number. The sections do not show them. The sources reference lists them. A listing copies lines from a capture file unchanged, and a `…` marks a cut that the note explains.
 
 Figures animate on the web, where a Replay button runs the steps again, and print and reduced motion show the final frame.
 

@@ -30,7 +30,7 @@ REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 ```
 
-The address is `gateway.docker.internal:3128`, not the `host.docker.internal:3128` of the legacy plugin ([conflict C26](#s-ref-sources-and-the-conflicts-register)). The docs describe two paths: "Agents use a forward proxy for HTTP and HTTPS; other TCP traffic is forwarded transparently. Both paths enforce network access policies." {{docs-sbx Networking}}
+The address is `gateway.docker.internal:3128`, not the `host.docker.internal:3128` of the legacy plugin ([conflict C26](#s-ref-sources-and-the-conflicts-register)). The docs describe two paths. Agents send HTTP and HTTPS through a forward proxy, and other TCP traffic is forwarded transparently. Both paths enforce the network access policies {{docs-sbx Networking}}.
 
 The first prototype was only an environment variable, and an agent bypassed it with `no_proxy`, as Kevin Wittek said on 2026-01-14 {{talk 2026-01-14 T01}}. The capture sent a request to `gateway.docker.internal:18080`, a name in `NO_PROXY`, so curl skipped the forward proxy and opened a plain TCP connection. The transparent path caught that connection, and the log recorded it as `transparent` and blocked (capture/out/10-policy-log.json).
 
@@ -63,11 +63,11 @@ exit=0
 
 `HTTP/1.1 200 OK` is the proxy accepting the `CONNECT`. The `403 Forbidden` that follows arrived inside the TLS session, under a certificate the sandbox trusts, and its 90-byte body is the approval message. After `sbx policy allow network --sandbox m101-policy example.com`, the same request got `HTTP/1.0 200 Connection established` and then `HTTP/2 200` with `server: cloudflare` (capture/out/09-allowed.txt).
 
-The log classed that one as `forward-bypass`, a tunnel without inspection and without credential injection {{docs-sbx Monitoring policies}}. So the ruling for C26 reads: the proxy terminates TLS only when it has to speak. That is a blocked host or a host with a bound credential, and it tunnels the rest. The v0.47.0 notes name both paths, a "non-MITM CONNECT tunnel" and "the transparent proxy's late handshake check" {{rel-sbx v0.47.0}}.
+The log classed that one as `forward-bypass`, a tunnel without inspection and without credential injection {{docs-sbx Monitoring policies}}. So the ruling for C26 reads: the proxy terminates TLS only when it has to speak. That is a blocked host or a host with a bound credential, and it tunnels the rest. The v0.47.0 notes name both paths: a CONNECT tunnel without interception, and a late handshake check in the transparent proxy {{rel-sbx v0.47.0}}.
 
 ## Reading policy log
 
-**policy log:** shows "which hosts were allowed or blocked by the proxy, along with the matching rule, proxy type, and request count" {{help-sbx sbx policy log}}. It takes `[SANDBOX]`, `--json`, `--limit`, and `--type`, and the help admits that "filesystem logs are not supported yet" ([conflict C28](#s-ref-sources-and-the-conflicts-register)). The JSON has two arrays:
+**policy log:** shows which hosts the proxy allowed or blocked, with the matching rule, the proxy type, and the request count {{help-sbx sbx policy log}}. It takes `[SANDBOX]`, `--json`, `--limit`, and `--type`, and the help admits that filesystem logs are not supported yet ([conflict C28](#s-ref-sources-and-the-conflicts-register)). The JSON has two arrays:
 
 ```listing
 title: the log of m101-policy after the deny rule
@@ -103,7 +103,7 @@ note: The second blocked row, the download.docker.com row, and the ports.ubuntu.
 
 Each row has `host`, `vm_name`, `proxy_type`, `rule`, `reason`, `last_seen`, `since`, and `count_since`. A blocked row names the operation, `op(action=net:connect:tcp, resource=net:domain:example.com:443)`, and either `no applicable policies` or the rule that matched. An allowed row in this capture carries an empty `rule`, so the log says that a host passed, and [check network](#s-sbx-policy-init-allow-deny-and-check-network) says why. `PROXY` takes five values, `forward`, `forward-bypass`, `transparent`, `network`, and `browser-open` {{docs-sbx Monitoring policies}}. [Figure](#fig-3-4) animates both requests.
 
-The 403 body names `sbx policy approval ls`. The docs describe `approval ls`, `inspect`, and `respond`. Under balanced and deny-all, a request no rule matches "asks for your approval instead of being denied outright" {{docs-sbx Local policy}}. The v0.47.0 help tree has no `sbx policy approval` command, while `sbx policy ls --created-via approval` exists ([conflict C16](#s-ref-sources-and-the-conflicts-register)).
+The 403 body names `sbx policy approval ls`. The docs describe `approval ls`, `inspect`, and `respond`. Under balanced and deny-all, a request that matches no rule waits for your approval instead of being denied at once {{docs-sbx Local policy}}. The v0.47.0 help tree has no `sbx policy approval` command, while `sbx policy ls --created-via approval` exists ([conflict C16](#s-ref-sources-and-the-conflicts-register)).
 
 ## What a host rule cannot see
 

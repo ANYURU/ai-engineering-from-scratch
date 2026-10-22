@@ -74,7 +74,7 @@ caption: Read top to bottom. Each row is a ReqToTokenPool entry, and the strip b
 
 ## The cache is the pool
 
-SGLang has no separate setting for cache size. The SGLang paper states the design directly: "we let the cached tokens and the currently running requests share the same memory pool" {{paper}}. A cached prefix is KV that no running request locks right now. When a new request needs room, SGLang evicts prefixes that no request locks, from the same pool.
+SGLang has no separate setting for cache size. The SGLang paper makes this a design choice: cached tokens and running requests use one memory pool {{paper}}. A cached prefix is KV that no running request locks right now. When a new request needs room, SGLang evicts prefixes that no request locks, from the same pool.
 
 This is why the startup log reports one number, `max_total_num_tokens`, and not two. On our Mac with `--mem-fraction-static 0.4`, that number was 181,574 tokens. The model allows a context of 40,960 tokens. So the pool holds four full-length conversations, or about 180 conversations of 1,000 tokens each. Running requests and cached prefixes compete for those same slots.
 

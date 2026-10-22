@@ -76,7 +76,7 @@ Many readers expect `lpm`, because the paper describes it. It was the default in
 
 Two rules in the code limit the cache-aware policies {{code}}:
 
-- When the waiting queue holds more than 128 requests, `lpm` and `hrrn` change to FCFS for that turn. The comment says why: "Turn off the expensive prefix matching and sorting when the #queue is large."
+- When the waiting queue holds more than 128 requests, `lpm` and `hrrn` change to FCFS for that turn. The code comment says why: prefix matching and sorting cost too much when the queue is long.
 - When the radix cache is off, `lpm`, `dfs-weight`, and `hrrn` become FCFS. `shortest-prefill-first` refuses to start.
 
 So `lpm` helps only in a narrow band. The queue must be long enough to reorder, short enough to stay under 128, and full of shared prefixes.

@@ -16,7 +16,7 @@ A benchmark result is a function of five inputs. Most disagreements between publ
 4. **Kernel path.** The attention backend, the MoE kernel, and the quantization format. Several reports below were decided by a kernel that did or did not exist for one GPU.
 5. **Version and date.** One analyst measured the same model on the same AMD GPU at 20.4 and then 2,256 tokens per second per GPU, 26 days apart.
 
-**The code** sets the third input from GPU memory at startup. Take an 80 GB H100 with tensor parallel size below 4. The default decode graph limit is 256, and the chunked prefill size is 8,192. On a 32 GB card the limit is 48, raised from 24 on 2026-09-04. The code comment on that change says the old cap "collapsed high-concurrency throughput vs vLLM" {{code}}.
+**The code** sets the third input from GPU memory at startup. Take an 80 GB H100 with tensor parallel size below 4. The default decode graph limit is 256, and the chunked prefill size is 8,192. On a 32 GB card the limit is 48, raised from 24 on 2026-09-04. The code comment on that change says the old cap made throughput at high concurrency fall far behind vLLM {{code}}.
 
 ## Six questions before you trust a number
 
@@ -322,7 +322,7 @@ Above all, do not import a result. Run the sweep from [section 5.1](#s-sglang-be
 
 **Advice that no longer parses.** Field reports from 2026 advise raising the decode graph limit with `--cuda-graph-max-bs`. At v0.5.22 that flag is split into `--cuda-graph-max-bs-decode` and `--cuda-graph-max-bs-prefill`. **The code** rejects the old spelling. The argument parser of `sglang serve` stops with `ambiguous option: --cuda-graph-max-bs could match --cuda-graph-max-bs-decode, --cuda-graph-max-bs-prefill`. A tuning recipe is tied to its version as tightly as a benchmark is.
 
-**The recycled number.** The 29 percent pair from the start of this section was criticized by DeepInfra on 2026-08-04 for its version gap {{field DeepInfra 2026-08}}. The author answered on 2026-10-14 that the result "should not be extrapolated" to long context {{field AIMultiple 2026-10}}. The SGLang team made a larger claim in 2024: "up to 3.1x higher throughput on Llama-70B" {{team 2024-07}}. No independent report found in this research reproduced a gap of that size on a dense model with unique prompts.
+**The recycled number.** The 29 percent pair from the start of this section was criticized by DeepInfra on 2026-08-04 for its version gap {{field DeepInfra 2026-08}}. The author answered on 2026-10-14 that the result does not carry over to long context {{field AIMultiple 2026-10}}. The SGLang team made a larger claim in 2024: up to 3.1 times the throughput on Llama-70B {{team 2024-07}}. No independent report found in this research reproduced a gap of that size on a dense model with unique prompts.
 
 ```takeaways
 - Compare engines at matched KV pools and matched GPU clocks, or not at all.

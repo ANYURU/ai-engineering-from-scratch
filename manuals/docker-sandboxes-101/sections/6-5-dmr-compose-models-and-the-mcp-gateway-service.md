@@ -8,7 +8,7 @@ When you finish this section, you can reach the runner from the host, a containe
 
 ## Docker Model Runner on port 12434
 
-**Docker Model Runner (DMR):** the Docker component that pulls models from Docker Hub, an OCI registry, or Hugging Face {{docs-dmr Docker Model Runner}}. It serves them over OpenAI, Anthropic, and Ollama compatible APIs {{docs-dmr DMR REST API}}. Since Desktop 4.71.0, "Docker Model Runner is now disabled by default and must be explicitly enabled in Settings" {{docs-desktop 4.71.0}}. `docker desktop enable model-runner --tcp <port>` turns on host TCP {{docs-dmr DMR REST API}}, and the capture used port 12434.
+**Docker Model Runner (DMR):** the Docker component that pulls models from Docker Hub, an OCI registry, or Hugging Face {{docs-dmr Docker Model Runner}}. It serves them over OpenAI, Anthropic, and Ollama compatible APIs {{docs-dmr DMR REST API}}. Since Desktop 4.71.0, Docker Model Runner is off by default, and you turn it on in Settings {{docs-desktop 4.71.0}}. `docker desktop enable model-runner --tcp <port>` turns on host TCP {{docs-dmr DMR REST API}}, and the capture used port 12434.
 
 ```listing
 title: the runner as docker model status --json reports it
@@ -29,7 +29,7 @@ note: The other backends are cut.
 }
 ```
 
-"The Model Runner API is not authenticated" {{docs-dmr Docker Model Runner}}. Any client that reaches the port can pull, load, and run models. The base URL depends on where the caller runs, and [figure](#fig-6-5) maps the five that this manual met:
+The Model Runner API has no authentication {{docs-dmr Docker Model Runner}}. Any client that reaches the port can pull, load, and run models. The base URL depends on where the caller runs, and [figure](#fig-6-5) maps the five that this manual met:
 
 | Caller | Base URL | Evidence |
 |---|---|---|
@@ -49,7 +49,7 @@ claim: Five callers reach the same runner through five base URLs, and every path
 caption: Read each row left to right, from the caller to the runner. The dashed caller comes from the docs and was not captured. The paths on the right follow any base URL. From capture/out/25-model-status.json, 25-models.json, 26-compose-up.txt, capture/fixtures/agents/files-sandbox.yaml, and research/sources/docs-model-runner.md.
 ```
 
-The 8B tag `ai/qwen3:latest` failed to pull on the recording Mac, as [docker-agent run, new, and doctor](#s-docker-agent-run-new-and-doctor) explains (capture/out/25-model-pull-latest.txt). With only the 4B tag pulled, `doctor` resolves `auto` to `dmr/docker.io/ai/qwen3:4b` (capture/out/25-doctor.txt). "By default model-runner unloads idle models after a few minutes" {{docs-agent Docker Model Runner}}, and `provider_opts.keep_alive` changes that time. `provider_opts.context_size` sets the context window through the runner's `_configure` endpoint {{docs-agent Docker Model Runner}}. No capture ran `docker model configure`, so [conflict C77](#s-ref-sources-and-the-conflicts-register) stays open.
+The 8B tag `ai/qwen3:latest` failed to pull on the recording Mac, as [docker-agent run, new, and doctor](#s-docker-agent-run-new-and-doctor) explains (capture/out/25-model-pull-latest.txt). With only the 4B tag pulled, `doctor` resolves `auto` to `dmr/docker.io/ai/qwen3:4b` (capture/out/25-doctor.txt). By default, Model Runner unloads an idle model after a few minutes {{docs-agent Docker Model Runner}}, and `provider_opts.keep_alive` changes that time. `provider_opts.context_size` sets the context window through the runner's `_configure` endpoint {{docs-agent Docker Model Runner}}. No capture ran `docker model configure`, so [conflict C77](#s-ref-sources-and-the-conflicts-register) stays open.
 
 An agent file can also name the runner in a `providers:` block. `fixtures/agents/dmr.yaml` sets `base_url: http://localhost:12434/engines/llama.cpp/v1`, and its run answered `Hello` (capture/out/25-run-dmr.txt). An explicit `base_url` bypasses the `--record` proxy, so that run is live on every capture (capture/README.md).
 
@@ -120,12 +120,12 @@ caption: Read from the models element at the top left. Solid ink arrows are call
 
 | Name in this manual | What it is | Address in the captures |
 |---|---|---|
-| models gateway | the address set by `--models-gateway` or `DOCKER_AGENT_MODELS_GATEWAY`, to "Route all provider traffic through a models gateway URL" {{docs-agent A2A Protocol}} | `http://localhost:12434/engines`, which `--record` with `dmr` needs (capture/README.md) |
+| models gateway | the address set by `--models-gateway` or `DOCKER_AGENT_MODELS_GATEWAY`, which sends all provider traffic through one models gateway URL {{docs-agent A2A Protocol}} | `http://localhost:12434/engines`, which `--record` with `dmr` needs (capture/README.md) |
 | sbx MCP gateway | one host-side gateway per sandbox, set up by `sbx mcp`, separate from the MCP Toolkit {{docs-sbx MCP gateway}} | `http://mcp-gateway.docker.internal/mcp` inside the VM |
 | MCP gateway service | `docker mcp gateway run` or the `docker/mcp-gateway` image, mcp v0.44.1 on the recording host | `http://localhost:8811/mcp` inside the service |
 | hosted MCP gateway | the gateway of Docker AI Governance, "an invite-only feature" {{docs-mcp MCP Gateway}} | not captured |
 
-The Toolkit gateway runs each MCP server in its own container. "Containers for MCP tools are limited to 2 GB" {{docs-mcp MCP Toolkit}}, and each one gets 1 CPU. A docker-agent toolset with `ref: docker:<name>` takes that route, to "Run MCP servers as secure Docker containers via the MCP Gateway" {{docs-agent MCP Tool}}. The sbx MCP gateway is [sbx mcp add, sbx mcp load, and --static-mcp](#s-sbx-mcp-add-load-and-static-mcp), and [the MCP gateways lesson](phases/13-tools-and-protocols/17-mcp-gateways-and-registries) covers the pattern.
+The Toolkit gateway runs each MCP server in its own container. Each MCP tool container has a limit of 2 GB {{docs-mcp MCP Toolkit}}, and each one gets 1 CPU. A docker-agent toolset with `ref: docker:<name>` takes that route, and runs the MCP server as a Docker container behind the MCP Gateway {{docs-agent MCP Tool}}. The sbx MCP gateway is [sbx mcp add, sbx mcp load, and --static-mcp](#s-sbx-mcp-add-load-and-static-mcp), and [the MCP gateways lesson](phases/13-tools-and-protocols/17-mcp-gateways-and-registries) covers the pattern.
 
 ```takeaways
 - Enable host TCP for Docker Model Runner before an agent on the host calls `dmr`.

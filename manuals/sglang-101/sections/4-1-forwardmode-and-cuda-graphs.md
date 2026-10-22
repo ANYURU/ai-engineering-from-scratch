@@ -86,7 +86,7 @@ The older torch.compile path for prefill graphs is being removed in PRs #42285 t
 
 A field report from Jarvislabs {{field Jarvislabs 2026-05}} ran Qwen2.5-7B on one H100 with default SGLang flags. At concurrency 300, mean inter-token latency was 17.72 ms against 12.28 ms for vLLM. With no concurrency cap it was 100.92 ms against 28.84 ms. The post does not record the SGLang version or the server logs.
 
-Our reading is a hypothesis, labeled as one. The default decode `max_bs` on that GPU is 256, and the latency break sits just above it. The maintainers saw the same shape on smaller cards. The code comment on the 20 to 35 GB tier says the old cap "forced eager decode at bs>=32 and collapsed high-concurrency throughput vs vLLM" {{code}}. PR #37898 raised that cap from 24 to 48 on 2026-09-04.
+Our reading is a hypothesis, labeled as one. The default decode `max_bs` on that GPU is 256, and the latency break sits just above it. The maintainers saw the same shape on smaller cards. The code comment on the 20 to 35 GB tier explains why. The old cap made every decode batch of 32 or more run eager, and throughput at high concurrency fell far behind vLLM {{code}}. PR #37898 raised that cap from 24 to 48 on 2026-09-04.
 
 ## What we measured on a GB10
 

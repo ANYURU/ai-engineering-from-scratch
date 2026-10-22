@@ -163,7 +163,7 @@ The rea repository has a wider verifier for its own use. The readiness page of t
 label: the readiness verifier is not a tool
 source: readiness Reconstruction readiness conformance
 ---
-"The report evaluator is part of the repository verifier, not a public REA tool."
+The report evaluator belongs to the verifier of the repository. It is not a public REA tool.
 ```
 
 Its aggregation rule is the one to copy into your own harness:
@@ -172,7 +172,7 @@ Its aggregation rule is the one to copy into your own harness:
 label: nothing weaker than pass adds up to pass
 source: readiness Required stages
 ---
-"fail, unknown, unsupported, truncated, and skipped never aggregate to pass."
+A stage result of fail, unknown, unsupported, truncated, or skipped never adds up to pass.
 ```
 
 ```takeaways

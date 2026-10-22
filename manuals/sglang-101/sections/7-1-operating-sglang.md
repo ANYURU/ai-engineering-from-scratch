@@ -77,7 +77,7 @@ note: One line from the startup log. The CUDA graph fields are all 0.00 because 
 
 The code helps with the cheap part of that work. When Python imports `sglang`, it points the Triton, TorchInductor, CUDA, TileLang, and FlashInfer caches into one directory, `SGLANG_CACHE_DIR`, which defaults to `~/.cache/sglang` {{code}}. Mount that directory and the Hugging Face cache on volumes that survive the pod. Then a restart reuses compiled kernels and downloaded weights.
 
-The same field report defends the slow start: "SGLang getting 10% more tokens per second is worth way more than launching 10s faster." {{field Doubleword 2026-04}} We agree for a fleet that runs for days. For a fleet that scales to zero every night, startup time is a real cost, and the persistent caches are the first fix.
+The same field report defends the slow start. To them, 10 percent more tokens per second is worth more than a start that is 10 seconds faster {{field Doubleword 2026-04}}. We agree for a fleet that runs for days. For a fleet that scales to zero every night, startup time is a real cost, and the persistent caches are the first fix.
 
 ## Health checks: /ready, /health, and /health_generate
 

@@ -40,7 +40,7 @@ PR #32114 deleted the plain GPTQ CUDA kernel on 2026-09-10, and on a CUDA build 
 
 `--kv-cache-dtype` accepts `auto`, `bf16`, `fp8_e4m3`, `fp8_e5m2`, `mxfp8` (FA4 only), `nvfp4`, and `fp4_mx_block16`. FP8 halves the bytes per token and FP4 quarters them, so the same pool holds two or four times as many tokens. [Section 3.1](#s-kv-bytes-per-token-and-the-kv-pool) shows how to compute bytes per token for your model.
 
-FP8 needs a scale for each tensor. The help text of `--quantization-param-path` says the file "should generally be supplied, when KV cache dtype is FP8" and that without it the scales "default to 1.0, which may cause accuracy issues" {{code}}. Run an accuracy check whenever you change the KV cache dtype.
+FP8 needs a scale for each tensor. The help text of `--quantization-param-path` says to supply the scales file when the KV cache dtype is FP8. Without it, every scale is 1.0, and accuracy can drop {{code}}. Run an accuracy check whenever you change the KV cache dtype.
 
 Cloudflare published its check. On Kimi K2.6, BF16 against FP8 KV scored 94.24 and 94.09 on GSM8K, 89.11 and 89.04 on MMLU, and 80.29 and 79.29 on MMLU-Pro {{field Cloudflare 2026-08}}. Those are their numbers on their model, and your model can differ.
 
@@ -175,7 +175,7 @@ The [Inside an LLM Serving GPU](https://aiengineeringfromscratch.com/inside-an-l
 
 ## Our position
 
-Use an offline-quantized checkpoint and pass no `--quantization` flag. The docs say the same: "offline quantization is recommended over online quantization" {{docs}}. Online quantization adds load time and gives you a checkpoint that nobody evaluated.
+Use an offline-quantized checkpoint and pass no `--quantization` flag. The SGLang docs give the same advice {{docs}}. Online quantization adds load time and gives you a checkpoint that nobody evaluated.
 
 Choose a KV cache dtype from memory, not from speed. If your server queues requests because the pool is full, FP8 is the cheapest capacity we measured. Our runs changed the weights and the KV cache together. For an FP8 KV cache alone, the evidence is the field report in [section 3.1](#s-kv-bytes-per-token-and-the-kv-pool), and you need a scale file. If the pool has room, keep the model dtype.
 

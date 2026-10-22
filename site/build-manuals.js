@@ -86,7 +86,7 @@ function fenceBlock(info, body, label) {
     const { head, rest } = splitHeader(body, label);
     const values = keyValues(head, label, 'rule', ['label', 'source']);
     const quote = rest.map(line => line.trim()).filter(Boolean).join(' ');
-    ensure(quote, `${label}: rule needs a quote`);
+    ensure(quote, `${label}: rule needs text`);
     return { type: 'rule', ...values, quote };
   }
   if (info === 'takeaways') {
@@ -235,7 +235,7 @@ function inlineHtml(source, where, acc) {
   const codes = [];
   let html = String(source).replace(/`([^`]+)`/g, (match, code) => { codes.push(code); return `\u0000${codes.length - 1}\u0000`; });
   html = escapeHtml(html);
-  html = html.replace(/\{\{(.+?)\}\}/g, (match, cite) => `<span class="m-cite">${cite}</span>`);
+  html = html.replace(/\s*\{\{(.+?)\}\}/g, '');
   html = html.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (match, label, href) => linkHtml(label, href.replace(/&amp;/g, '&').replace(/&#39;/g, "'"), where, acc));
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/(^|[^*\w])\*(?!\s)([^*]+?)\*(?!\w)/g, '$1<em>$2</em>');
@@ -475,7 +475,10 @@ function blockHtml(block, doc, manual, acc) {
   switch (block.type) {
     case 'heading': return `<h${block.level} id="${block.id}">${inline(block.text)}</h${block.level}>`;
     case 'paragraph': {
-      if (/^Sources:\s/.test(block.text)) return `<p class="m-sources"><span class="m-sources-label">Sources:</span>${inline(block.text.replace(/^Sources:\s*/, ''))}</p>`;
+      if (/^Sources:\s/.test(block.text)) {
+        inline(block.text.replace(/^Sources:\s*/, ''));
+        return '';
+      }
       return `<p${/^\*\*[^*]+:\*\*\s/.test(block.text) ? ' class="m-def"' : ''}>${inline(block.text)}</p>`;
     }
     case 'list': {
@@ -493,9 +496,9 @@ function blockHtml(block, doc, manual, acc) {
     }
     case 'figure-index': return tableHtml(['Fig.', 'The claim it makes'], [...manual.figures.values()].map(figure => ({ accent: figure.accent, cells: [`<a class="m-xref" href="#${figure.id}">${figure.number}</a>`, figure.claimHtml] })));
     case 'contents': return tocHtml(manual, 'web');
-    case 'listing': return `<figure class="m-listing"><div class="m-listing-head"><span class="m-listing-title">${inline(block.title)}</span><span class="m-listing-src">${escapeHtml(block.source)}</span><span>${escapeHtml(block.lang)}</span></div><pre><code>${highlight(block.code, block.lang)}</code></pre>${block.note ? `<figcaption class="m-listing-note">${inline(block.note)}</figcaption>` : ''}</figure>`;
+    case 'listing': return `<figure class="m-listing"><div class="m-listing-head"><span class="m-listing-title">${inline(block.title)}</span><span>${escapeHtml(block.lang)}</span></div><pre><code>${highlight(block.code, block.lang)}</code></pre>${block.note ? `<figcaption class="m-listing-note">${inline(block.note)}</figcaption>` : ''}</figure>`;
     case 'takeaways': return `<aside class="m-takeaways"><div class="m-box-label">${TAKEAWAYS_LABEL}</div><ul>${block.items.map(item => `<li>${inline(item)}</li>`).join('')}</ul></aside>`;
-    case 'rule': return `<aside class="m-rule"><div class="m-box-label">${escapeHtml(block.label)}</div><blockquote>${inline(block.quote)}</blockquote><div class="m-rule-src">${escapeHtml(block.source)}</div></aside>`;
+    case 'rule': return `<aside class="m-rule"><div class="m-box-label">${escapeHtml(block.label)}</div><p>${inline(block.quote)}</p></aside>`;
     default: throw new Error(`${where}: unknown block ${block.type}`);
   }
 }

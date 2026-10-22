@@ -57,7 +57,7 @@ caption: Read left to right. The numbers are the values of the KVPoll class. Amb
 
 All defaults come from the v0.5.22 code {{code}}. `mooncake_tcp` exists for clusters without RDMA network cards. We did not measure its speed.
 
-Do not send requests straight to a prefill or decode server. The scheduler asserts that a bootstrap room exists, and its error message says "Do not send requests directly to prefill or decode instances; send to the router instead" {{code}}.
+Do not send requests straight to a prefill or decode server. The scheduler asserts that a bootstrap room exists, and its error message tells you to send requests to the router instead {{code}}.
 
 ## Our position
 

@@ -12,12 +12,12 @@ The sandbox product had four lives. The plan's timeline dates a container-based 
 label: the removal note
 source: docs-desktop 4.80.0
 ---
-"The experimental `docker sandbox` plugin has been removed. Migrate to `docker sbx`."
+Docker Desktop removed the experimental `docker sandbox` plugin. Move to `docker sbx`.
 ```
 
 No `docker sbx` command exists in any help tree, and the binary is `sbx` ([conflict C1](#s-ref-sources-and-the-conflicts-register)).
 
-The agent product had three names. It launched as cagent with a blog on 2025-09-18 {{blog 2025-09-18}}, and Desktop 4.49.0 bundled it on 2025-10-23. The Desktop notes for 4.49.0 now read "Docker Agent is now available through Docker Desktop." {{docs-desktop 4.49.0}}, under the current name. The agent docs say "In Docker Desktop versions 4.49 through 4.62, this feature was called cagent." {{docs-agent Installation}}, and the `docker agent` plugin arrived with v1.23.3 on 2026-02-16 {{rel-agent v1.23.3}}.
+The agent product had three names. It launched as cagent with a blog on 2025-09-18 {{blog 2025-09-18}}, and Desktop 4.49.0 bundled it on 2025-10-23. The Desktop notes for 4.49.0 now use the current name, Docker Agent {{docs-desktop 4.49.0}}. The agent docs say that Docker Desktop 4.49 to 4.62 called the feature cagent {{docs-agent Installation}}, and the `docker agent` plugin arrived with v1.23.3 on 2026-02-16 {{rel-agent v1.23.3}}.
 
 Version 1.23.4 restructured the commands three days later, and v1.30.0 finished the rename on 2026-03-09 {{rel-agent v1.30.0}}. The docs date Docker Agent in Desktop to 4.63, while the first release note that names it is 4.64.0 with v1.27.1 ([conflict C49](#s-ref-sources-and-the-conflicts-register)). Desktop 4.81.0 removed the deprecated `cagent` binary on 2026-07-06 {{docs-desktop 4.81.0}}. Desktop 4.94.0 bundles Docker Agent v1.144.0 {{docs-desktop 4.94.0}}, five releases behind the v1.149.0 binary this manual pins. Many Desktop notes state no bundled version at all ([conflict C50](#s-ref-sources-and-the-conflicts-register)).
 
@@ -122,7 +122,7 @@ Beside them, the v0.47.0 tree in `capture/out/01-help-sbx.txt` groups `policy`, 
 | `docker cp` the agent binary into a sandbox, then `agent run dev-team.yaml` inside | blog 2026-03-11 | the `docker-agent` template | `sbx run docker-agent .` or `docker agent run --sandbox agent.yaml` |
 | `--yolo` | everywhere | still accepted | `--safety autonomous`, of which `--yolo` is the alias |
 | the eval judge is a paid Anthropic model | v1.32.4 help | v1.147.0, 2026-10-05 | default `openai/gpt-5.6-terra`, or any `provider/model` |
-| `--sandbox` "requires Docker Desktop with sandbox support" | v1.32.4 help | sbx | `--sbx` defaults to true, and `--sbx=false` has no target after Desktop 4.80.0 |
+| `--sandbox` needs Docker Desktop with sandbox support | v1.32.4 help | sbx | `--sbx` defaults to true, and `--sbx=false` has no target after Desktop 4.80.0 |
 | mcp-gateway v0.22.0 in the GitHub Action | the action's defaults | the repository is at v0.44.1 | pin the gateway version yourself |
 
 The rows restate the register's stale-advice list S1 to S30 and the plugin rows C107 to C112, which [the sources section](#s-ref-sources-and-the-conflicts-register) prints in full.

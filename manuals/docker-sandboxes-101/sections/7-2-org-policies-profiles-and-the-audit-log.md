@@ -18,7 +18,7 @@ Governance narrows and never widens. When a policy is active, only organization 
 label: the narrowing rule
 source: help-sbx sbx create --deny-network
 ---
-"Safe under centralized governance because a local deny can only narrow, never widen, egress."
+A local deny is safe under central governance, because it can only make egress narrower, never wider.
 ```
 
 A local deny even beats an organization approval requirement, so the request is blocked and no prompt appears {{docs-sbx Policy concepts}}.

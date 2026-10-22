@@ -2,7 +2,7 @@
 
 > Speculative decoding spends idle GPU compute to commit several tokens per step, so it cuts latency at low load and can cost throughput when the GPU is already full.
 
-A user turned on EAGLE-3 for Llama-3.1-8B on an A6000 and ran two tests. At batch 1, output went from 42.0 to 92.5 tok/s, more than twice as fast. At concurrency 20, output fell from 217.8 to 164.4 tok/s, a quarter slower. Both numbers are in issue #5274, and both are correct. A maintainer answered that speculative decoding "is for small batch sizes rather than stress tests" {{issue #5274}}.
+A user turned on EAGLE-3 for Llama-3.1-8B on an A6000 and ran two tests. At batch 1, output went from 42.0 to 92.5 tok/s, more than twice as fast. At concurrency 20, output fell from 217.8 to 164.4 tok/s, a quarter slower. Both numbers are in issue #5274, and both are correct. A maintainer answered that speculative decoding is meant for small batches, not for stress tests {{issue #5274}}.
 
 When you finish this section, you can explain draft, verify, and acceptance length, and read the defaults SGLang picks. You can also find the request limit that speculation sets and decide where speculation belongs.
 
@@ -45,7 +45,7 @@ With topk 1, the code forces the draft token count to the step count plus one.
 
 ## The limit nobody asked for
 
-The EAGLE, NGRAM, DFLASH, and DSPARK handlers at v0.5.22 each do the same thing when you did not set `--max-running-requests`. It sets the value to 48 and logs one warning: "Max running requests is reset to 48 for speculative decoding" {{code}}. Speculation needs memory for draft tokens and works best at small batch, so the cap protects the server. It also caps your benchmark.
+The EAGLE, NGRAM, DFLASH, and DSPARK handlers at v0.5.22 each do the same thing when you did not set `--max-running-requests`. It sets the value to 48 and logs one warning: `Max running requests is reset to 48 for speculative decoding` {{code}}. Speculation needs memory for draft tokens and works best at small batch, so the cap protects the server. It also caps your benchmark.
 
 A throughput test with speculation on and no explicit limit measures a server that admits 48 requests. If your traffic runs 200 concurrent requests, the other 152 wait in the queue, and time to first token grows. The warning prints once at startup, and it scrolls away before the first request.
 
@@ -67,7 +67,7 @@ caption: Output tok/s for Llama-3.1-8B with and without EAGLE-3 on one A6000, as
 
 We ran EAGLE-3 on `Qwen/Qwen3-30B-A3B-Instruct-2507` on one NVIDIA GB10. The draft was `lmsys/SGLang-EAGLE3-Qwen3-30B-A3B-Instruct-2507-SpecForge-Nex`, with the shape (3, 1, 4) that the SGLang cookbook uses for this pair.
 
-The first start failed. The draft config says 2,048 positions, and the target says 262,144. The context length check raised `ValueError` and ended with "To allow overriding this maximum, set the env var SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1" {{code}}. The cookbook command for this pair sets that variable, so we set it too.
+The first start failed. The draft config says 2,048 positions, and the target says 262,144. The context length check raised `ValueError` and ended with `To allow overriding this maximum, set the env var SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1` {{code}}. The cookbook command for this pair sets that variable, so we set it too.
 
 ```listing
 title: the draft context length check with the override set

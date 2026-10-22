@@ -42,7 +42,7 @@ Your test needs a manual. When you finish this section, you can render one and c
 label: core rule
 source: spec §1
 ---
-"The server MUST reply with a task."
+The server must reply with a task.
 \`\`\`
 
 **Task:** a unit of work with an id {{spec §1}}. See [the figures](#s-ref-figures) and [figure](#fig-1-1).
@@ -151,8 +151,14 @@ test('rejects constructs outside the subset', () => {
 test('inline markup escapes HTML and records cross references with their location', () => {
   const acc = manuals.newInline();
   const html = manuals.inlineHtml('**a** <b> `x < y` {{spec §2}} [s](#s-1-1)', 'doc.md:4', acc);
-  assert.match(html, /<strong>a<\/strong> &lt;b&gt; <code>x &lt; y<\/code> <span class="m-cite">spec §2<\/span> <a class="m-xref" href="#s-1-1">s<\/a>/);
+  assert.match(html, /<strong>a<\/strong> &lt;b&gt; <code>x &lt; y<\/code> <a class="m-xref" href="#s-1-1">s<\/a>/);
+  assert.doesNotMatch(html, /spec §2|m-cite/);
   assert.deepEqual(acc.refs, [{ id: 's-1-1', where: 'doc.md:4' }]);
+});
+
+test('citation markers render nothing and leave the punctuation in place', () => {
+  const html = manuals.inlineHtml('Stop the server {{docs Install}}.', 'doc.md:5', manuals.newInline());
+  assert.equal(html, 'Stop the server.');
 });
 
 test('numbers figures per part and renders the print edition', () => {
@@ -164,6 +170,8 @@ test('numbers figures per part and renders the print edition', () => {
   assert.match(html, /href="#fig-1-1">1\.1<\/a>/);
   assert.match(html, /string-set: mtitle content\(text\)/);
   assert.match(html, /<span class="m-tok-key">&quot;kind&quot;<\/span>/);
+  assert.doesNotMatch(html, /class="m-(sources|listing-src|cite)"|>Sources:</);
+  assert.doesNotMatch(html, /<span[^>]*>capture\/out\/task\.json/);
 });
 
 test('fails the build on dangling cross references anywhere, including the plate caption', () => {
@@ -197,6 +205,13 @@ test('paths and quote keys fail closed', () => {
   assert.ok(!rules(declared.dir).has('quote-key'));
 });
 
+test('quoted source prose is flagged and literal output in code font is not', () => {
+  const quoted = SECTION.replace('**Task:** a unit of work with an id {{spec §1}}.', '**Task:** the spec says "a task is a unit of work with a stable id" {{spec §1}}.');
+  assert.ok(rules(fixture({ 'sections/1-1-intro.md': quoted }).dir).has('quote'));
+  const literal = SECTION.replace('**Task:** a unit of work with an id {{spec §1}}.', '**Task:** a unit of work with an id. The server logs `task created with a stable id` {{spec §1}}.');
+  assert.ok(!rules(fixture({ 'sections/1-1-intro.md': literal }).dir).has('quote'));
+});
+
 test('a clean fixture passes the editorial audit', () => {
   assert.deepEqual(issuesFor(fixture().dir), []);
 });
@@ -204,7 +219,7 @@ test('a clean fixture passes the editorial audit', () => {
 test('audit flags prose, provenance, and quote violations', () => {
   const broken = SECTION
     .replace('Your test needs a manual.', 'Your test needs a manual; it can’t wait — really.')
-    .replace('"The server MUST reply with a task."', '"The server SHOULD reply with a task."')
+    .replace('The server must reply with a task.', '"The server must reply with a task."')
     .replace('  "kind": "task",', '  "kind": "message",');
   const found = rules(fixture({ 'sections/1-1-intro.md': broken }).dir);
   for (const rule of ['semicolon', 'contraction', 'dash', 'quote', 'provenance']) assert.ok(found.has(rule), `expected ${rule}`);

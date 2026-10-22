@@ -24,9 +24,9 @@ The manual pins `rea-agents` 6.7.0, published 2026-10-18, at the tag `rea-agents
 
 Facts come from seven sources, ranked by authority. When two of them disagree, the higher one wins and the text says so.
 
-| Rank | Source | What the manual takes from it | Cited as |
+| Rank | Source | What the manual takes from it | Source key |
 |---|---|---|---|
-| 1 | the rea source at the tag, `27dc42d` | every claim about how rea works | the file list in the Sources line at the end of each section |
+| 1 | the rea source at the tag, `27dc42d` | every claim about how rea works | the source files of each section, in the manual source |
 | 2 | the rea documentation at the tag | documented behaviour, limits, and the use rule | `readme`, `cli`, `mcp`, `ghidra`, `native`, `install`, `readiness`, `ledgers`, `jsgraph`, or `design` and a heading |
 | 3 | the captured runs in `capture/out/` | every listing and every number in a figure | the capture file name |
 | 4 | the ELF, Mach-O, x86-64, and AArch64 specifications | formats, encodings, and calling conventions | `spec` and a section |
@@ -59,7 +59,7 @@ The kit records every one-shot command in `00-commands.txt`, each with its exit 
 
 `$CAPTURE` stands for the capture directory, `$OUT` for `capture/out/`, `$WORK` for the kit's work directory, and `$HOME` for the home directory. Values that change on every run appear as tokens such as `<hash>` and `<ts>`. Addresses are lowercase `0x` hexadecimal, as rea prints them. `_percent_change` with a leading `_` is the Mach-O symbol, and `percent_change` is the C name and the ELF symbol.
 
-Citations name a place. `{{cli Choose a provider}}` names a heading in a rea documentation page at the tag, and `{{readme}}` names the README. The rea source files a section was written from are listed once, in the Sources line at its end, at the tag. A capture path, such as `capture/out/06-function-percent-change.json`, names the recorded file. A listing copies lines from a capture file unchanged, and a `…` marks a cut that the note explains.
+Each section records its sources in the manual source, where the audit checks every quote and number. The sections do not show them. The sources reference lists them. A listing copies lines from a capture file unchanged, and a `…` marks a cut that the note explains.
 
 Figures animate on the web, where a Replay button runs the steps again, and print and reduced motion show the final frame.
 

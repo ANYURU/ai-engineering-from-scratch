@@ -80,7 +80,7 @@ note: The description and the output schema are cut.
 …
 ```
 
-`debug tool FILE TOOL JSON` calls one tool with no model turn, and "Calls have real side effects and bypass other hooks and approval checks" {{help-agent docker-agent debug tool}}. In `20-debug-tool.txt`, `shell` with `{"cmd":"echo m101-direct"}` printed `m101-direct`. Use it to test a tool before any model calls it.
+`debug tool FILE TOOL JSON` calls one tool with no model turn, and the call has real side effects and skips the other hooks and approval checks {{help-agent docker-agent debug tool}}. In `20-debug-tool.txt`, `shell` with `{"cmd":"echo m101-direct"}` printed `m101-direct`. Use it to test a tool before any model calls it.
 
 ## Keys every toolset shares
 
