@@ -10,7 +10,7 @@ Long prompts arrive and short requests stall behind them. When you finish this s
 
 vLLM always splits long prompts into chunks. In each step, the running streams get their next token first, and a waiting prompt fills the rest of the budget. `--max-num-batched-tokens` sets the budget. [The token budget page](#s-why-one-token-budget-replaces-a-prefill-phase) explains the order.
 
-A larger budget lets a long prompt finish its prefill in fewer steps, so its first token comes sooner. But each of those steps takes longer, and every running stream waits for it. So a larger budget gives a faster first token and longer gaps between tokens.
+A larger budget lets a long prompt finish its prefill in fewer steps, so its first token comes sooner. But each of those steps takes longer, and every running stream waits for it. So at low load, a larger budget can give a faster first token and longer gaps between tokens.
 
 ## Know your default
 
@@ -26,7 +26,7 @@ Our DGX Spark has 128 GB of memory that the CPU and GPU share. Its startup log s
 
 ## See what our runs show
 
-**We measured** budgets of 2,048 and 16,384 tokens on our DGX Spark with `Qwen3-30B-A3B` on 2026-10-21. The prompts had 1,024 to 4,096 tokens, and each request asked for 256 tokens. We sent requests at a fixed rate, with three seeds per point.
+**We measured** budgets of 2,048 and 16,384 tokens on our DGX Spark with `Qwen3-30B-A3B` on 2026-10-21. The prompts had 1,024 to 4,096 tokens, and each request asked for 64 to 256 tokens. We sent requests at a fixed rate, with three seeds per point.
 
 ```figure
 id: fig-3-3
@@ -61,7 +61,7 @@ The run with no budget flag matched the run with 2,048 at every rate. That agree
 vLLM also has `--long-prefill-token-threshold`. It caps the tokens that one long prompt gets in a step when other requests wait. It is off by default, and we did not test it.
 
 ```takeaways
-- A larger budget gives a faster first token and longer gaps between tokens.
+- At low load, a larger budget can give a faster first token and longer gaps between tokens.
 - On our DGX Spark, 16,384 raised the P99 ITL by 39 percent at low load.
 - Read the budget your server uses, because the default depends on the memory vLLM reads.
 - Measure at your real request rate before you change it.

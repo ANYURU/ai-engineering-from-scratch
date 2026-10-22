@@ -11,7 +11,7 @@ const bar = (key, field, name, hue) => ({ name, value: at(key, field), hue, labe
 module.exports = figure('fig-3-3', {
   height: 330,
   title: 'A larger token budget at 0.5 requests per second on the DGX Spark',
-  desc: 'vLLM with Qwen3-30B-A3B on an NVIDIA GB10, prompts of 1,024 to 4,096 tokens, 256 output tokens, 0.5 requests per second, three seeds. With a budget of 2,048 tokens, the median first token took 1,145 ms and the P99 ITL was 574 ms. With 16,384 tokens, the first token took 906 ms and the P99 ITL was 798 ms.',
+  desc: 'vLLM with Qwen3-30B-A3B on an NVIDIA GB10, prompts of 1,024 to 4,096 tokens, 64 to 256 output tokens, 0.5 requests per second, three seeds. With a budget of 2,048 tokens, the median first token took 1,145 ms and the P99 ITL was 574 ms. With 16,384 tokens, the first token took 906 ms and the P99 ITL was 798 ms.',
 }, f => {
   f.text(66, 30, 'median first token, ms', { size: 12, hue: 'ink' });
   const a = chart(f, { x: 66, y: 50, w: 220, h: 210, yDomain: [0, 1500], xDomain: [0, 1], yTicks: [0, 750, 1500], yFormat: v => v.toLocaleString('en-US'), yLabel: '' });
