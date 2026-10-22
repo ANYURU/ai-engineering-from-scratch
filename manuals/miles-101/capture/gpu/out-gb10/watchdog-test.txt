@@ -1,0 +1,6 @@
+$ docker run -d --rm --name wd-test --entrypoint sh radixark/miles:latest -c "while true; do echo \"Error: Server error 503 Service Unavailable for url http://x/generate\"; sleep 0.1; done"
+$ sh capture/gpu/watchdog.sh wd-test 100
+2026-10-22T07:03:16Z wd-test: 149 errors from the rollout engine in 60 s, stopping the run
+wd-test
+$ echo $?
+1
