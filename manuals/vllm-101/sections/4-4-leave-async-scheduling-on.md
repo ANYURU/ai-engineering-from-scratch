@@ -4,6 +4,8 @@
 
 You read about async scheduling and you want to know whether to set it. When you finish this section, you can check whether your server runs with it, and name the settings that turn it off.
 
+**Our result:** two same-day runs with async scheduling on agreed within 1.8 percent, which sets our noise floor. We did not measure it turned off.
+
 ## Know what it does
 
 Without async scheduling, each step runs in order. The scheduler picks a batch, the GPU runs it, and the scheduler reads the result before it picks the next batch. While the scheduler works, the GPU waits.
