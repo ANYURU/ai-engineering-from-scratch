@@ -1,4 +1,4 @@
-# Measure the weight update for your model
+# Size the weight update
 
 > On one GPU the weight update is a small fixed cost, so it is not the step to tune first.
 
@@ -17,11 +17,11 @@ Every step logs `perf/update_weights_time` in seconds. Read it next to `perf/ste
 | Qwen3-0.6B | 0.63 to 0.66 s | 1.08 to 1.20 s | 0.77 to 0.86 s |
 | Qwen3-1.7B | 0.89 to 0.95 s | 2.63 to 3.20 s | 1.42 to 1.45 s |
 
-Steps 0 and 1 are warm-up steps. Their trainer offload took up to 4.1 s for 0.6B and 11.8 s for 1.7B. The table leaves them out.
+Steps 0 and 1 are warm-up steps. In these 4-step runs, their trainer offload took up to 4.1 s for 0.6B and 11.8 s for 1.7B. The table leaves them out.
 
 **Trainer offload:** the time the trainer takes to move its weights and optimizer state to host memory after training, logged as `perf/sleep_time`. **Trainer onload:** the time it takes to move them back before the next log probabilities, logged as `perf/wake_up_time`.
 
-The larger model is about 2.8 times the size, and its update took about 1.4 times as long. The trainer offload and onload grew faster than the update did. Our reading: the update sends only the weights, and the offload also moves the gradients and the optimizer state.
+The larger model is about 2.8 times the size, and its update took about 1.4 times as long. The trainer offload and onload grew faster than the update did. A likely reason is that the update sends only the weights, while the offload also moves the gradients and the optimizer state.
 
 The short answers cut almost every reply, so the reward in these runs stayed near 0. These runs measure the copy, not the training.
 
