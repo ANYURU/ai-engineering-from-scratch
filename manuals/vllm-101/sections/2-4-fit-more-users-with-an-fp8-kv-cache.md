@@ -77,12 +77,35 @@ Two things changed together: the KV data type and the backend. The table does no
 
 ## Check the accuracy
 
-We did not measure output quality with an FP8 KV cache. With no scale file, vLLM uses a scale of 1.0 for the keys and values. Run your own prompts with and without FP8, and compare the answers before you go to production.
+We did not measure output quality with an FP8 KV cache. With no scales in the checkpoint, vLLM uses a scale of 1.0 for the keys and values. That is the worst case for accuracy.
+
+The vLLM team tested uncalibrated FP8 KV caches in 2026. In their tests, most models stayed close to BF16. Some did not: they name Kimi-K2.5 on the FlashMLA backend as a model that needs calibrated scales. We did not measure these results ourselves.
+
+### Check that your scales load
+
+A checkpoint with calibrated scales does not always use them. At 0.31.0, issue 54623 reports that the Qwen3.5 model family never loads its KV scales. Issue 60333 reports the same for one MTP draft loader. Both issues are open.
+
+First, look for the scales in the checkpoint. Search the weight index for tensor names that end in `k_scale` or `v_scale`:
+
+```bash
+grep -oE '"[^"]*(k|v)_scale"' model.safetensors.index.json | head
+```
+
+A checkpoint with one weight file has no index. For it, list the tensor names with the `safetensors` Python package.
+
+Then read the startup log. The warning `Using KV cache scaling factor 1.0` means that vLLM uses a scale of 1.0. If the checkpoint has scales and the log still shows the warning, the loader dropped them.
+
+Last, run your own prompts with and without FP8, and compare the answers before you go to production.
+
+## Know what changed after 0.31.0
+
+Release 0.32.0 adds an NVFP4 KV cache on SM 8.x and SM 12.x GPUs, which include the L4 and the GB10. It stores fewer bytes per token than FP8. We did not test it.
 
 ```takeaways
 - An FP8 KV cache halves the bytes per token, so the same memory holds twice the tokens.
 - On an L4, add --attention-backend TRITON_ATTN if the FlashInfer build fails.
 - Read the attention backend line after you change the KV data type.
+- Check the startup log for the scale 1.0 warning, even with a calibrated checkpoint.
 - Check output quality on your own prompts before production.
 ```
 
