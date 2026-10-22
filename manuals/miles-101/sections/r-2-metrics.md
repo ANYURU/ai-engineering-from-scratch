@@ -27,13 +27,13 @@ The ranges come from our lab runs: Qwen3-0.6B on GSM8K on one GB10, 32 prompts w
 
 | Metric | Meaning | Our value |
 |---|---|---|
-| `perf/step_time` | the full step | 152.6 s median in a run without pauses |
-| `perf/rollout_time` | the rollout phase | 47.5 s median in a run without pauses |
-| `perf/log_probs_time` | the trainer scoring of the samples | 23.4 s median in a run without pauses |
-| `perf/train_time` | the training phase, with the scoring | 100.3 s median in a run without pauses |
+| `perf/step_time` | the full step | 152.6 s median of 48 steps, in a run made before the heat guard |
+| `perf/rollout_time` | the rollout phase | 47.5 s median of 48 steps, in a run made before the heat guard |
+| `perf/log_probs_time` | the trainer scoring of the samples | 23.4 s median of 48 steps, in a run made before the heat guard |
+| `perf/train_time` | the training phase, with the scoring | 100.3 s median of 48 steps, in a run made before the heat guard |
 | `perf/update_weights_time` | the copy of new weights into the engine | 0.63 to 0.65 s for Qwen3-0.6B |
-| `perf/sleep_time` | the trainer moving its state to host memory after training | 1.6 s median for Qwen3-0.6B |
-| `perf/wake_up_time` | the trainer moving its state back before the log probabilities | 0.8 s median for Qwen3-0.6B |
+| `perf/sleep_time` | the trainer moving its state to host memory after training | 0.76 s median over 48 steps for Qwen3-0.6B, 1.9 to 3.7 s in the first two steps |
+| `perf/wake_up_time` | the trainer moving its state back before the log probabilities | 0.87 s median over 48 steps for Qwen3-0.6B |
 | `perf/train_wait_time` | the time the trainer waits for samples | logged in every step |
 
 Time values hold only for steps that no heat-guard pause touched. [The lab notes](#s-ref-lab-notes) give the rule.
@@ -47,4 +47,4 @@ Time values hold only for steps that no heat-guard pause touched. [The lab notes
 
 We did not run evaluation or async training, so this table has no ranges.
 
-Sources: capture/gpu/summary/miles-gb10-lab.json (runs.plain-48, runs.plain-48-s2, runs.plain-48-s3, runs.e4-0.6b); Miles loss, metric, and evaluation code at main 08752a12.
+Sources: capture/gpu/summary/miles-gb10-lab.json (runs.plain-48, runs.plain-48-s2, runs.plain-48-s3, runs.e4-0.6b); capture/gpu/out-gb10/thermostat.log; Miles loss, metric, and evaluation code at main 08752a12.
