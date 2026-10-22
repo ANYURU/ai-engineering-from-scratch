@@ -31,6 +31,14 @@ If a cache transfer fails, the default policy fails the request. The `kv_load_fa
 
 Not measured on our hardware. We have not run disaggregated serving with vLLM on two L4s.
 
+```figure
+id: fig-6-3
+kind: flow
+title: prefill and decode on two servers
+claim: A prefill server computes the prompt, and a KV connector copies its cache to a decode server that writes the tokens.
+caption: Teal arrows move the KV cache. The dotted arrow is the token stream. From the vLLM documentation at v0.31.0.
+```
+
 ## Size the two sides
 
 The ratio of prefill to decode servers depends on your prompt and answer lengths. Long prompts with short answers need more prefill capacity. Short prompts with long answers need more decode capacity. Measure the first token and the stream on each side, and move one server at a time.
