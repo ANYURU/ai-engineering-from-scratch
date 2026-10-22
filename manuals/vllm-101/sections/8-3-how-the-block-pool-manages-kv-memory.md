@@ -18,6 +18,14 @@ A new request computes the same chain of hashes over its prompt. The engine look
 
 Since version 0.11, the hash is SHA-256 by default. A faster hash exists as an option, but the documentation warns that a collision could return the wrong cache entries, or leak data between tenants.
 
+```figure
+id: fig-8-3
+kind: structure
+title: the block pool
+claim: The KV cache is one pool of 16-token blocks that requests take in any order, mapped by a block table for each request.
+caption: Coloured blocks belong to the request of the same colour. Dashed blocks are free. From the vLLM source at v0.31.0.
+```
+
 ## Eviction
 
 A block that no request uses goes to a free list, and it keeps its hash. A later request with the same prefix can still use it. When vLLM needs a new block, it takes the block at the head of the free list, which is the one unused the longest. Only then does the old content go away.
