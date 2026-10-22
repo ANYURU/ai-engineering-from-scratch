@@ -85,8 +85,8 @@ The server is ready when the log shows `Application startup complete.`. On our D
 ```figure
 id: fig-1-2
 kind: structure
-title: the four startup lines
-claim: Four startup lines tell you the attention backend, the weight memory, the free KV memory, and the pool size before you send traffic.
+title: the four lines that size the server
+claim: Four startup lines size the server: the attention backend, the weight memory, the free KV memory, and the pool size.
 caption: Read each row from left to right: the log line, our value on the DGX Spark, and what it decides. From capture/gpu/out-gb10/server-load-vllm.log.
 ```
 

@@ -15,7 +15,7 @@
     "verified": "2026-10-22"
   },
   "outcomes": [
-    "Install vLLM, serve a model, and read the four startup lines that decide most answers.",
+    "Install vLLM, serve a model, and read the startup lines that size the server.",
     "Predict how many users fit on your GPU, and fix an out-of-memory failure at startup.",
     "Pick the one or two flags that matter for your traffic, and leave the rest at the default.",
     "Decide from a measurement when speculative decoding, FP8, or a compile level pays.",
