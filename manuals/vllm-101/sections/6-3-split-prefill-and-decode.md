@@ -24,7 +24,9 @@ Each server gets a KV connector and a role in `--kv-transfer-config`. The NIXL c
 
 ```bash
 uv pip install nixl==1.4.1
-``` The prefill server produces the cache, and the decode server consumes it. On one host with two GPUs, give each server its own GPU, its own port, and its own NIXL side channel port:
+```
+
+The prefill server produces the cache, and the decode server consumes it. On one host with two GPUs, give each server its own GPU, its own port, and its own NIXL side channel port:
 
 ```bash
 CUDA_VISIBLE_DEVICES=0 VLLM_NIXL_SIDE_CHANNEL_PORT=5600 \
