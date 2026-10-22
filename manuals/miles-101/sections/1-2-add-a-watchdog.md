@@ -6,6 +6,8 @@ We left a run alone for an hour. When we came back, the GPU was idle and the log
 
 When you finish this section, you can recognize a run whose engine died. You can also start a watchdog that stops that run within a minute.
 
+**Our result:** a run whose engine died logged 200,533 HTTP 503 errors in 63 minutes and never failed. The watchdog stopped a test of the same error in 60 s.
+
 ## What a dead engine looks like
 
 The run below used a setting that this GPU cannot run. The rollout engine stopped during startup. The trainer did not stop, and it sent requests to the engine for 63 minutes:
@@ -34,6 +36,14 @@ $ grep -c "503 Service Unavailable" true-on-policy-fa3.log
 ```
 
 The run wrote 200,533 error lines and never reported a failure. **503 Service Unavailable:** the HTTP status the router returns when no rollout engine can take the request.
+
+```figure
+id: fig-1-2
+kind: timeline
+title: A dead engine does not stop the job
+claim: Without a watchdog, a dead engine left the job running for 63 minutes with an idle GPU.
+caption: The top track is our failed run. The bottom track is the watchdog test on a container that writes the same error.
+```
 
 ## Why one count is enough
 
