@@ -56,7 +56,7 @@ The `<id>` is lowercase and hyphenated, such as `a2a-101`. It matches the direct
 
 ## The shape of a manual
 
-**Front matter.** One document, `front.md`, titled "How to read this manual". It covers, in order: who the manual is for and what they can do after it, how it was made (the ranked sources table), the capture kit, the conventions, a first run the reader can do offline, how the parts are ordered (a `parts` block), colour in figures (a `palette` block), and figure 0.1, which teaches the arrow and colour grammar this manual uses.
+**Front matter.** One document, `front.md`, titled "How to read this manual". It covers, in order: who the manual is for and what they can do after it, how it was made (the ranked sources table), the capture kit, the conventions, a first run the reader can do offline, how the parts are ordered (a `parts` block), colour in figures (a `palette` block), and figure 0.1, which teaches the arrow and colour grammar this manual uses. A user-first manual can open with a quickstart instead, and move how it was made, the capture kit, and the conventions to a reference section titled "How this manual was made" that the front matter links to. SGLang 101 uses this form.
 
 **Part 1, the subject on one page.** Two sections, read once and completely:
 
