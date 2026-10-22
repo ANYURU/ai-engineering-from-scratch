@@ -11,6 +11,14 @@ One GPU is not enough. When you finish this section, you can pick the parallel l
 | Does the model fit on one GPU, with room for the KV cache you need? | Use data parallelism: one full copy for each GPU, `--data-parallel-size N`. The output grows with the copy count. | Split the model with tensor parallelism inside one machine: `--tensor-parallel-size N`. |
 | Does the split model fit inside one machine? | Keep tensor parallelism inside the machine. | Add pipeline parallelism across machines, `--pipeline-parallel-size M`, with tensor parallelism inside each machine. |
 
+```figure
+id: fig-6-1
+kind: decision
+title: two questions
+claim: Two questions pick the layout: does the model fit one GPU with its cache, and does the split model fit one machine.
+caption: Start at the top and follow the answer. From the vLLM documentation at v0.31.0.
+```
+
 ## Know what each layout costs
 
 | Layout | What it splits | Communication | Best for |
