@@ -6,6 +6,8 @@ After each training phase, the trainer copies its new weights into the rollout e
 
 When you finish this section, you can measure the weight update and decide if it matters for your run.
 
+**Our result:** the weight update took 0.64 s for Qwen3-0.6B and 0.91 s for Qwen3-1.7B, under one percent of a step.
+
 ## Read the update time
 
 Every step logs `perf/update_weights_time` in seconds. Read it next to `perf/step_time`. We ran 4 short steps for two model sizes, with answers cut at 256 tokens:
@@ -20,6 +22,14 @@ Every step logs `perf/update_weights_time` in seconds. Read it next to `perf/ste
 The larger model is about 2.8 times the size, and its update took about 1.4 times as long. Release and resume grew faster than the update did.
 
 The short answers cut almost every reply, so the reward in these runs stayed near 0. These runs measure the copy, not the training.
+
+```figure
+id: fig-2-4
+kind: chart
+title: A larger model costs more to release than to update
+claim: From 0.6B to 1.7B, the weight update grew 1.4 times, and the release grew 2.4 times.
+caption: Median seconds over 4 short steps for each model.
+```
 
 ## Compare it with the step
 
