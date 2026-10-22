@@ -505,13 +505,9 @@ function blockBody(block) {
 
 function blockHtml(block, place, href = '') {
   const group = TYPES[block.type] ? TYPES[block.type].group : 'know';
-  const from = block.from.map(source => {
-    const link = sourceLink(source);
-    return `<a href="${escapeHtml(link.href)}">${escapeHtml(link.label)}</a>`;
-  }).join(', ');
   const style = place ? ` style="grid-column:${place.col} / span ${place.span};grid-row:${place.row} / span ${place.rows}"` : '';
   const wide = place && place.span > 1 ? ' cs-wide' : '';
-  return `<section class="cs-block cs-g-${group} cs-t-${block.type}${wide}" id="${block.id}"${style}><h2 class="cs-bar"><span>${placeholders(inline(block.title))}</span><a class="cs-anchor" href="${href}#${block.id}" aria-label="Link to this block">#</a></h2><div class="cs-bb">${blockBody(block)}</div><p class="cs-from">From ${from}</p></section>`;
+  return `<section class="cs-block cs-g-${group} cs-t-${block.type}${wide}" id="${block.id}"${style}><h2 class="cs-bar"><span>${placeholders(inline(block.title))}</span><a class="cs-anchor" href="${href}#${block.id}" aria-label="Link to this block">#</a></h2><div class="cs-bb">${blockBody(block)}</div></section>`;
 }
 
 function textLength(html) {
@@ -556,8 +552,6 @@ function estimateBlock(block) {
       else h += 6 + 18 * Math.ceil((plain(item.lead).length + plain(item.text).length + 2) / (44 * scale));
     }
   }
-  const fromText = block.from.map(source => sourceLink(source).label).join(', ');
-  h += 13 * Math.max(0, Math.ceil(fromText.length / (50 * scale)) - 1);
   return h + 16;
 }
 
