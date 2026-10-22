@@ -32,9 +32,11 @@ If a few very long answers set the step time, use partial rollout instead:
 --partial-rollout --over-sampling-batch-size 48 --dynamic-sampling-filter-path miles.rollout.filter_hub.dynamic_sampling_filters.check_reward_nonzero_std
 ```
 
+The filter path is the one from [section 3.2](#s-train-with-the-dapo-filter), which Miles marks as deprecated.
+
 With partial rollout, the step takes the groups that finish first. Groups that are not done go back to the data buffer, and a later step continues them from the tokens they already have. The engine does not generate those tokens again.
 
-Partial rollout works together with over-sampling. `--over-sampling-batch-size` sets the size of each new batch of prompts that the rollout starts when it runs short of finished groups. Keep such a run synchronous, because `--fully-async` ignores the over-sampling setting.
+Partial rollout works together with over-sampling. `--over-sampling-batch-size` sets the size of each new batch of prompts that the rollout starts when it runs short of finished groups. Keep such a run synchronous. `--fully-async` and the session server both refuse `--partial-rollout`. The multi-turn and agent generate functions do not support it either.
 
 ## The cost of continued answers
 
