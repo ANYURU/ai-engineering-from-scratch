@@ -32,7 +32,7 @@ Clients now send `"model": "chat"`. You can then move to a new checkpoint withou
 Stop any server that already runs on port 8000. Then start the server with a key in the first terminal:
 
 ```bash
-VLLM_API_KEY=change-me vllm serve Qwen/Qwen3-8B 2>&1 | tee server.log
+VLLM_API_KEY=change-me vllm serve Qwen/Qwen3-8B --host 127.0.0.1 2>&1 | tee server.log
 ```
 
 When the server is ready, send a request with the key from a second terminal:
