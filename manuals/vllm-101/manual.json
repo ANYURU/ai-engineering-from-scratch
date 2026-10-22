@@ -155,7 +155,7 @@
       "number": 3,
       "title": "Tune for Your Traffic",
       "thesis": "Each kind of traffic needs a different one or two flags, and most defaults are already right.",
-      "summary": "Recipes for chat, RAG and agents, long documents, long sessions, JSON, batch jobs, multi-LoRA, reproducible outputs, and RL rollouts.",
+      "summary": "Recipes for chat, RAG and agents, long documents, long sessions, JSON, batch jobs, multi-LoRA, reproducible outputs, RL rollouts, and reasoning models.",
       "accent": "amber",
       "sections": [
         {
@@ -193,6 +193,10 @@
         {
           "id": "3.9",
           "file": "sections/3-9-use-vllm-as-an-rl-rollout-engine.md"
+        },
+        {
+          "id": "3.10",
+          "file": "sections/3-10-serve-reasoning-models.md"
         }
       ]
     },
