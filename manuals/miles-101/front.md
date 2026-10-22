@@ -13,6 +13,8 @@ docker run --rm --name miles-plain --gpus all --ipc=host --shm-size 32g -v "$HOM
 grep -o "'rollout/raw_reward': [0-9.]*" plain.log
 ```
 
+Before you leave the run alone, start the watchdog from [section 1.2](#s-add-a-watchdog) in a second terminal. A run whose engine dies does not stop by itself.
+
 ## What you can do after this manual
 
 You can serve a model and you know what a reward is. You want to train a model with reinforcement learning, and you want to know which settings matter before you rent a cluster.

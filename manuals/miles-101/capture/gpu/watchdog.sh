@@ -2,6 +2,11 @@
 name=${1:-miles-plain}
 limit=${2:-100}
 checks=${3:-6}
+for value in "$limit" "$checks"; do
+  case $value in
+    ''|*[!0-9]*|??????????*) echo "limit and checks must be whole numbers below one billion"; exit 2;;
+  esac
+done
 strikes=0
 while :; do
   if ! running=$(docker ps -q --filter "name=^${name}$"); then

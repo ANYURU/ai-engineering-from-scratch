@@ -32,7 +32,7 @@ import re
 
 
 def last_number(text):
-    found = re.findall(r"-?\d+(?:\.\d+)?", text.replace(",", ""))
+    found = re.findall(r"-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?", text.replace(",", ""))
     return float(found[-1]) if found else None
 
 
@@ -50,7 +50,7 @@ Then pass its import path:
 --custom-rm-path my_rewards.custom_rm
 ```
 
-Write the function with `async def`. The flag help shows a plain function, but Miles awaits the result, so a plain function fails. The function receives the run arguments and one sample, with the answer in `sample.response` and the label in `sample.label`. If it returns a dict, name the field that holds the reward with `--reward-key`.
+Write the function with `async def`. The flag help shows a plain function, but Miles awaits the result, so a plain function fails. The function receives the run arguments and one sample, with the answer in `sample.response` and the label in `sample.label`. If it returns a dict, name the field that holds the reward with `--reward-key`. With `--group-rm`, Miles passes the whole group as a list of samples instead, and the function must return one reward for each sample.
 
 ## Test it before the run
 

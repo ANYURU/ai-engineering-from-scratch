@@ -2,6 +2,7 @@ import argparse
 import copy
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -22,8 +23,13 @@ import summarize_miles
 
 
 def lab_runs():
-    folder = Path(os.environ.get("MILES_LAB_RUNS", Path.home() / "miles-lab" / "runs"))
-    return folder if (folder / "status.txt").exists() else None
+    configured = os.environ.get("MILES_LAB_RUNS")
+    folder = Path(configured) if configured else Path.home() / "miles-lab" / "runs"
+    if (folder / "status.txt").exists():
+        return folder
+    if configured:
+        raise SystemExit(f"MILES_LAB_RUNS is {folder}, which holds no status.txt")
+    return None
 
 
 def replay_output():
@@ -37,9 +43,9 @@ def stored_replay():
     return "\n".join(lines[start + 1:]) + "\n"
 
 
-def summary_problems(summary):
+def summary_problems(summary, pause_log=PAUSES):
     problems = []
-    pauses = summarize_miles.load_pauses(PAUSES)
+    pauses = summarize_miles.load_pauses(pause_log)
     if len(pauses) != summary["pauses"]:
         problems.append(f"the pause log holds {len(pauses)} pauses and the summary {summary['pauses']}")
     for name, run in summary["runs"].items():
@@ -84,12 +90,33 @@ def check():
     return 0
 
 
+def changed_runs(old, new):
+    names = sorted(set(old["runs"]) | set(new["runs"]))
+    return [name for name in names if old["runs"].get(name) != new["runs"].get(name)]
+
+
 def run():
     runs = lab_runs()
     if runs is None:
         print("skipped: no runs folder with status.txt. The GPU captures record on the DGX Spark, see the lab notes.")
         return 0
-    summarize_miles.main(runs, SUMMARY, runs / "thermostat.log")
+    pause_log = runs / "thermostat.log"
+    with tempfile.TemporaryDirectory() as folder:
+        fresh = Path(folder) / "summary.json"
+        summarize_miles.main(runs, fresh, pause_log)
+        new = json.loads(fresh.read_text())
+        old = json.loads(SUMMARY.read_text())
+        problems = summary_problems(new, pause_log)
+        problems += [f"{name}: stored, but missing from the runs folder" for name in sorted(set(old["runs"]) - set(new["runs"]))]
+        if problems:
+            for problem in problems:
+                print(f"drift: {problem}")
+            print("the stored summary was not replaced")
+            return 1
+        for name in changed_runs(old, new):
+            print(f"changed: {name}")
+        shutil.copyfile(fresh, SUMMARY)
+    shutil.copyfile(pause_log, PAUSES)
     return check()
 
 

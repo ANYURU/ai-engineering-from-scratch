@@ -82,10 +82,4 @@ These numbers rest on one run and are labelled as leads where they appear:
 - The group sizes of 4 and 16 answers, in section 3.1.
 - The reward and the rollout cost of the DAPO filter, in section 3.2. Its rollout times take the pause time out, because no step was clean.
 
-```takeaways
-- Times come from steps that no pause touched, except the DAPO filter rollouts.
-- Compare times on the same step numbers, because the rollout time follows the answer length.
-- Treat the results listed as leads as directions, not sizes.
-```
-
 Sources: capture/gpu/heat-guard.sh; capture/run.py; capture/gpu/watchdog_replay.py; capture/gpu/out-gb10/image-identity.txt; capture/gpu/miles_grpo.py; capture/gpu/summarize_miles.py; capture/gpu/summary/miles-gb10-lab.json; capture/gpu/out-gb10/thermostat.log; capture/gpu/out-gb10/unpaused-timing.txt; capture/gpu/out-gb10/ray-oom-4b.log.
