@@ -785,12 +785,12 @@ function manualCard(manual) {
   if (manual.status === 'ready') actions.push(action(pdfUrl(manual), 'Download the PDF'));
   actions.push(sourceAction(manual));
   const draft = manual.status === 'draft' ? '<div class="m-draft-note">Draft edition</div>' : '';
-  return `<article class="m-index-card">${draft}<div class="m-kicker m-index-pin">${pinLine(manual)}</div><h2 class="m-index-name"><a href="${pageName(manual.id)}">${escapeHtml(manual.title)}</a></h2><p class="m-index-subtitle">${escapeHtml(manual.subtitle)}</p><p class="m-index-summary">${escapeHtml(manual.summary)}</p>${partDots(manual)}<div class="m-kicker m-index-stats">${manual.parts.length} parts · ${sectionCount(manual)} sections · ${manual.figures.size} figures</div><div class="m-index-actions">${actions.join('')}</div>${plateHtml(manual, 'class="m-fig m-plate"')}</article>`;
+  return `<article class="m-index-card">${plateHtml(manual, 'class="m-fig m-plate"')}<div class="m-index-body">${draft}<div class="m-kicker m-index-pin">${pinLine(manual)}</div><h2 class="m-index-name"><a href="${pageName(manual.id)}">${escapeHtml(manual.title)}</a></h2><p class="m-index-subtitle">${escapeHtml(manual.subtitle)}</p><p class="m-index-summary">${escapeHtml(manual.summary)}</p>${partDots(manual)}<div class="m-kicker m-index-stats">${manual.parts.length} parts · ${sectionCount(manual)} sections · ${manual.figures.size} figures</div><div class="m-index-actions">${actions.join('')}</div></div></article>`;
 }
 
 function indexPage(listed) {
   const gives = INDEX_GIVES.map(([label, text]) => `<li><span class="m-kicker">${label}</span><p>${text}</p></li>`).join('');
-  const body = listed.length ? listed.map(manualCard).join('') : '<p class="m-index-empty">No manual is published yet.</p>';
+  const body = listed.length ? `<div class="m-index-grid">${listed.map(manualCard).join('')}</div>` : '<p class="m-index-empty">No manual is published yet.</p>';
   return pageShell({
     title: 'Manuals - AI Engineering from Scratch',
     ogTitle: 'Manuals · AI Engineering from Scratch',
