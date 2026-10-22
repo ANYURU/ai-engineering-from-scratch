@@ -161,6 +161,14 @@ test('citation markers render nothing and leave the punctuation in place', () =>
   assert.equal(html, 'Stop the server.');
 });
 
+test('a table column whose cells are only citation markers is dropped', () => {
+  const inline = cell => manuals.inlineHtml(cell, 'doc.md:6', manuals.newInline());
+  const html = manuals.tableHtml(['Key', 'Value', 'Source'].map(inline), [['`a`', 'one', '{{docs A}}'], ['`b`', 'two', '{{docs B}}']].map(row => ({ cells: row.map(inline) })));
+  assert.doesNotMatch(html, /Source/);
+  assert.match(html, /<th>Key<\/th><th>Value<\/th><\/tr>/);
+  assert.match(html, /<td><code>a<\/code><\/td><td>one<\/td><\/tr>/);
+});
+
 test('numbers figures per part and renders the print edition', () => {
   const { dir } = fixture();
   const manual = manuals.loadManual(dir);

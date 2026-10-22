@@ -466,7 +466,9 @@ function figureHtml(block) {
 }
 
 function tableHtml(head, rows) {
-  return `<div class="m-table-wrap"><table class="m-table"><thead><tr>${head.map(cell => `<th>${cell}</th>`).join('')}</tr></thead><tbody>${rows.map(row => `<tr${row.accent ? ` data-accent="${row.accent}"` : ''}>${row.cells.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  const keep = head.map((cell, index) => rows.length === 0 || rows.some(row => String(row.cells[index] ?? '').trim() !== ''));
+  const pick = cells => cells.filter((cell, index) => keep[index]);
+  return `<div class="m-table-wrap"><table class="m-table"><thead><tr>${pick(head).map(cell => `<th>${cell}</th>`).join('')}</tr></thead><tbody>${rows.map(row => `<tr${row.accent ? ` data-accent="${row.accent}"` : ''}>${pick(row.cells).map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 }
 
 function blockHtml(block, doc, manual, acc) {
@@ -578,7 +580,7 @@ function editionHtml(manual) {
 function colophonHtml(manual) {
   const page = `${SITE_ORIGIN}/${pageName(manual.id)}`;
   const pin = manual.pin;
-  return `<section class="m-colophon" id="colophon"><div class="m-kicker">About this edition</div><p>${escapeHtml(manual.title)}, edition ${escapeHtml(manual.edition)}, by ${AUTHOR}. It is part of AI Engineering from Scratch, an open source course at <a href="${SITE_ORIGIN}">aiengineeringfromscratch.com</a>. The newest edition is always at <a href="${page}">${page.replace('https://', '')}</a>.</p><p>${escapeHtml(pin.subject)} ${escapeHtml(pin.version)} is the subject, at commit ${escapeHtml(pin.commit)} of ${escapeHtml(pin.date)}, checked on ${escapeHtml(pin.verified)}. Every listing comes from a recorded run of the capture kit in the manual's source directory, and every quoted rule is checked word for word against the vendored sources.</p><p>${copyLine(manual)}. You can copy and share this manual. Keep this page and the copyright line with it. Report an error at <a href="${ISSUES_URL}">${ISSUES_URL.replace('https://', '')}</a>.</p></section>`;
+  return `<section class="m-colophon" id="colophon"><div class="m-kicker">About this edition</div><p>${escapeHtml(manual.title)}, edition ${escapeHtml(manual.edition)}, by ${AUTHOR}. It is part of AI Engineering from Scratch, an open source course at <a href="${SITE_ORIGIN}">aiengineeringfromscratch.com</a>. The newest edition is always at <a href="${page}">${page.replace('https://', '')}</a>.</p><p>${escapeHtml(pin.subject)} ${escapeHtml(pin.version)} is the subject, at commit ${escapeHtml(pin.commit)} of ${escapeHtml(pin.date)}, checked on ${escapeHtml(pin.verified)}. Every listing comes from a recorded run of the capture kit in the manual's source directory, and every rule is written in our own words from a declared source.</p><p>${copyLine(manual)}. You can copy and share this manual. Keep this page and the copyright line with it. Report an error at <a href="${ISSUES_URL}">${ISSUES_URL.replace('https://', '')}</a>.</p></section>`;
 }
 
 function coverHtml(manual, mode) {
@@ -801,6 +803,7 @@ module.exports = {
   SCHEMA,
   LISTING_LANGS,
   inlineHtml,
+  tableHtml,
   loadAll,
   loadManual,
   newInline,
