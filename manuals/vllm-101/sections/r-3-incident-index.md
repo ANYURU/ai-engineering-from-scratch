@@ -12,7 +12,7 @@ States are as of 2026-10-21. Numbers refer to issues in the vLLM repository.
 |---|---|---|---|
 | 58726 | slow weight load on the GB10, from per-tensor copies out of the file map | open | [DGX Spark](#s-size-memory-on-a-dgx-spark) |
 | 59770 | slower NVFP4 decode for one model on the GB10 since 0.29.0 | open | [troubleshooting](#s-troubleshoot-by-symptom) |
-| 60174 | one repeated token after a prefix-cache hit with DFlash2 or DSpark speculation on 0.30 and 0.31 | open | [troubleshooting](#s-troubleshoot-by-symptom) |
+| 60174 | one repeated token after a prefix-cache hit with DFlash2 or DSpark speculation on 0.30 and 0.31 | closed on 2026-10-22 | [troubleshooting](#s-troubleshoot-by-symptom) |
 | 60262 | a crash at start when an FP8 KV cache picks FlashInfer without a working kernel build | open | [troubleshooting](#s-troubleshoot-by-symptom) |
 | 60830 | invalid JSON with MTP speculation and a JSON schema on one model | closed | [troubleshooting](#s-troubleshoot-by-symptom) |
 | 60838 | `--mamba-block-size` has no effect after the removal of the `all` Mamba cache mode | open | [long contexts](#s-serve-long-contexts-and-hybrid-models) |
@@ -35,4 +35,4 @@ States are as of 2026-10-21. Numbers refer to issues in the vLLM repository.
 - An open issue for your GPU and model is a reason to pin the release that works.
 ```
 
-Sources: vLLM issues 58253, 58726, 59538, 59770, 60174, 60262, 60830, 60838, 61024, 61229, 61698, and 61886 (fetched 2026-10-21); capture/gpu/out-gb10/server-load-vllm.log.
+Sources: vLLM issues 58253, 58726, 59538, 59770, 60174, 60262, 60830, 60838, 61024, 61229, 61698, and 61886 (fetched 2026-10-21, and the state of 60174 again on 2026-10-22); capture/gpu/out-gb10/server-load-vllm.log.
