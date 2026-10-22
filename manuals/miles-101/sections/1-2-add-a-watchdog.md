@@ -6,7 +6,7 @@ We left a run alone for an hour. When we came back, the GPU was idle and the log
 
 When you finish this section, you can recognize a run whose engine died. You can also start a watchdog that stops that run within a few minutes.
 
-**Our result:** a run whose engine died logged 200,533 HTTP 503 errors in 63 minutes and never failed. The watchdog stopped a test of the same error in 183 s. It let a test with one-minute bursts of the error run to its end.
+**Our result:** a run whose engine died logged 200,533 HTTP 503 errors in 63 minutes and never failed. The watchdog stopped a test of the same error in 183 s. A replay of a healthy run showed that its default of six checks is too few, so we run it with ten.
 
 ## What a dead engine looks like
 
@@ -45,17 +45,33 @@ claim: Without a watchdog, a dead engine left the job running for 63 minutes wit
 caption: The top track is our failed run. The bottom track is the watchdog test on a container that writes the same error.
 ```
 
-## Why the watchdog waits for six checks
+## Why the watchdog waits for ten checks
 
-In our 17 runs that ended normally, the log held no `503 Service Unavailable` line at all. Our 16-answer run of [section 3.1](#s-train-math-on-gsm8k) logged 22,357 of them. They came in bursts of up to 60 s, with up to 2,209 in one minute. The client retried each request, and the run finished all its steps.
+In our 17 runs that ended normally, the log held no `503 Service Unavailable` line at all. Our 16-answer run of [section 3.1](#s-train-math-on-gsm8k) logged 22,357 of them. They came in bursts of up to about 60 s, with up to 2,209 in one minute. The client retried each request, and the run finished all its steps.
 
-In the failed run, the errors never stopped. Every minute held at least 1,838 of them, for 63 minutes.
+In the failed run, the errors never stopped. Every full minute held at least 2,669 of them, for 63 minutes.
 
-A count alone cannot tell these two runs apart, but the time can. So the watchdog stops a run only when it finds more than 100 errors in six checks in a row. That is about three minutes of errors without a break, three times our longest healthy burst.
+A count alone cannot tell these two runs apart, but the time can. Every 30 s, the watchdog counts the errors of the last 60 s. It stops the run only when that count is above 100 in a set number of checks in a row.
+
+```listing
+title: the watchdog rule replayed on a healthy run
+source: capture/gpu/out-gb10/503-bursts.txt
+lang: text
+note: The real error times of the 16-answer run, for each of the 30 start times of the checks. The last column is a dead engine that never stops writing the error.
+---
+$ python3 watchdog_replay.py out-gb10/e2-n16-503-per-second.txt
+healthy run: 22357 errors from 2026-10-22 07:16:29, checks every 30 s over the last 60 s, limit 100
+checks  healthy offsets stopped  most checks in a row  dead engine stopped after
+     6  17 of 30                    6                     153 to 182 s
+     8   0 of 30                    6                     213 to 242 s
+    10   0 of 30                    6                     273 to 302 s
+```
+
+**We measured** the rule on the real error times of that healthy run. With 6 checks, it stopped the run in 17 of the 30 cases, because two bursts came 45 s apart. No case reached more than 6 checks in a row. With 10 checks, no case stopped the healthy run, and a dead engine is stopped in about five minutes.
 
 ## Start the watchdog
 
-The script reads the last 60 seconds of the container log every 30 seconds. It stops the container when the count passes the limit in six checks in a row:
+The script reads the last 60 seconds of the container log every 30 seconds. It stops the container when the count passes the limit in a set number of checks in a row. The default is 6:
 
 ```bash
 #!/bin/sh
@@ -80,10 +96,10 @@ done
 echo "$(date -u +%FT%TZ) $name: the run ended"
 ```
 
-Save it as `~/miles-lab/watchdog.sh`. Start it in a second terminal right after the run starts, with the container name from [section 1.1](#s-run-grpo-on-one-gpu):
+Save it as `~/miles-lab/watchdog.sh`. Start it in a second terminal right after the run starts, with the container name from [section 1.1](#s-run-grpo-on-one-gpu) and 10 checks:
 
 ```bash
-sh ~/miles-lab/watchdog.sh miles-plain 100 6
+sh ~/miles-lab/watchdog.sh miles-plain 100 10
 ```
 
 ## Test the watchdog first
@@ -103,16 +119,17 @@ $ echo $?
 1
 ```
 
-The watchdog stopped the container 183 s after it started, and exited with 1. A script that starts runs one after another can read that exit code and skip to the next run.
+The watchdog stopped the container 183 s after it started, and exited with 1. This test used the default of 6 checks. With 10 checks, the same rule needs four more checks, so it stops about two minutes later. A script that starts runs one after another can read that exit code and skip to the next run.
 
-The second container prints the error for 60 s and then stays quiet for two minutes. It does this three times, like the bursts of a busy engine. The watchdog let it run to its end after 541 s, and exited with 0.
+The second container prints the error for 60 s and then stays quiet for two minutes. It does this three times, like the bursts of a busy engine. The watchdog let it run to its end after 541 s, and exited with 0. Its quiet gaps of two minutes are longer than the real gaps of 45 s, so test with the replay above too.
 
 The watchdog only stops the run. To find out why the engine died, read the engine lines above the first error. [Section 7.1](#s-troubleshoot-by-symptom) lists the causes we met.
 
 ```takeaways
 - Start the watchdog in a second terminal for every run you leave alone.
+- Run the watchdog with 10 checks, because healthy bursts can come 45 s apart.
 - Test the watchdog on a fake container before you trust it.
 - Read the engine lines above the first 503 error to find the cause.
 ```
 
-Sources: capture/gpu/watchdog.sh; capture/gpu/out-gb10/engine-died-503.log; capture/gpu/out-gb10/engine-died-count.txt; capture/gpu/out-gb10/watchdog-test.txt; capture/gpu/summary/miles-gb10-lab.json (excluded runs); Miles rollout client at main 08752a12.
+Sources: capture/gpu/watchdog.sh; capture/gpu/watchdog_replay.py; capture/gpu/out-gb10/503-bursts.txt; capture/gpu/out-gb10/e2-n16-503-per-second.txt; capture/gpu/out-gb10/engine-died-503.log; capture/gpu/out-gb10/engine-died-count.txt; capture/gpu/out-gb10/watchdog-test.txt; capture/gpu/summary/miles-gb10-lab.json (excluded runs); Miles rollout client at main 08752a12.
