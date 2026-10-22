@@ -118,7 +118,7 @@ curl http://localhost:8000/v1/chat/completions \
 
 The `chat_template_kwargs` field turns the thinking off for this one request, so 64 tokens are enough for the answer. The reply is one JSON object. The answer text is in `choices[0].message.content`, and the token counts are in `usage`. In the server log, a new line shows the request path and `200 OK`.
 
-If you leave the thinking on, the model can spend all 64 tokens on it. The thinking then goes to the `reasoning` field, `content` is empty, and `finish_reason` is `length`. Give a thinking request a much larger `max_tokens`.
+If you leave the thinking on, the model can spend all 64 tokens on it. The thinking then goes to the `reasoning` field, `content` is null, and `finish_reason` is `length`. We saw exactly this on an L4. Give a thinking request a much larger `max_tokens`.
 
 The server speaks the OpenAI API, so the OpenAI Python client works without a change to your code:
 
