@@ -129,7 +129,7 @@ def main(runs_dir, out_file, thermostat=None):
     runs = {}
     for name, code in status.items():
         log = runs_dir / f"{name}.log"
-        if code != 0 or not log.exists():
+        if code not in (0, 124) or not log.exists():
             continue
         rows = parse(log)
         if not rows:
@@ -137,6 +137,7 @@ def main(runs_dir, out_file, thermostat=None):
         mark_pauses(rows, pauses)
         runs[name] = {
             "steps": len(rows),
+            "partial": code == 124,
             "median": {field: median_of(rows, field) for field in KEEP.values()},
             "median_unpaused": clean_medians(rows),
             "per_step": rows,
@@ -148,7 +149,8 @@ def main(runs_dir, out_file, thermostat=None):
         "dataset": "zhuzilin/gsm8k",
         "timing_rule": "median_unpaused keeps only steps whose window overlaps no heat-guard pause. The rollout window ends at the rollout perf line and lasts rollout_time_s. The step window ends at the trainer perf line and lasts step_time_s.",
         "pauses": len(pauses),
-        "excluded": {name: code for name, code in status.items() if code != 0},
+        "excluded": {name: code for name, code in status.items() if code not in (0, 124)},
+        "partial": [name for name, code in status.items() if code == 124],
         "runs": runs,
     }
     Path(out_file).write_text(json.dumps(summary, indent=1) + "\n")
