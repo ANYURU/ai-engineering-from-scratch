@@ -18,6 +18,14 @@ With `--colocate`, the trainer and the engine share the same GPU. Each step has 
 
 The `--colocate` flag also turns on offload for both sides. `--offload-rollout-level` decides what the engine gives back. The default is both of its memory tags: `kv_cache`, the cache of attention keys and values, and `weight`, the model weights.
 
+```figure
+id: fig-8-4
+kind: timeline
+title: The engine and the trainer take turns on one memory
+claim: Only one side holds the GPU memory at a time, and the hand-offs take about 2 s of each step.
+caption: Phase medians of 48 steps, drawn to scale.
+```
+
 ## Offload on a normal machine and on a GB10
 
 On a machine with a separate GPU, offload copies bytes from GPU memory to CPU memory over the bus. The copy is the cost.
