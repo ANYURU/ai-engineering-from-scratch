@@ -54,4 +54,4 @@ During turn 2, `vllm:prefix_cache_hits_total` rises by about the length of turn 
 - Offload blocks to CPU memory when idle sessions do not fit the GPU pool.
 ```
 
-Sources: the vLLM source at v0.31.0 (vllm/config/cache.py, vllm/config/vllm.py, vllm/v1/kv_offload/, vllm/v1/metrics/loggers.py, vllm/distributed/kv_transfer/kv_connector/factory.py), vLLM documentation at v0.31.0 (docs/features/kv_offloading_usage.md, docs/design/prefix_caching.md).
+Sources: the vLLM source at v0.31.0 (vllm/config/cache.py, vllm/config/vllm.py, vllm/v1/kv_offload/base.py, vllm/v1/kv_offload/config.py, vllm/v1/kv_offload/factory.py, vllm/v1/metrics/loggers.py, vllm/distributed/kv_transfer/kv_connector/factory.py), vLLM documentation at v0.31.0 (docs/features/kv_offloading_usage.md, docs/design/prefix_caching.md).
