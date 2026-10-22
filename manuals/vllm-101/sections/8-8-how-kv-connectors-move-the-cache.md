@@ -30,7 +30,7 @@ Set the connector with `--kv-transfer-config`, which gives the connector name, t
 
 ## What disaggregation buys
 
-The vLLM documentation states plainly that disaggregated prefill does not raise throughput. It gives two other reasons to use it. You can tune the first token and the stream on separate servers. You can also keep long prompts from stalling the stream of other users, which controls the tail of the inter-token latency.
+The vLLM documentation says that disaggregated prefill does not raise throughput. It gives two other reasons to use it. You can tune the first token and the stream on separate servers. You can also keep long prompts from stalling the stream of other users, which controls the tail of the inter-token latency.
 
 The price is a transfer for every request, and more machines to run. If a load fails, the default policy is to fail the request. A recompute policy exists as an option.
 
