@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" role="img" aria-labelledby="fig-3-2b-title fig-3-2b-desc" font-family="JetBrains Mono, ui-monospace, monospace">
-  <title id="fig-3-2b-title">The reward moved the same way in 12 steps</title>
+  <title id="fig-3-2b-title">The reward before the filter read higher</title>
   <desc id="fig-3-2b-desc">Mean reward per step over every answer the engine finished, for 12 steps with seed 1. Without the filter: 0.657 on average. With the filter, counted before it dropped any group: 0.686.</desc>
   <line x1="60" y1="256" x2="620" y2="256" stroke="var(--m-ink-mute, #6f6f6a)" stroke-width="1" stroke-opacity="0.25"/>
   <text x="54" y="260" font-size="11" text-anchor="end" fill="var(--m-ink-soft, #4a4a4a)">0.5</text>

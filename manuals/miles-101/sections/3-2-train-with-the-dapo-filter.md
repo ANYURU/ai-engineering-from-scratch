@@ -6,7 +6,7 @@ In a plain GRPO step, about half of our groups had every answer right or every a
 
 When you finish this section, you can turn on the zero-variance filter and check how many groups it drops. You can also measure what the extra prompts cost.
 
-**Our result:** the filter dropped 16 to 48 groups in each step, and most of them had every answer right. The rollout took 1.5 to 2.8 times as long. In 12 steps on one seed, the reward did not move differently from the run without the filter.
+**Our result:** the filter dropped 16 to 48 groups in each step, and most of them had every answer right. The rollout took 1.5 to 2.8 times as long. In 12 steps on one seed, the reward counted before the filter read higher than the run without it. We read that as a bias of the metric, not as learning.
 
 ## Turn it on
 
@@ -15,6 +15,8 @@ Add two flags to the launcher from [section 1.1](#s-run-grpo-on-one-gpu):
 ```bash
 --dynamic-sampling-filter-path miles.rollout.filter_hub.dynamic_sampling_filters.check_reward_nonzero_std --over-sampling-batch-size 48
 ```
+
+Miles marks this filter path as deprecated and names a replacement in its common filters module. We ran the older path shown here.
 
 **Over-sampling batch:** the number of prompts that the rollout sends to the engine at a time. It must be at least `--rollout-batch-size`.
 
@@ -64,14 +66,14 @@ The filter changes what `rollout/raw_reward` means, because the dropped groups a
 ```figure
 id: fig-3-2b
 kind: chart
-title: The reward moved the same way in 12 steps
-claim: Over 12 steps on one seed, the reward with the filter stayed inside the swings of the run without it.
+title: The reward before the filter read higher
+claim: Over 12 steps on one seed, the reward counted before the filter was higher in 8 of the 12 steps.
 caption: Mean reward per step over every finished answer, 12 steps with seed 1.
 ```
 
-The mean over 12 steps was 0.686 with the filter and 0.657 without it. That difference is inside the seed noise of 0.03 from [section 5.3](#s-repeat-a-run). The mean of the first four steps was also higher, 0.672 against 0.625, before the filter could have changed the model much.
+The mean over 12 steps was 0.686 with the filter and 0.657 without it. Our five baseline runs gave 12-step means of 0.638 to 0.660, so 0.686 is above all of them. The mean of the first four steps was also higher, 0.672 against 0.625, before the filter could have changed the model much.
 
-Our reading: the reward before the filter counts only the groups that finished before the rollout stopped. The stopped requests are the slowest, with the longest answers. An answer cut at the length limit usually scores 0, as [section 4.2](#s-handle-long-responses) shows. So this number can lean high.
+Our reading: the reward before the filter counts only the groups that finished before the rollout stopped. The stopped requests are the slowest, with the longest answers. An answer cut at the length limit usually scores 0, as [section 4.2](#s-handle-long-responses) shows. So this number can lean high, and we read the higher mean as that bias, not as a learning effect.
 
 This is one seed of 12 steps. The filter run finished all 12 steps, and its time limit ended the container during shutdown. To see a reward effect, run more steps and a second seed, and compare against the spread of your baseline seeds.
 
@@ -86,4 +88,4 @@ Use the filter when many groups score the same for every answer, and when you ca
 - Compare the reward before the filter, and run a second seed before you report a gain.
 ```
 
-Sources: capture/gpu/summary/miles-gb10-lab.json (runs.e2b-dapo-filter, runs.e6a-base); capture/gpu/summarize_miles.py; Miles rollout loop and filter metrics at main 08752a12.
+Sources: capture/gpu/summary/miles-gb10-lab.json (runs.e2b-dapo-filter, runs.e6a-base, runs.plain, runs.plain-48, runs.plain-48-s2, runs.plain-48-s3); capture/gpu/summarize_miles.py; Miles rollout loop and filter metrics at main 08752a12.
