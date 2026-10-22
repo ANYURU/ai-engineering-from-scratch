@@ -62,6 +62,7 @@ def configs(profile):
         "vllm-async": (p["model"], ["--async-scheduling"]),
         "vllm-no-async": (p["model"], ["--no-async-scheduling"]),
         "vllm-kv-fp8": (p["model"], ["--kv-cache-dtype", "fp8"]),
+        "vllm-kv-fp8-triton": (p["model"], ["--kv-cache-dtype", "fp8", "--attention-backend", "TRITON_ATTN"]),
         "vllm-fp8": (p["fp8"], []),
         "vllm-eagle3": (p["model"], ["--speculative-config", json.dumps({"method": "eagle3", "model": p["draft"], "num_speculative_tokens": 3})]),
         "vllm-ngram": (p["model"], ["--speculative-config", json.dumps({"method": "ngram", "num_speculative_tokens": 3, "prompt_lookup_max": 4})]),
