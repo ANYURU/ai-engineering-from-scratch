@@ -18,13 +18,13 @@ When you finish this section, you can record each run so that you can compare it
 | The GPU temperature and pauses | the heat-guard log, as in [the lab notes](#s-ref-lab-notes) |
 | The exit code | one status line per run |
 
-Keep the engine log next to the trainer log. Of the three failures we met, one began in the engine and two began in the trainer, so you need both.
+Keep the engine log next to the trainer log. Of the four failures we met, one began in the engine and three began in the trainer, so you need both.
 
 ## Change one thing per run
 
-Compare two runs only when one setting differs. Our first offload run changed the offload setting and the engine memory fraction together. We could not tell which change moved the rollout time, so the result stays a lead until a run separates the two.
+Compare two runs only when one setting differs. Our first offload run changed the offload setting and the engine memory fraction together, and it showed a 12 percent faster rollout. A same-day pair that changed only the offload setting showed 1 to 3 percent. [Section 2.2](#s-choose-what-to-offload) has both.
 
-Keep a baseline from the same session. A baseline from another day can differ in time, and on our GB10 heat is the likely cause, as [section 5.3](#s-repeat-a-run) shows.
+Compare times on the same step numbers. The rollout time follows the answer length, and the answers get shorter as the model learns. A median over different steps can differ for that reason alone, as [section 5.3](#s-repeat-a-run) shows.
 
 ## Save what you need to replay a step
 
