@@ -38,9 +38,9 @@ caption: Reward gain over the first 24 steps for each run. The three green bars 
 
 **We measured** no clear effect of the group size on the reward in 24 steps. The 16-answer run gained +0.097, and one of the three 8-answer seeds gained +0.098. The seed spread at 8 answers, 0.038 to 0.098, covers all the runs.
 
-The cost is clear. More answers mean more tokens to write in each step. The 4-answer rollout took 32.5 s on its 14 clean steps. Our first 8-answer seed had no pause, and on the same 14 step numbers it took 59.1 s. Every step of the 16-answer run overlapped a heat pause, so it has no clean time. Its median of 188.2 s includes the pauses.
+The cost is clear. More answers mean more tokens to write in each step. The 4-answer rollout took 32.5 s on its 14 clean steps. Our first 8-answer seed ran on another day, before we added the heat guard, so no pause touched it. On the same 14 step numbers it took 59.1 s. Every step of the 16-answer run overlapped a heat pause, so it has no clean time. Its median of 188.2 s includes the pauses.
 
-The 16-answer run also logged 22,357 `503 Service Unavailable` lines, in bursts of up to 60 s. The client retried each request, and the run went on. Our reading: with 512 open requests, the router found no free engine for a short time. [Section 1.2](#s-add-a-watchdog) shows why the watchdog lets such bursts pass.
+The 16-answer run also logged 22,357 `503 Service Unavailable` lines, in bursts of up to 60 s. The client retried each request, and the run went on. Our reading: with 512 open requests, the router found no free engine for a short time. [Section 1.2](#s-add-a-watchdog) replays these bursts through the watchdog.
 
 Read this result with its limits. The runs with 4 and 16 answers have one seed each. The 16-answer run finished all 24 steps, and its time limit ended the container during shutdown.
 
@@ -54,4 +54,4 @@ We did not run the rollout batch size sweep with 16 and 64 prompts for each step
 - Change the group size only with a second seed, because one run sits inside the seed spread.
 ```
 
-Sources: capture/gpu/miles_grpo.py; capture/gpu/summary/miles-gb10-lab.json (runs.e2-n4, runs.e2-n16, runs.plain-48, runs.plain-48-s2, runs.plain-48-s3, partial).
+Sources: capture/gpu/miles_grpo.py; capture/gpu/out-gb10/503-bursts.txt; capture/gpu/summary/miles-gb10-lab.json (runs.e2-n4, runs.e2-n16, runs.plain-48, runs.plain-48-s2, runs.plain-48-s3, partial).
