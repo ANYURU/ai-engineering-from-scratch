@@ -63,8 +63,8 @@ Before you compare speculative decoding with no speculation, lock the clock or r
 
 ## Choose the depth
 
-- Start with a depth of 3. It gave the best output at 32 users and tied for the best at one user.
-- Do not go deeper for a busy server. Depth 5 lost output at 32 users.
+- For Qwen3-8B with this draft, start with a depth of 3. On our L4 it gave the best output at 32 users and tied at one user.
+- For a busy server, sweep the depth on your own model. On our L4, depth 5 lost output at 32 users.
 - If your load changes a lot through the day, vLLM can set the depth by batch size with `num_speculative_tokens_per_batch_size`. We did not test it.
 
 ## Check the gain on your prompts
@@ -84,4 +84,4 @@ Divide the accepted tokens by the draft tokens. vLLM also writes a `SpecDecoding
 - Lock or record the GPU clock before you compare speculative decoding.
 ```
 
-Sources: capture/gpu/summary/l4.json (load.vllm-lock-b, load.vllm-lock-eagle3-k1, load.vllm-lock-eagle3-k3, load.vllm-lock-eagle3-k5), the vLLM source at v0.31.0 (vllm/config/speculative.py, vllm/v1/spec_decode/metrics.py), vLLM documentation at v0.31.0 (docs/features/speculative_decoding/eagle.md, docs/features/speculative_decoding/dynamic_speculative_decoding.md).
+Sources: capture/gpu/summary/l4.json (load.vllm-lock-b, load.vllm-lock-eagle3-k1, load.vllm-lock-eagle3-k3, load.vllm-lock-eagle3-k5, and the unlocked load.vllm-eagle3 and load.vllm-eagle3-k5), the vLLM source at v0.31.0 (vllm/config/speculative.py, vllm/v1/spec_decode/metrics.py), vLLM documentation at v0.31.0 (docs/features/speculative_decoding/eagle.md, docs/features/speculative_decoding/dynamic_speculative_decoding.md).
