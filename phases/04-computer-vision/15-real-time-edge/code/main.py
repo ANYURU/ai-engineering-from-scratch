@@ -5,9 +5,10 @@ import torch.nn as nn
 
 def _sync(device):
     """Block until queued GPU work finishes, so timing is accurate."""
-    if device == "cuda":
+    kind = torch.device(device).type
+    if kind == "cuda":
         torch.cuda.synchronize()
-    elif device == "mps":
+    elif kind == "mps":
         torch.mps.synchronize()
 
 

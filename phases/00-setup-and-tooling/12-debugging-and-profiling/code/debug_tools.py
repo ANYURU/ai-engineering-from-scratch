@@ -239,12 +239,12 @@ def demo_gpu_memory():
         print(f"  Cached: {torch.cuda.memory_reserved() / 1e6:.1f} MB")
 
         large_tensor = torch.randn(10000, 10000, device="cuda")
-        print(f"  After 10k x 10k tensor:")
+        print("  After 10k x 10k tensor:")
         print(f"    Allocated: {torch.cuda.memory_allocated() / 1e6:.1f} MB")
 
         del large_tensor
         torch.cuda.empty_cache()
-        print(f"  After cleanup:")
+        print("  After cleanup:")
         print(f"    Allocated: {torch.cuda.memory_allocated() / 1e6:.1f} MB")
         return
 
@@ -253,12 +253,12 @@ def demo_gpu_memory():
         print(f"  Allocated: {torch.mps.current_allocated_memory() / 1e6:.1f} MB")
 
         large_tensor = torch.randn(10000, 10000, device="mps")
-        print(f"  After 10k x 10k tensor:")
+        print("  After 10k x 10k tensor:")
         print(f"    Allocated: {torch.mps.current_allocated_memory() / 1e6:.1f} MB")
 
         del large_tensor
         torch.mps.empty_cache()
-        print(f"  After cleanup:")
+        print("  After cleanup:")
         print(f"    Allocated: {torch.mps.current_allocated_memory() / 1e6:.1f} MB")
         return
 
