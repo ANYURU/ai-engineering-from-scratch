@@ -23,7 +23,7 @@ The gap between the trainer and the engine is never 0 outside true on-policy mod
 
 | Our runs | Gap at step 0 |
 |---|---|
-| Qwen3-0.6B, no top-p or top-k, 13 runs | 0.0149 to 0.0157 |
+| Qwen3-0.6B, no top-p or top-k, 16 runs | 0.0149 to 0.0157 |
 | Qwen3-0.6B, top-p 0.95 and top-k 64 | 0.0136 |
 | Qwen3-1.7B | 0.0109 |
 
