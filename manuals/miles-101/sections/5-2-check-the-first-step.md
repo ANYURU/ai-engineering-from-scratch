@@ -31,7 +31,7 @@ The gap depends on the model and the sampler, so build the range for your own se
 
 ## Check the weights directly
 
-Add `--check-weight-update-equal` to a short test run. After the first weight update, Miles compares the engine weights with the trainer weights. With FP8 or another low-precision engine, add `--check-weight-update-allow-quant-error` so that the check allows the expected rounding.
+Add `--check-weight-update-equal` to a short test run, with `-e MILES_NUM_ROLLOUT=2 -e MILES_EXTRA_ARGS="--check-weight-update-equal"` on the run of [section 1.1](#s-run-grpo-on-one-gpu). After the first weight update, Miles compares the engine weights with the trainer weights. With FP8 or another low-precision engine, add `--check-weight-update-allow-quant-error` so that the check allows the expected rounding.
 
 Run this check once for each new model or image, not on every long run.
 
