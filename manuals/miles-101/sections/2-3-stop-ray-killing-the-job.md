@@ -6,6 +6,8 @@ Our Qwen3-4B run finished its first rollout, then stopped in the training phase 
 
 When you finish this section, you can recognize a Ray memory kill and lower the memory that the run needs.
 
+**Our result:** Ray stopped our 4B trainer twice, with the node at 115.86 and then 119.18 of 121.69 GB. Both stops were real memory pressure.
+
 ## Read the kill message
 
 Search the log for `OutOfMemoryError` before you change anything. A Ray memory kill names the node, not a GPU:
@@ -31,6 +33,14 @@ The node held 115.86 GB of 121.69 GB, which is 95.2 percent. The trainer process
 On a GB10, the CPU and the GPU use one pool of memory. Ray reads the memory of the whole node. So the model weights, the optimizer state, and the KV cache all count in the number that Ray watches.
 
 That number is real. When it reaches 100 percent, the machine has no memory left for anyone. So a Ray kill at 95 percent is a warning that the run does not fit, and not a false alarm.
+
+```figure
+id: fig-2-3
+kind: layers
+title: Ray reads one memory for the whole GB10
+claim: On a GB10, Ray counts the GPU allocations as used node memory, so its kill means the machine is close to full.
+caption: The memory Ray read when it stopped the first 4B run, drawn as one bar.
+```
 
 ## Lower the memory the run needs
 
