@@ -15,6 +15,14 @@ In each step, the scheduler has a budget of tokens, set by `--max-num-batched-to
 
 A long prompt that does not fit the rest of the budget gets a part of the budget now and the rest in later steps. That is chunked prefill. It is on by default, because the budget design needs nothing else to support it.
 
+```figure
+id: fig-8-2
+kind: timeline
+title: one token budget
+claim: Each step spends 2,048 tokens: running requests get a decode token first, and a new prompt fills the rest in chunks.
+caption: Each row is one scheduler step. Prompt chunks are drawn to scale, and decode blocks are widened so you can see them. Dashed space is unused budget. From the vLLM source at v0.31.0.
+```
+
 ## Why decode goes first
 
 Running requests come first, so a user who already sees a stream keeps seeing it. A new prompt waits for the budget that is left. The vLLM documentation states the trade. A smaller budget gives a smoother stream, and a larger one gives a faster first token for long prompts. The default of 2,048 is a choice for the stream.
