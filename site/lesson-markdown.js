@@ -605,8 +605,66 @@
     return code;
   }
 
+  var QUIZ_ANCHORS = {
+    pre: ['the-concept', 'concept', 'build-it', 'build'],
+    check: ['use-it', 'use', 'ship-it', 'ship'],
+    post: ['key-terms']
+  };
+
+  function headingIds(html) {
+    var ids = [];
+    var pattern = /<h2 id="([^"]*)"/g;
+    var match;
+    while ((match = pattern.exec(html)) !== null) ids.push(match[1]);
+    return ids;
+  }
+
+  function anchorIndex(ids, keys) {
+    for (var k = 0; k < keys.length; k++) {
+      for (var i = 0; i < ids.length; i++) {
+        if (ids[i] === keys[k] || ids[i].indexOf(keys[k] + '-') === 0) return i;
+      }
+    }
+    return -1;
+  }
+
+  function quizPlacement(ids, referenceIds) {
+    var n = ids.length;
+    var source = ids;
+    var shift = 0;
+    if (referenceIds && referenceIds.length && n - referenceIds.length >= 0 && n - referenceIds.length <= 2) {
+      source = referenceIds;
+      shift = n - referenceIds.length;
+    }
+    var m = source.length;
+    var pre = anchorIndex(source, QUIZ_ANCHORS.pre);
+    var post = anchorIndex(source, QUIZ_ANCHORS.post);
+    var check = anchorIndex(source, QUIZ_ANCHORS.check);
+    if (pre < 0) pre = m >= 2 ? 1 : 0;
+    if (post < 0) post = m >= 3 ? m - 1 : m;
+    if (post < pre) post = pre;
+    if (check < 0 || check > post) {
+      check = post - 1 > pre ? post - 1 : post;
+    }
+    if (check < pre) check = pre;
+    return { pre: pre + shift, check: check + shift, post: post + shift, count: n };
+  }
+
+  function quizPanelQuestions(data) {
+    var source = data && (data.questions || data);
+    if (!Array.isArray(source)) return null;
+    var shownInline = source.some(function (q) {
+      return q && q.question && Array.isArray(q.options) &&
+        typeof q.correct === 'number' && q.correct >= 0 && q.correct < q.options.length;
+    });
+    return shownInline ? [] : null;
+  }
+
   return {
     parseMd: parseMd,
+    headingIds: headingIds,
+    quizPlacement: quizPlacement,
+    quizPanelQuestions: quizPanelQuestions,
     extractMath: extractMath,
     splitInlineMath: splitInlineMath,
     slugify: slugify,
