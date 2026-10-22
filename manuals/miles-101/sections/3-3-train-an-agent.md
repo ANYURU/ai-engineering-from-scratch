@@ -33,6 +33,8 @@ Between turns, an agent loop often turns tokens into text and back into tokens. 
 
 Miles avoids that with a session server that passes tokens in and tokens out for every turn. With `--use-session-server`, the router also keeps all turns of one conversation on the same engine. So each turn reuses the cache of the turns before it.
 
+Partial rollout from [section 4.2](#s-handle-long-responses) does not work with these recipes. The session server and the multi-turn and agent generate functions refuse it.
+
 ## What to watch
 
 - The share of tokens that the model wrote against the share that tools wrote. A recipe where tools write most of the tokens teaches the model little per step.
