@@ -8,7 +8,7 @@ You must run many vLLM servers on a cluster. When you finish this section, you c
 
 The vLLM documentation shows a plain Kubernetes setup. It has a volume for the weights, a secret for the Hugging Face token, a Deployment that runs `vllm serve`, and a Service. A small Helm chart in the vLLM repository packages the same pieces. It adds a job that downloads the model and an optional Kubernetes autoscaler.
 
-Here is a minimal version in our own form, for one GPU and one model. We did not run it on a cluster. It needs a cluster where the NVIDIA device plugin offers `nvidia.com/gpu`. For a model with restricted access, add a Secret named `hf-token` with a `token` key.
+Here is a minimal version in our own form, for one GPU and one model. We did not run it on a cluster. It needs a cluster where the NVIDIA device plugin offers `nvidia.com/gpu`. For a model with restricted access, add a Secret named `hf-token` with a `token` key. Create a Secret named `vllm-api-key` with a `key` key, so that the `/v1` routes need the key.
 
 ```yaml
 apiVersion: apps/v1
@@ -39,6 +39,11 @@ spec:
                   name: hf-token
                   key: token
                   optional: true
+            - name: VLLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: vllm-api-key
+                  key: key
           resources:
             limits:
               nvidia.com/gpu: 1
@@ -84,7 +89,9 @@ spec:
       targetPort: 8000
 ```
 
-The image starts `vllm serve`, so `args` holds only the model and the flags. The startup probe allows 90 checks 10 seconds apart, which is 15 minutes. Our DGX Spark took about 8 minutes for its first start, so set the limit from your own measured cold start. The probes stop Kubernetes from sending traffic or restarting the pod while the weights load. Replace the `emptyDir` cache with a PersistentVolumeClaim, so a new pod does not download the weights again. The memory volume at `/dev/shm` gives the processes shared memory, as `--ipc=host` does with Docker.
+The image starts `vllm serve`, so `args` holds only the model and the flags. The startup probe allows 90 checks 10 seconds apart, which is 15 minutes. Our DGX Spark took about 8 minutes for its first start, so set the limit from your own measured cold start. The probes stop Kubernetes from sending traffic or restarting the pod while the weights load.
+
+Replace the `emptyDir` cache with a PersistentVolumeClaim, so a new pod does not download the weights again. The memory volume at `/dev/shm` gives the processes shared memory, as `--ipc=host` does with Docker. The API key does not protect `/health` or `/metrics`, so also limit which pods can reach the Service with a NetworkPolicy.
 
 This is enough for a few replicas of one model. A plain Service spreads requests at random, so a user's next turn can go to a replica that never cached the earlier turns. An autoscaler on CPU use also scales on the wrong signal, because GPU load is not CPU load.
 
