@@ -20,6 +20,7 @@ Check the rest of your machine against this table. It comes from the vLLM 0.31.0
 
 | You need | Value at 0.31.0 |
 |---|---|
+| Operating system | Linux, or WSL on Windows, for the uv and pip paths. Docker needs a host with the NVIDIA container toolkit |
 | GPU | NVIDIA, compute capability 7.5 or higher, such as a T4, an L4, an A100, or an H100 |
 | Driver | new enough for CUDA 12.9 for the default wheel, and R580 or newer for the CUDA 13 image |
 | Python | 3.10 to 3.13 |
