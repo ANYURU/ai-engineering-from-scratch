@@ -4,7 +4,7 @@
 
 You have an agent file with the `filesystem` and `shell` toolsets, and its model is `ai/qwen3:4b` on Docker Model Runner on your Mac. On the host, `shell` runs with your permissions. `--sandbox` moves the tools into a microVM and leaves the model on the host.
 
-This section follows the recorded run in capture/out/27-*, step by step, and [figure](#fig-1-3) draws it. When you finish this section, you can read the launch summary of a sandboxed run and explain the two failures this run met.
+This section follows [the recorded run](manuals/docker-sandboxes-101/capture/out), step by step, and [figure](#fig-1-3) draws it. When you finish this section, you can read the launch summary of a sandboxed run and explain the two failures this run met.
 
 ```figure
 id: fig-1-3
