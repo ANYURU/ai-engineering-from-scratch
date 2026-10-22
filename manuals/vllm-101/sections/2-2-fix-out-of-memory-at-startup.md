@@ -1,6 +1,6 @@
 # Fix out of memory at startup
 
-> One dial, the GPU memory fraction, decides most startup failures, and a shorter maximum length or a lower concurrency cap fixes most of the rest.
+> One setting, the GPU memory fraction, decides most startup failures, and a shorter maximum length or a lower concurrency cap fixes most of the rest.
 
 The server stopped before it printed the KV cache size line. When you finish this section, you can read the reason from the last lines of the log and pick the one flag that fixes it.
 
@@ -51,17 +51,17 @@ note: The first line gives the settings. The second line gives the error and the
 
 We set `--max-model-len 2048`, which is enough for our 640-token requests, and the server started. Later we raised it to 2,304 tokens, so that our tests with 2,048-token prefixes fit.
 
-The lesson: on a shared GPU, the fraction and the maximum length work together. Lower the maximum length to the longest request you send before you lower the fraction.
+So on a shared GPU, the fraction and the maximum length work together. Lower the maximum length to the longest request you send before you lower the fraction.
 
 ## Set the KV cache size directly
 
 If you know the KV cache size you want, set it in bytes with `--kv-cache-memory-bytes`. vLLM then ignores `--gpu-memory-utilization` for the cache. Use this when two vLLM instances share one GPU and each one needs a known pool.
 
-For a test with a small pool, `--num-gpu-blocks-override` fixes the number of 16-token blocks. Our sweeps used it to give vLLM and SGLang the same pool. Do not use it in production, because it does not check that the memory exists.
+`--num-gpu-blocks-override` sets the number of 16-token blocks for a test, as in [our fixed pool](#s-count-the-memory-before-you-pick-a-gpu). Do not use it in production, because it does not check that the memory exists.
 
 ## Check the fix
 
-Start the server again and wait for the pool line:
+Start the server again with `tee server.log`, as in [the first start](#s-install-vllm-and-serve-your-first-model), and wait for the pool line:
 
 ```bash
 grep "GPU KV cache size" server.log
