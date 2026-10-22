@@ -4,6 +4,8 @@
 
 You chose a GPU and the server holds fewer users than you planned. When you finish this section, you can predict the KV pool and the number of users for a model and a context length.
 
+**Our result:** on our L4 with Qwen3-8B, the 24,096-token pool fit 37 users with 640 tokens each, although the startup line printed 2.94.
+
 ## Count the bytes for one token
 
 Every token in a running request keeps its keys and values in GPU memory until the request ends. Four numbers in the model config give the size:
@@ -20,6 +22,14 @@ The factor 2 counts the key and the value. Read the first three numbers from `co
 | `Qwen/Qwen3-30B-A3B-Instruct-2507` | 48 | 4 | 128 | 96 KiB |
 
 The mixture-of-experts model has almost four times the weights of the dense model, but it keeps fewer bytes for each token. The KV heads decide this number, not the parameter count.
+
+```figure
+id: fig-2-1
+kind: structure
+title: the bytes for one token
+claim: Qwen3-8B holds 144 KiB of KV cache for every token, and Qwen3-30B-A3B holds 96 KiB, because it has fewer KV heads.
+caption: Multiply the five numbers in each row. The last factor is two bytes for BF16. From the model configs on the Hugging Face Hub.
+```
 
 ## Turn bytes into users
 
@@ -59,6 +69,14 @@ INFO 10-17 20:13:17 [kv_cache_utils.py:2464] GPU KV cache size: 24,096 tokens, M
 ```
 
 The `Maximum concurrency` number assumes that every user fills the full `--max-model-len`. Real users hold less, so more of them fit. With 512 prompt tokens and 128 output tokens, the 24,096-token pool holds 37 users at their full length. During our load sweep, the log showed 40 running requests with the cache 99.5 percent full, because users early in their answer hold fewer tokens.
+
+```figure
+id: fig-2-1b
+kind: comparison
+title: the pool decides the users
+claim: The same 24,096-token pool fits 2.94 users at the full context length, but 37 users who each hold 640 tokens.
+caption: Each blue block is one user. The dashed part is pool that no full-length user fills. From capture/gpu/out-l4/server-h2h-vllm.log.
+```
 
 ## Decide what to change
 
