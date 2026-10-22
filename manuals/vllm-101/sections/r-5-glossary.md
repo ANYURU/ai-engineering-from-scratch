@@ -9,8 +9,8 @@ Use this page when a section uses a term you do not know.
 | API server | the process that serves HTTP, tokenizes, and streams the answer | the tokenizer manager in the main process |
 | async scheduling | planning the next step while the GPU runs the current one | the overlap scheduler |
 | attention backend | the kernel family that computes attention | the attention backend |
-| block pool | all KV blocks, allocated at startup | the KV pool |
 | block | a fixed group of 16 tokens in the KV cache | a page, with a page size of 1 by default |
+| block pool | all KV blocks, allocated at startup | the KV pool |
 | chunked prefill | splitting a long prompt across steps | chunked prefill |
 | clock floor | the lowest median SM clock that our sweep tool accepts for a run, below which it repeats the run | not an SGLang term |
 | CUDA graph | a recorded sequence of kernel launches that replays with one call | a CUDA graph |
