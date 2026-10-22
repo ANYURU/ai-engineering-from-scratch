@@ -23,16 +23,20 @@ You cannot select the fleet together with a checkpoint eval function for your ow
 Set the interval and the data:
 
 ```bash
---eval-interval 10 --eval-prompt-data gsm8k_test /data/gsm8k/test.parquet
+-e MILES_EXTRA_ARGS="--eval-interval 10 --eval-prompt-data gsm8k_test /root/lab/datasets/gsm8k/test.parquet"
 ```
+
+The launcher of [section 1.1](#s-run-grpo-on-one-gpu) already downloads the GSM8K test split into the lab folder.
 
 Rollout stops while the eval runs, and requests that are already running finish first. The engines already hold the current weights, so no extra weight transfer happens. Use this mode on one GPU, and for small eval sets.
 
 ## Evaluate on a dedicated fleet
 
 ```bash
---eval-num-gpus 1 --eval-interval 10 --eval-hf-dir /dev/shm/miles_eval_hf --eval-prompt-data aime /data/aime.jsonl
+--eval-num-gpus 1 --eval-interval 10 --eval-hf-dir /dev/shm/miles_eval_hf --eval-prompt-data aime /root/lab/datasets/aime/aime.jsonl
 ```
+
+Put your own eval file in the lab folder first. The launcher does not download AIME. A fleet also needs a GPU of its own, so our one-GPU launcher cannot start it.
 
 The fleet runs its own engines behind its own router. On each eval step, the trainer writes a checkpoint snapshot to `--eval-hf-dir`, hands it to the fleet, and keeps training. The fleet loads the snapshot. It does not take part in the training weight updates.
 
@@ -50,4 +54,4 @@ Start with the training engines. Move to a fleet when the eval pause becomes a l
 - Change fleet engine settings with the --eval-sglang-* flags.
 ```
 
-Sources: Miles main 08752a12 files docs/user-guide/fully-async.md, miles/utils/arguments.py, miles/backends/sglang_utils/arguments.py, miles/backends/sglang_utils/sglang_config.py, miles/ray/rollout/eval_fleet.py, miles/ray/rollout/eval_dispatch.py, miles/ray/rollout/rollout_executor.py, miles/rollout/checkpoint_eval.py.
+Sources: capture/gpu/miles_grpo.py; Miles main 08752a12 files docs/user-guide/fully-async.md, miles/utils/arguments.py, miles/backends/sglang_utils/arguments.py, miles/backends/sglang_utils/sglang_config.py, miles/ray/rollout/eval_fleet.py, miles/ray/rollout/eval_dispatch.py, miles/ray/rollout/rollout_executor.py, miles/rollout/checkpoint_eval.py.
