@@ -48,7 +48,7 @@ caption: Users double at each step on the axis. The band spans the lowest and hi
 
 ## Avoid the four mistakes
 
-1. **Reusing a seed.** With the random dataset and a fixed seed, a second run sends the same prompts. The prefix cache then serves part of them, and the second run looks faster. Use a new seed for each run, or reset the cache with `curl -X POST localhost:8000/reset_prefix_cache`.
+1. **Reusing a seed.** With the random dataset and a fixed seed, a second run sends the same prompts. The prefix cache then serves part of them, and the second run looks faster. Use a new seed for each run. The `/reset_prefix_cache` route also clears the cache, but it exists only with `VLLM_SERVER_DEV_MODE=1`, and a server in that mode must not be exposed.
 2. **Letting the model stop early.** Without `--ignore-eos`, some answers end before the output length. The run then measures fewer tokens than you asked for.
 3. **Skipping the warmup.** The first requests after a start pay for compiled kernels and cold caches. Use `--num-warmups` or send a few requests before you measure.
 4. **Ignoring the clock.** A GPU that is hot or shared runs slower. Record `nvidia-smi --query-gpu=clocks.sm,temperature.gpu --format=csv -l 1` during the run. Compare two runs only at similar clocks.
