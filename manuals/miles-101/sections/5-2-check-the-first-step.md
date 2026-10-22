@@ -13,7 +13,7 @@ At step 0, the trainer computes the log probabilities of the samples with the sa
 - `train/ppo_kl`, the KL between the trainer's old and new probabilities. Before the first update they are the same.
 - `train/pg_clipfrac`, the share of clipped tokens. Nothing can be clipped before the first update.
 
-Miles asserts both in its own tests: `train/ppo_kl` below 1e-9 and `train/pg_clipfrac` below 1e-10. That assert runs only on the Megatron trainer with `--ci-test`. On the FSDP trainer, or without that flag, read the values yourself.
+Miles asserts both in its own tests: `train/ppo_kl` below 1e-9 and `train/pg_clipfrac` below 1e-10. That assert runs only on the Megatron trainer with `--ci-test`, on the first optimizer step of each rollout. `--ci-disable-kl-checker` turns it off. On the FSDP trainer, or without that flag, read the values yourself.
 
 All our runs logged a clip fraction of 0 at step 0.
 
@@ -23,7 +23,7 @@ The gap between the trainer and the engine is never 0 outside true on-policy mod
 
 | Our runs | Gap at step 0 |
 |---|---|
-| Qwen3-0.6B, no top-p or top-k, 16 runs | 0.0149 to 0.0157 |
+| Qwen3-0.6B, no top-p or top-k, 17 runs | 0.0148 to 0.0157 |
 | Qwen3-0.6B, top-p 0.95 and top-k 64 | 0.0136 |
 | Qwen3-1.7B | 0.0109 |
 
