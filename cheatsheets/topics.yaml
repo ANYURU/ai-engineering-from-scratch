@@ -310,6 +310,12 @@
   sources:
     - manuals/sglang-101
 
+- id: miles-rl
+  title: RL Post-Training with Miles
+  kind: manual
+  sources:
+    - manuals/miles-101
+
 - id: tokenization
   title: Tokenization and BPE
   kind: commands
