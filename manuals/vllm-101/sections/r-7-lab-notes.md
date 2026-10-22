@@ -11,13 +11,13 @@ Use this page to check a number from another section, or to repeat a run. When y
 - **Seeds.** Each point ran with seeds 1, 2, and 3. Tables give the median, and some columns give the lowest and the highest of the three.
 - **Pools.** On the L4, vLLM ran with `--num-gpu-blocks-override 1506`, a pool of 24,096 tokens, against 24,094 for SGLang. On the GB10, vLLM ran with 14,685 blocks, a pool of 234,960 tokens. The SGLang pools on the GB10 were 233,303 tokens for load, 234,958 for waves, and 251,910 for mixed.
 - **Clocks.** A sampler recorded the SM clock and the temperature every second. The sweep tool can wait for the GPU to cool before a run, and repeat a run below a clock floor. The clock column shows the result for each point. The sections draw no conclusion from a point under 1,000 MHz.
-- **Dates.** The L4 load runs were on 2026-10-17. The L4 rate and waves runs were on 2026-10-18. The L4 run without the prefix cache was on 2026-10-21. Every GB10 run in these tables was on 2026-10-21.
+- **Dates.** The L4 load runs of `vllm` and `sglang` were on 2026-10-17, and the `vllm-b`, `vllm-async`, `vllm-eager`, and `vllm-seqs-16` load runs on 2026-10-21. The L4 rate and waves runs were on 2026-10-18. The L4 run without the prefix cache was on 2026-10-21. Every GB10 run in these tables was on 2026-10-21.
 
 ## Not run yet
 
 These runs are planned or running on the L4 and are not in these tables:
 
-- the same-day vLLM baseline, eager mode, async scheduling off, and `--max-num-seqs 16`.
+- async scheduling off, with `--no-async-scheduling`.
 - `--max-num-batched-tokens` at 512, 2048, and 16384 on mixed prompts.
 - an FP8 KV cache, FP8 weights, and a small pool.
 - `-O0`, `-O1`, and `-O3`.
@@ -25,24 +25,54 @@ These runs are planned or running on the L4 and are not in these tables:
 
 ## Tables
 
+The config `vllm-async` passes `--async-scheduling`. For these models with no speculation, that is the default, so `vllm-async` is a second run of the baseline setting on both machines.
+
 ### L4, load: users at once, 512 prompt and 128 output tokens
 
 | Users | Config | Output tok/s (min to max) | Median TTFT | Median TPOT | P99 ITL (min to max) | Median SM clock |
 |---|---|---|---|---|---|---|
 | 1 | `vllm` | 13.5 (13.5 to 13.5) | 192 ms | 60.4 ms | 105 (104 to 105) ms | 1,290 MHz |
 | 1 | `sglang` | 13.8 (13.7 to 14.1) | 185 ms | 60.2 ms | 104 (104 to 104) ms | 1,290 MHz |
+| 1 | `vllm-b` | 13.5 (13.1 to 13.8) | 191 ms | 60.4 ms | 105 (104 to 105) ms | 1,275 MHz |
+| 1 | `vllm-async` | 13.2 (13.1 to 13.6) | 191 ms | 60.4 ms | 105 (104 to 105) ms | 1,268 MHz |
+| 1 | `vllm-eager` | 13.2 (13.1 to 13.4) | 190 ms | 61.1 ms | 107 (107 to 107) ms | 1,290 MHz |
+| 1 | `vllm-seqs-16` | 13.3 (13.1 to 13.6) | 190 ms | 60.4 ms | 105 (105 to 105) ms | 1,275 MHz |
 | 2 | `vllm` | 31.3 (31.2 to 31.3) | 132 ms | 63.4 ms | 64 (64 to 64) ms | 1,500 MHz |
 | 2 | `sglang` | 31.2 (31.2 to 31.2) | 116 ms | 63.6 ms | 65 (65 to 65) ms | 1,500 MHz |
+| 2 | `vllm-b` | 31.3 (31.3 to 31.3) | 132 ms | 63.4 ms | 64 (64 to 64) ms | 1,500 MHz |
+| 2 | `vllm-async` | 31.3 (31.2 to 31.3) | 132 ms | 63.4 ms | 64 (64 to 64) ms | 1,500 MHz |
+| 2 | `vllm-eager` | 30.8 (30.7 to 30.8) | 141 ms | 64.5 ms | 65 (65 to 65) ms | 1,515 MHz |
+| 2 | `vllm-seqs-16` | 31.3 (31.2 to 31.3) | 132 ms | 63.4 ms | 65 (64 to 65) ms | 1,500 MHz |
 | 4 | `vllm` | 61.8 (61.8 to 61.8) | 141 ms | 64.1 ms | 65 (65 to 65) ms | 1,515 MHz |
 | 4 | `sglang` | 61.5 (61.5 to 61.6) | 137 ms | 64.4 ms | 67 (65 to 67) ms | 1,530 MHz |
+| 4 | `vllm-b` | 61.8 (61.8 to 61.8) | 142 ms | 64.1 ms | 65 (65 to 66) ms | 1,560 MHz |
+| 4 | `vllm-async` | 61.8 (61.8 to 61.8) | 141 ms | 64.1 ms | 65 (65 to 65) ms | 1,515 MHz |
+| 4 | `vllm-eager` | 60.6 (60.6 to 60.7) | 143 ms | 65.3 ms | 66 (66 to 66) ms | 1,560 MHz |
+| 4 | `vllm-seqs-16` | 61.6 (61.3 to 61.6) | 142 ms | 64.3 ms | 65 (65 to 66) ms | 1,515 MHz |
 | 8 | `vllm` | 112.8 (112.8 to 112.9) | 253 ms | 65.8 ms | 68 (68 to 70) ms | 1,470 MHz |
 | 8 | `sglang` | 112.5 (112.4 to 112.6) | 170 ms | 66.1 ms | 71 (70 to 73) ms | 1,485 MHz |
+| 8 | `vllm-b` | 112.8 (112.7 to 112.8) | 253 ms | 65.8 ms | 67 (67 to 68) ms | 1,485 MHz |
+| 8 | `vllm-async` | 112.7 (112.6 to 112.8) | 261 ms | 65.8 ms | 67 (67 to 68) ms | 1,500 MHz |
+| 8 | `vllm-eager` | 111.2 (111.2 to 111.4) | 206 ms | 67.0 ms | 68 (68 to 68) ms | 1,515 MHz |
+| 8 | `vllm-seqs-16` | 112.5 (112.4 to 112.6) | 260 ms | 65.9 ms | 67 (67 to 67) ms | 1,485 MHz |
 | 16 | `vllm` | 200.9 (200.5 to 201.2) | 289 ms | 69.5 ms | 80 (80 to 105) ms | 1,425 MHz |
 | 16 | `sglang` | 201.1 (201.1 to 201.2) | 212 ms | 70.1 ms | 81 (81 to 82) ms | 1,470 MHz |
+| 16 | `vllm-b` | 201.3 (200.9 to 201.3) | 288 ms | 69.5 ms | 85 (81 to 89) ms | 1,455 MHz |
+| 16 | `vllm-async` | 201.4 (200.8 to 201.5) | 284 ms | 69.5 ms | 85 (79 to 87) ms | 1,425 MHz |
+| 16 | `vllm-eager` | 198.4 (198.2 to 198.4) | 278 ms | 71.1 ms | 80 (80 to 85) ms | 1,455 MHz |
+| 16 | `vllm-seqs-16` | 200.9 (200.6 to 201.1) | 288 ms | 69.7 ms | 80 (79 to 86) ms | 1,440 MHz |
 | 32 | `vllm` | 273.9 (273.8 to 274.4) | 1,813 ms | 102.2 ms | 619 (612 to 622) ms | 1,275 MHz |
 | 32 | `sglang` | 271.3 (270.3 to 272.2) | 2,871 ms | 96.8 ms | 102 (102 to 103) ms | 1,320 MHz |
+| 32 | `vllm-b` | 275.1 (274.8 to 275.1) | 1,800 ms | 101.8 ms | 613 (608 to 614) ms | 1,275 MHz |
+| 32 | `vllm-async` | 275.3 (273.8 to 275.3) | 1,807 ms | 102.1 ms | 613 (611 to 619) ms | 1,275 MHz |
+| 32 | `vllm-eager` | 273.2 (272.4 to 273.3) | 1,768 ms | 103.1 ms | 600 (595 to 601) ms | 1,312 MHz |
+| 32 | `vllm-seqs-16` | 171.8 (171.3 to 172.4) | 12,330 ms | 81.1 ms | 595 (587 to 603) ms | 1,365 MHz |
 | 64 | `vllm` | 241.4 (241.4 to 246.4) | 10,953 ms | 129.2 ms | 1,363 (1,204 to 1,436) ms | 1,012 MHz |
 | 64 | `sglang` | 256.6 (255.8 to 260.5) | 18,356 ms | 106.2 ms | 114 (114 to 118) ms | 1,215 MHz |
+| 64 | `vllm-b` | 242.3 (242.0 to 243.8) | 11,181 ms | 129.2 ms | 1,233 (1,187 to 1,437) ms | 1,005 MHz |
+| 64 | `vllm-async` | 242.0 (241.2 to 253.3) | 11,087 ms | 128.2 ms | 1,127 (1,116 to 1,423) ms | 998 MHz |
+| 64 | `vllm-eager` | 242.5 (241.3 to 245.6) | 10,941 ms | 131.4 ms | 1,326 (1,270 to 1,427) ms | 1,020 MHz |
+| 64 | `vllm-seqs-16` | 138.1 (136.9 to 139.3) | 39,890 ms | 103.7 ms | 1,143 (1,086 to 1,282) ms | 630 MHz |
 
 ### L4, rate: requests each second, 512 prompt and 128 output tokens
 
