@@ -14,7 +14,9 @@ Disaggregated serving runs two kinds of server. A prefill server computes the pr
 
 The vLLM documentation states plainly that disaggregated prefill does not raise throughput. It gives you control over the first token and the stream as two separate numbers, and it controls the tail of the inter-token latency. It costs a transfer of the KV cache for every request, and more servers to run.
 
-Pick it when the 99th percentile of the inter-token latency matters and long prompts cause it. Do not pick it to serve more users on the same GPUs.
+Even for the tail, the gain is a condition, not a default. A 2025 study compared split servers with servers that run both stages. It found that the gain is not guaranteed and depends on the request load and on the path that moves the KV cache. We did not measure this ourselves.
+
+Pick it when the 99th percentile of the inter-token latency matters and long prompts cause it. Do not pick it to serve more users on the same GPUs. Before you keep it, compare it with the same GPUs run as plain servers, at your real load.
 
 ## Set it up
 
@@ -54,6 +56,7 @@ The ratio of prefill to decode servers depends on your prompt and answer lengths
 - Split prefill and decode to protect the stream from long prompts, not to raise throughput.
 - Each server needs a KV connector and a role, and a router sends each request to both.
 - Set the failure policy, because the default fails the request.
+- Compare it with plain servers on the same GPUs, at your real load, before you keep it.
 ```
 
 Sources: vLLM documentation at v0.31.0 (docs/features/disagg_prefill.md, docs/features/nixl_connector_usage.md), the vLLM source at v0.31.0 (vllm/config/kv_transfer.py, vllm/distributed/kv_transfer/), the vLLM CI configuration at v0.31.0 (.buildkite).
