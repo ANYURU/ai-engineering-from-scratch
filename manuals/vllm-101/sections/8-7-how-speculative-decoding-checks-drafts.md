@@ -16,8 +16,8 @@ The check is what keeps the output the same. With greedy sampling, a guess stays
 id: fig-8-7
 kind: sequence
 title: one verify pass
-claim: One target pass checks every guess, keeps the guesses up to the first rejection, and adds one token from the target.
-caption: Read top to bottom. The tokens are an example. From the vLLM source at v0.31.0.
+claim: One target pass keeps the drafts up to the first rejection and adds one token, so one real request got about 1.8 tokens per pass.
+caption: The top half shows the rule by position. The bottom half is a real Qwen3-8B request on our L4, served by SGLang with EAGLE3, the same rule vLLM uses. Green tokens came from verify passes. From manuals/sglang-101/capture/gpu/out-l4/eagle3-generate.txt.
 ```
 
 ## The proposers
