@@ -4,7 +4,7 @@
 
 Your users ask for edits of documents they send. When you finish this section, you can decide when n-gram speculation beats a draft model.
 
-**Our result:** on our L4, n-gram speculation cut the time per token from 242 to 77 ms for one user, on random prompts.
+**Our result:** on our L4, n-gram cut the time per token from 242 to 77 ms for one user, on random prompts with 128-token outputs.
 
 ## Turn it on
 
@@ -32,7 +32,7 @@ Open chat copies little. For that work, most guesses fail, and each step writes 
 
 ## See what our run shows
 
-**We measured** the time per token with and without n-gram speculation on the shared GPU of our L4 node, with `Qwen/Qwen3-8B`, on 2026-10-22. That GPU held a pool of 2,928 tokens, so we tested 1 and 4 users with two seeds each.
+**We measured** the time per token with and without n-gram speculation on the shared GPU of our L4 node, with `Qwen/Qwen3-8B`, on 2026-10-22. That GPU held a pool of 2,928 tokens, so we tested 1 and 4 users with two seeds each. The prompts came from the random dataset of the benchmark tool, with 512 tokens in and 128 tokens out.
 
 ```figure
 id: fig-4-2
@@ -51,7 +51,9 @@ The GPU ran at 375 to 443 MHz, far below its full clock, because the card is sha
 
 At one user, output rose by 86 percent. At four users it rose by 48 percent, and the worst token gap grew from 290 to 1,691 ms. We did not trace the cause of that gap.
 
-Our prompts came from the random dataset of the benchmark tool. We did not record the acceptance counters, so we cannot say how many guesses matched. Treat our gain as a result for these prompts only. On your own prompts, the gain depends on how much the output copies the input.
+We did not record the acceptance counters, so we cannot say how many guesses matched. Treat our gain as a result for random prompts and 128-token outputs only. On your own prompts, the gain depends on how much the output copies the input.
+
+Other teams report the same limits, and we did not measure them ourselves. A 2026 study of speculative decoding in vLLM found that the acceptance length changes a lot between requests and between datasets. A 2025 study of serving benchmarks found that speculation can lower the median time per token and raise the P99 at the same time. Our P99 ITL at four users shows the second effect.
 
 ## Know what it costs
 
@@ -60,7 +62,7 @@ Our prompts came from the random dataset of the benchmark tool. We did not recor
 
 ## Check the gain on your prompts
 
-Run your own prompts with and without the config, and compare the time per token. Then read two counters from `/metrics`:
+Run a sample of your own traffic with and without the config. Keep your real output lengths, and do not use `--ignore-eos`. Compare the median TPOT, the P99 ITL, and the P99 TTFT, not only the median. Then read two counters from `/metrics`:
 
 ```bash
 curl -s http://localhost:8000/metrics | grep -E "spec_decode_num_(draft|accepted)_tokens"
@@ -70,7 +72,8 @@ Divide the accepted tokens by the draft tokens. A high share means that your out
 
 ```takeaways
 - Try n-gram speculation for edits, quotes, code changes, and extraction.
-- Measure on your own prompts, because our gain comes from random prompts.
+- Measure on your own prompts, because our gain comes from random prompts with 128-token outputs.
+- Watch the P99 ITL, which grew almost sixfold at four users in our run.
 - Expect async scheduling to turn off when you add it.
 ```
 
