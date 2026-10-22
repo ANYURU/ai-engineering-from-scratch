@@ -4,7 +4,7 @@
 
 Your server queues requests because the KV cache is full. When you finish this section, you can double the KV pool and check the cost in speed and accuracy.
 
-**Our result:** on our L4, the first FP8 start failed, and the Triton backend fixed it. With the pool held fixed, one user got 2 percent faster.
+**Our result:** on our L4, the first FP8 start failed, and the Triton backend fixed it. With the pool held fixed, one user got 2.3 percent faster per token.
 
 ## Turn it on
 
@@ -62,11 +62,11 @@ VLLM_USE_FLASHINFER_SAMPLER=0 vllm serve Qwen/Qwen3-8B --kv-cache-dtype fp8 --at
 
 ## See what our run shows
 
-**We measured** the FP8 KV cache with the Triton backend against the BF16 default on our L4 with `Qwen/Qwen3-8B` on 2026-10-22. Both ran in one session, at 1 and 32 users.
+**We measured** the FP8 KV cache with the Triton backend against the BF16 default on our L4 with `Qwen/Qwen3-8B` on 2026-10-22. Both ran in [the throttled session](#l4-sessions), at 1 and 32 users.
 
-We held the pool at 24,096 tokens in both runs, with `--num-gpu-blocks-override`. So this run does not show the larger pool. It shows only the change in speed.
+We held the pool at 24,096 tokens in both runs, as a [fixed pool](#s-count-the-memory-before-you-pick-a-gpu). So this run does not show the larger pool. It shows only the change in speed.
 
-| Users | Median TPOT, BF16 / FP8 | Output tok/s, BF16 / FP8 | Median SM clock, BF16 / FP8 | Seeds, BF16 / FP8 |
+| Users, L4 throttled session | Median TPOT, BF16 / FP8 | Output tok/s, BF16 / FP8 | Median SM clock, BF16 / FP8 | Seeds, BF16 / FP8 |
 |---|---|---|---|---|
 | 1 | 104.1 / 101.8 ms | 10.59 / 10.75 | 210 / 210 MHz | 3 / 2 |
 | 32 | 142.7 / 138.0 ms | 186.68 / 192.00 | 450 / 480 MHz | 3 / 2 |
@@ -79,17 +79,19 @@ Two things changed together: the KV data type and the backend. The table does no
 
 We did not measure output quality with an FP8 KV cache. With no scales in the checkpoint, vLLM uses a scale of 1.0 for the keys and values. That is the worst case for accuracy.
 
-The vLLM team tested uncalibrated FP8 KV caches in 2026. In their tests, most models stayed close to BF16. Some did not: they name Kimi-K2.5 on the FlashMLA backend as a model that needs calibrated scales. We did not measure these results ourselves.
+The vLLM team tested uncalibrated FP8 KV caches in the blog post "The State of FP8 KV-Cache and Attention Quantization in vLLM" of April 2026. In their tests, most models stayed close to BF16. Some did not. They name Kimi-K2.5 on the FlashMLA backend as a model that needs calibrated scales. We did not measure these results ourselves.
 
 ### Check that your scales load
 
 A checkpoint with calibrated scales does not always use them. At 0.31.0, issue 54623 reports that the Qwen3.5 model family never loads its KV scales. Issue 60333 reports the same for one MTP draft loader. Both issues are open.
 
-First, look for the scales in the checkpoint. Search the weight index for tensor names that end in `k_scale` or `v_scale`:
+First, look for the scales in the checkpoint. Search the weight index in the Hugging Face cache for tensor names that end in `k_scale` or `v_scale`. Change the model folder name to your model:
 
 ```bash
-grep -oE '"[^"]*(k|v)_scale"' model.safetensors.index.json | head
+grep -oE '"[^"]*(k|v)_scale"' ~/.cache/huggingface/hub/models--Qwen--Qwen3-8B/snapshots/*/model.safetensors.index.json | head
 ```
+
+No output means that the checkpoint has no scales.
 
 A checkpoint with one weight file has no index. For it, list the tensor names with the `safetensors` Python package.
 
@@ -102,11 +104,9 @@ Last, run your own prompts with and without FP8, and compare the answers before 
 Release 0.32.0 adds an NVFP4 KV cache on SM 8.x and SM 12.x GPUs, which include the L4 and the GB10. It stores fewer bytes per token than FP8. We did not test it.
 
 ```takeaways
-- An FP8 KV cache halves the bytes per token, so the same memory holds twice the tokens.
-- On an L4, add --attention-backend TRITON_ATTN if the FlashInfer build fails.
 - Read the attention backend line after you change the KV data type.
-- Check the startup log for the scale 1.0 warning, even with a calibrated checkpoint.
-- Check output quality on your own prompts before production.
+- If the FlashInfer build fails, start with --attention-backend TRITON_ATTN.
+- Check for the scale 1.0 warning and test quality on your own prompts.
 ```
 
-Sources: capture/gpu/summary/l4.json (load.vllm-fast-b, load.vllm-kv-fp8-triton), capture/gpu/incidents/l4-vllm-kv-fp8-flashinfer-attention-jit.txt, capture/gpu/incidents/l4-vllm-flashinfer-jit.txt, the vLLM source at v0.31.0 (vllm/platforms/cuda.py, vllm/v1/attention/backends/fa_utils.py, vllm/v1/attention/backends/triton_attn.py), vLLM documentation at v0.31.0 (docs/features/quantization/quantized_kvcache.md), the vLLM team's 2026 tests of uncalibrated FP8 KV caches (Kimi-K2.5 on the FlashMLA backend), vLLM issues 54623 and 60333, the release notes for v0.32.0 (NVFP4 KV cache).
+Sources: capture/gpu/summary/l4.json (load.vllm-fast-b, load.vllm-kv-fp8-triton), capture/gpu/incidents/l4-vllm-kv-fp8-flashinfer-attention-jit.txt, capture/gpu/incidents/l4-vllm-flashinfer-jit.txt, the vLLM source at v0.31.0 (vllm/platforms/cuda.py, vllm/v1/attention/backends/fa_utils.py, vllm/v1/attention/backends/triton_attn.py), vLLM documentation at v0.31.0 (docs/features/quantization/quantized_kvcache.md), the vLLM blog post The State of FP8 KV-Cache and Attention Quantization in vLLM (2026-04-22), vLLM issues 54623 and 60333, the release notes for v0.32.0 (NVFP4 KV cache).
