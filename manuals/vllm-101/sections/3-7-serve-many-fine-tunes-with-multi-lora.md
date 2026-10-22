@@ -56,4 +56,4 @@ Not measured on our hardware. We have not measured the cost of the adapter count
 - Two adapters never share prefix-cache blocks.
 ```
 
-Sources: the vLLM source at v0.31.0 (vllm/config/lora.py, vllm/lora/, vllm/lora/lora_model.py, vllm/lora/peft_helper.py, vllm/v1/core/kv_cache_utils.py), vLLM documentation at v0.31.0 (docs/features/lora.md), the release notes for v0.31.0.
+Sources: the vLLM source at v0.31.0 (vllm/config/lora.py, vllm/lora/lora_model.py, vllm/lora/peft_helper.py, vllm/lora/utils.py, vllm/v1/core/kv_cache_utils.py), vLLM documentation at v0.31.0 (docs/features/lora.md), the release notes for v0.31.0.
