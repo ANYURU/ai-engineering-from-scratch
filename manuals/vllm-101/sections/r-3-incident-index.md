@@ -4,12 +4,17 @@
 
 Use this page to check whether a problem you see is known.
 
-States are as of 2026-10-21. Numbers refer to issues in the vLLM repository.
+States are as of 2026-10-21, and as of 2026-10-22 for issues 44740, 52479, 54623, 57853, and 60333. Numbers refer to issues in the vLLM repository.
 
 ## Issues
 
 | Issue | What it reports | State | Page |
 |---|---|---|---|
+| 44740 | a negative CUDA graph memory estimate with MTP speculation on the GB10, which makes the KV cache too large | open | [DGX Spark](#s-size-memory-on-a-dgx-spark) |
+| 52479 | a level 2 wake from sleep that does not reload the speculative draft, so no draft token is accepted | open | [RL rollouts](#s-use-vllm-as-an-rl-rollout-engine) |
+| 54623 | the Qwen3.5 family never loads checkpoint KV scales, so an FP8 KV cache runs at scale 1.0 | open | [FP8 KV cache](#s-fit-more-users-with-an-fp8-kv-cache) |
+| 57853 | a weight update sent while the engine sleeps segfaults the engine core | open | [RL rollouts](#s-use-vllm-as-an-rl-rollout-engine) |
+| 60333 | one MTP draft loader drops FP8 KV scales, and the draft layers use scale 1.0 | open | [FP8 KV cache](#s-fit-more-users-with-an-fp8-kv-cache) |
 | 58726 | slow weight load on the GB10, from per-tensor copies out of the file map | open | [DGX Spark](#s-size-memory-on-a-dgx-spark) |
 | 59770 | slower NVFP4 decode for one model on the GB10 since 0.29.0 | open | [troubleshooting](#s-troubleshoot-by-symptom) |
 | 60174 | one repeated token after a prefix-cache hit with DFlash2 or DSpark speculation on 0.30 and 0.31 | closed on 2026-10-22 | [troubleshooting](#s-troubleshoot-by-symptom) |
