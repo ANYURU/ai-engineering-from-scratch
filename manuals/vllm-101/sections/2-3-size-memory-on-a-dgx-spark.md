@@ -12,6 +12,17 @@ The GB10 in a DGX Spark has no separate GPU memory. The CPU and the GPU use the 
 
 vLLM 0.31.0 knows this. On an integrated GPU it reads free memory from the operating system. The GPU driver reports too little free memory on these machines. It also releases its cached GPU memory when the whole system is more than 80 percent full. So `--gpu-memory-utilization` is a share of the whole machine, not of a separate card.
 
+## Do not trust the fraction as a hard limit
+
+The fraction sets the share that vLLM plans for. On unified memory it does not always limit what vLLM takes. Reports from other users show two cases. We did not see them in our run:
+
+- One user on a GB10 saw vLLM take about 101 GiB at a fraction of 0.50. The report says that vLLM sized the KV cache from the free memory, not from the share.
+- Issue 44740 reports a negative estimate of the CUDA graph memory with MTP speculation on the GB10. The KV cache grew too large, and the start ran out of memory. The issue is open.
+
+In our run, the numbers matched the share of 0.75. That is one run, with no speculation.
+
+To give the cache a fixed size, set it in bytes with `--kv-cache-memory-bytes`. vLLM then ignores the fraction for the cache. Add the weights, the cache, and a few GiB for the profile and the graphs. Check that the sum leaves room for the operating system.
+
 ## Pick the fraction
 
 Add the weights, the KV cache you want, and a few GiB for the startup profile and the CUDA graphs. Divide the sum by the total memory. Leave room for the operating system and the page cache, which use the same memory.
@@ -66,11 +77,12 @@ grep -E "Model loading took|Available KV cache memory|GPU KV cache size" server.
 free -g
 ```
 
-If `free -g` shows almost no available memory while the server is idle, lower the fraction by 0.05 and start again.
+If `free -g` shows almost no available memory while the server is idle, lower the fraction by 0.05 and start again. If the KV cache line is larger than your share allows, set `--kv-cache-memory-bytes` instead.
 
 ```takeaways
 - On unified memory, the memory fraction is a share of the whole machine.
 - Leave room for the operating system and the page cache, and check it with `free -g`.
+- If the fraction does not limit the memory, set the cache size with --kv-cache-memory-bytes.
 - Expect minutes for the first weight load, and keep the server running.
 ```
 
