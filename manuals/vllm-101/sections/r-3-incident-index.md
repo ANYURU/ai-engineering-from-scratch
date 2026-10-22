@@ -4,7 +4,7 @@
 
 Use this page to check whether a problem you see is known.
 
-States are as of 2026-10-23. Numbers refer to issues in the vLLM repository.
+States are as of 2026-10-22. Numbers refer to issues in the vLLM repository.
 
 ## Issues
 
@@ -36,4 +36,4 @@ States are as of 2026-10-23. Numbers refer to issues in the vLLM repository.
 | 2026-10-22 | L4, shared GPU | the start failed, because one request at a maximum length of 2,928 tokens needed slightly more KV cache than was free | [startup](#s-fix-out-of-memory-at-startup) |
 | 2026-10-21 | GB10 | the first weight load of 56.93 GiB took 330 seconds | [DGX Spark](#s-size-memory-on-a-dgx-spark) |
 
-Sources: vLLM issues 44740, 46307, 52479, 54623, 57853, 58253, 58726, 59538, 59770, 60174, 60262, 60333, 60830, 60838, 61024, 61229, 61698, and 61886 (fetched 2026-10-21, and the state of each again on 2026-10-23); capture/gpu/out-gb10/server-load-vllm.log.
+Sources: vLLM issues 44740, 46307, 52479, 54623, 57853, 58253, 58726, 59538, 59770, 60174, 60262, 60333, 60830, 60838, 61024, 61229, 61698, and 61886 (fetched 2026-10-21, and the state of each again on 2026-10-22); capture/gpu/out-gb10/server-load-vllm.log.
