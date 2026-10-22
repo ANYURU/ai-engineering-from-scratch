@@ -231,6 +231,15 @@ function newInline() {
   return { refs: [], repoLinks: [] };
 }
 
+function readerCaption(caption) {
+  const text = String(caption).trim();
+  const index = text.search(/(?:^|\s)From (?!step\b)\S[^]*$/);
+  if (index < 0) return text;
+  const tail = text.slice(index).trim();
+  if (/\.\s+[A-Z]/.test(tail.replace(/\.$/, ''))) return text;
+  return text.slice(0, index).trim();
+}
+
 function inlineHtml(source, where, acc) {
   const codes = [];
   let html = String(source).replace(/`([^`]+)`/g, (match, code) => { codes.push(code); return `\u0000${codes.length - 1}\u0000`; });
@@ -514,11 +523,11 @@ function renderAll(manual, acc) {
   manual.paletteHtml = manual.palette.map(entry => ({ hue: entry.hue, html: inlineHtml(entry.meaning, `${label} palette`, acc) }));
   for (const part of manual.parts) part.summaryHtml = inlineHtml(part.summary || part.thesis, `${label} part ${part.number}`, acc);
   if (manual.reference) manual.reference.summaryHtml = inlineHtml(manual.reference.summary || manual.reference.thesis || 'Lookup tables for every name in the manual.', `${label} reference`, acc);
-  if (manual.plate) manual.plate.captionHtml = inlineHtml(manual.plate.caption, `${label} plate caption`, acc);
+  if (manual.plate) manual.plate.captionHtml = inlineHtml(readerCaption(manual.plate.caption), `${label} plate caption`, acc);
   for (const doc of manual.documents) {
     for (const block of doc.blocks.filter(item => item.type === 'figure')) {
       block.claimHtml = inlineHtml(block.claim, docLine(doc, block.line), acc);
-      block.captionHtml = inlineHtml(block.caption, docLine(doc, block.line), acc);
+      block.captionHtml = inlineHtml(readerCaption(block.caption), docLine(doc, block.line), acc);
     }
   }
   for (const doc of manual.documents) {
@@ -803,6 +812,7 @@ module.exports = {
   SCHEMA,
   LISTING_LANGS,
   inlineHtml,
+  readerCaption,
   tableHtml,
   loadAll,
   loadManual,

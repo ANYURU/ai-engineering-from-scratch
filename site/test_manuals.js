@@ -169,6 +169,12 @@ test('a table column whose cells are only citation markers is dropped', () => {
   assert.match(html, /<td><code>a<\/code><\/td><td>one<\/td><\/tr>/);
 });
 
+test('figure captions drop the closing source sentence in the reader view', () => {
+  assert.equal(manuals.readerCaption('Read top to bottom. Grey layers are outside SGLang. From the v0.5.22 source and capture/out/server-default.log.'), 'Read top to bottom. Grey layers are outside SGLang.');
+  assert.equal(manuals.readerCaption('From step 2 on, the left box is the request. From capture/out/a.txt.'), 'From step 2 on, the left box is the request.');
+  assert.equal(manuals.readerCaption('Read left to right.'), 'Read left to right.');
+});
+
 test('numbers figures per part and renders the print edition', () => {
   const { dir } = fixture();
   const manual = manuals.loadManual(dir);
