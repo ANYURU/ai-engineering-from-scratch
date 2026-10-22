@@ -15,7 +15,7 @@ We have not measured a custom reward on our GB10. Our runs used the built-in `ma
 | `--rm-type` | Score |
 |---|---|
 | `math` | 1 when the answer matches the label, else 0 |
-| `dapo` | the DAPO math score |
+| `dapo` | 1 for a correct answer and -1 otherwise, returned as a dict, so it needs `--reward-key score` |
 | `deepscaler` | the DeepScaleR rule-based score |
 | `f1` | the F1 overlap with the label |
 | `gpqa` | the score for GPQA multiple choice |
@@ -47,9 +47,9 @@ Run the function on ten answers that you have scored by hand. Include a correct 
 
 ## Check the advantages of fractional rewards
 
-GRPO subtracts the mean reward of each group from each answer. When every answer in a group gets the same reward, every advantage should be 0, and the group teaches nothing.
+GRPO subtracts the mean reward of each group from each answer, then divides by the standard deviation of the group. When every answer in a group gets the same reward, every advantage should be 0, and the group teaches nothing.
 
-A report in the Miles issue tracker shows that this fails for some fractions. A group of 16 answers, each scored 0.3, got an advantage of about 0.029 per answer, because 0.3 has no exact float32 form. A binary reward of 0 or 1 does not hit this.
+A report in the Miles issue tracker shows that this fails for some fractions. In float32, the mean of 16 rewards of 0.3 is not exactly 0.3, so a tiny remainder stays. The division by a standard deviation near 0 makes it large: about 0.029 per answer. A binary reward of 0 or 1 does not hit this, because its mean is exact.
 
 If your reward gives fractions, find groups where every answer has the same reward and check that their advantages are 0. If they are not, round the rewards to values that a float32 holds exactly, such as multiples of 0.25.
 
