@@ -35,9 +35,21 @@ caption: Read down each column: where the log stops, the cause, and the flag to 
 
 ## Fix a shared GPU
 
-On a shared GPU, set the fraction yourself. We ran vLLM 0.31.0 on an L4 that another team also used. Their processes held about 3.5 GB, so we set `--gpu-memory-utilization 0.83`.
+On a shared GPU, set the fraction yourself. We ran vLLM 0.31.0 on an L4 that another team also used. Their processes held part of the memory, so we set `--gpu-memory-utilization 0.83` and a pool of 2,928 tokens.
 
-The first start still failed. The KV cache needed 0.4 GiB for one request at a maximum length of 2,928 tokens, and slightly less than that was free. The error said that 2,912 tokens would fit. We set `--max-model-len 2048`, which is enough for our 640-token requests, and started the server again.
+The first start still failed, because we also set the maximum length to 2,928 tokens. One request at that length needed slightly more KV cache than was free, and the error said that 2,912 tokens would fit:
+
+```listing
+title: the maximum length error on the shared L4 GPU
+source: capture/gpu/incidents/l4-gpu1-vllm-maxlen-oom.txt
+lang: text
+note: The first line gives the settings. The second line gives the error and the length that fits.
+---
+(APIServer pid=3681321) INFO 10-22 00:35:04 [api_utils.py:286] non-default args: {'model_tag': 'Qwen/Qwen3-8B', 'host': '127.0.0.1', 'port': 30100, 'model': 'Qwen/Qwen3-8B', 'max_model_len': 2928, 'gpu_memory_utilization': 0.83, 'num_gpu_blocks_override': 183}
+(EngineCore pid=3682071) ERROR 10-22 00:36:18 [core.py:1433] ValueError: To serve at least one request with the model's max seq len (2928), (0.4 GiB KV cache is needed, which is larger than the available KV cache memory (0.4 GiB). Based on the available memory, the estimated maximum model length is 2912. Try increasing `gpu_memory_utilization` (which also controls CPU memory on the CPU backend) or decreasing `max_mod
+```
+
+We set `--max-model-len 2048`, which is enough for our 640-token requests, and the server started. Later we raised it to 2,304 tokens, so that our tests with 2,048-token prefixes fit.
 
 The lesson: on a shared GPU, the fraction and the maximum length work together. Lower the maximum length to the longest request you send before you lower the fraction.
 
@@ -63,4 +75,4 @@ If the line is there, the server has a pool. Compare its size with [your count](
 - Use the exact KV memory flag when two instances share one GPU.
 ```
 
-Sources: vLLM documentation at v0.31.0 (docs/configuration/optimization.md), the vLLM source at v0.31.0 (vllm/config/cache.py, vllm/config/scheduler.py), our L4 run on the shared GPU on 2026-10-22.
+Sources: capture/gpu/incidents/l4-gpu1-vllm-maxlen-oom.txt, vLLM documentation at v0.31.0 (docs/configuration/optimization.md), the vLLM source at v0.31.0 (vllm/config/cache.py, vllm/config/scheduler.py), our L4 run on the shared GPU on 2026-10-22.
