@@ -110,7 +110,6 @@ def run():
         old_names = set(old["runs"]) | set(old["excluded"])
         new_names = set(new["runs"]) | set(new["excluded"])
         problems += [f"{name}: stored, but missing from the runs folder" for name in sorted(old_names - new_names)]
-        problems += [f"{name}: stored as partial, but not partial in the runs folder" for name in sorted(set(old.get("partial", [])) - set(new.get("partial", [])))]
         if problems:
             for problem in problems:
                 print(f"drift: {problem}")
@@ -118,6 +117,8 @@ def run():
             return 1
         for name in changed_runs(old, new):
             print(f"changed: {name}")
+        for name in sorted(set(old.get("partial", [])) - set(new.get("partial", []))):
+            print(f"completed: {name} is no longer partial")
         shutil.copyfile(fresh, SUMMARY)
     shutil.copyfile(pause_log, PAUSES)
     return check()
