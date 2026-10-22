@@ -4,14 +4,22 @@ const path = require('path');
 const { figure } = require('../../../_shared/figkit.js');
 const { load } = require('../../../_shared/chart.js');
 
-const m = load(path.join(__dirname, '../../capture/gpu/summary/miles-gb10-lab.json')).runs['plain-48'].median_unpaused;
+const run = load(path.join(__dirname, '../../capture/gpu/summary/miles-gb10-lab.json')).runs['plain-48'];
+const m = run.median_unpaused;
 const v = key => m[key].median;
-const total = v('rollout_time_s') + v('wake_up_time_s') + v('train_time_s') + v('sleep_time_s') + v('update_weights_time_s');
+const phases = ['rollout_time_s', 'wake_up_time_s', 'train_time_s', 'sleep_time_s', 'update_weights_time_s'];
+const total = phases.reduce((sum, key) => sum + v(key), 0);
+const residuals = run.per_step
+  .filter(row => row.step_paused_s === 0 && ['step_time_s', ...phases].every(key => typeof row[key] === 'number'))
+  .map(row => row.step_time_s - phases.reduce((sum, key) => sum + row[key], 0))
+  .sort((a, b) => a - b);
+const middle = Math.floor(residuals.length / 2);
+const untimed = residuals.length % 2 ? residuals[middle] : (residuals[middle - 1] + residuals[middle]) / 2;
 
 module.exports = figure('fig-8-4', {
   height: 330,
   title: 'The engine and the trainer take turns on one memory',
-  desc: `One colocated step drawn to scale from the phase medians of 48 steps of a run made before we added the heat guard. The engine holds its weights and its KV cache during rollout, ${v('rollout_time_s').toFixed(1)} s, then gives them back. The trainer moves its state onto the GPU in ${v('wake_up_time_s').toFixed(2)} s, trains in ${v('train_time_s').toFixed(1)} s, of which ${v('log_probs_time_s').toFixed(1)} s compute the log probabilities, and moves its state off in ${v('sleep_time_s').toFixed(2)} s. The engine loads again and gets the new weights in ${v('update_weights_time_s').toFixed(2)} s. The other ${(v('step_time_s') - total).toFixed(1)} s of the ${v('step_time_s').toFixed(1)} s step have no timer.`,
+  desc: `One colocated step drawn to scale from the phase medians of 48 steps of a run made before we added the heat guard. The engine holds its weights and its KV cache during rollout, ${v('rollout_time_s').toFixed(1)} s, then gives them back. The trainer moves its state onto the GPU in ${v('wake_up_time_s').toFixed(2)} s, trains in ${v('train_time_s').toFixed(1)} s, of which ${v('log_probs_time_s').toFixed(1)} s compute the log probabilities, and moves its state off in ${v('sleep_time_s').toFixed(2)} s. The engine loads again and gets the new weights in ${v('update_weights_time_s').toFixed(2)} s. Over the same ${residuals.length} steps, a median of ${untimed.toFixed(1)} s of each ${v('step_time_s').toFixed(1)} s step has no timer.`,
 }, f => {
   const x0 = 160;
   const w = 460;
@@ -42,5 +50,5 @@ module.exports = figure('fig-8-4', {
 
   f.text(20, 252, 'Only one side holds the GPU memory at a time.', { size: 12, serif: true });
   f.text(20, 274, 'The timed hand-offs take about 2 s of a step of about 2.5 minutes.', { size: 12, serif: true });
-  f.text(20, 304, `The other ${(v('step_time_s') - total).toFixed(1)} s of the ${v('step_time_s').toFixed(1)} s step have no timer, such as the engine release.`, { size: 11.5, serif: true, hue: 'ink-soft' });
+  f.text(20, 304, `A median of ${untimed.toFixed(1)} s of each step has no timer, such as the engine release.`, { size: 11.5, serif: true, hue: 'ink-soft' });
 });

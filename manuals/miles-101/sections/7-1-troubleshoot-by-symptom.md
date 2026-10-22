@@ -40,7 +40,7 @@ caption: The five symptoms from our runs. The entries below add six more from is
 
 ## Step times change from run to run
 
-- **Cause:** thermal pauses or a lower clock on a hot GPU. The samples and the rewards do not show it.
+- **Cause:** thermal pauses or a lower clock on a hot GPU. We expect the samples and the rewards to stay the same, but we have not tested that.
 - **Check:** the pause log of your heat guard, and the GPU clock during the run.
 - **Fix:** time only steps without a pause, and compare times only within one session. [Section 5.3](#s-repeat-a-run) gives the rule.
 

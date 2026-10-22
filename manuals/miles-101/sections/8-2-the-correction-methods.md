@@ -2,7 +2,7 @@
 
 > Miles has several ways to deal with the gap between the trainer and the engine, and each one fixes a different cause.
 
-[Section 8.1](#s-why-rl-owns-an-engine) names four sources of disagreement: tokens, routing, numbers, and staleness. Miles has a method for each. Some methods remove a cause, and others only reduce its effect on the gradient.
+[Section 8.1](#s-why-rl-owns-an-engine) names five sources of disagreement: tokens, routing, sampling, numbers, and staleness. Miles has a method for each. Some methods remove a cause, and others only reduce its effect on the gradient.
 
 When you finish this section, you can explain which correction fixes which cause, and which of them we measured.
 

@@ -10,7 +10,7 @@ We cannot test fault tolerance on our single GB10. On one GPU, a dead engine mea
 
 ## Save checkpoints first
 
-Checkpoints protect you from every other failure. Set them before anything else:
+Checkpoints limit the work you lose when you restart after a failure. They do not help when the storage fails, when a checkpoint is damaged, or for the steps after the last checkpoint. Set them before anything else:
 
 ```bash
 --save /ckpt/run-a --save-interval 20 --load /ckpt/run-a
@@ -48,4 +48,4 @@ The Miles team built a fault injector for its tests. Their release notes report 
 - Test an engine crash on your own setup before a long run.
 ```
 
-Sources: Miles fault tolerance, checkpoint, and weight update arguments at main 08752a12, compared with main ee36bb2a of 2026-10-20; Miles release notes v0.1.2; Miles issue 3649; capture/gpu/out-gb10/engine-died-503.log.
+Sources: Miles main 08752a12 files miles/utils/arguments.py, docs/advanced/fault-tolerance.md, miles/ray/placement_group.py, miles/backends/training_utils/checkpoint/io.py, miles/utils/test_utils/fault_injector.py, compared with miles/utils/arguments.py at main ee36bb2a of 2026-10-20; Miles release notes v0.1.2; Miles issue 3649; capture/gpu/out-gb10/engine-died-503.log.

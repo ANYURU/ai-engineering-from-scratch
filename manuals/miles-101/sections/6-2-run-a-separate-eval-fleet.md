@@ -50,4 +50,4 @@ Start with the training engines. Move to a fleet when the eval pause becomes a l
 - Change fleet engine settings with the --eval-sglang-* flags.
 ```
 
-Sources: Miles fully async documentation (evaluation), eval arguments, and eval fleet code at main 08752a12.
+Sources: Miles main 08752a12 files docs/user-guide/fully-async.md, miles/utils/arguments.py, miles/backends/sglang_utils/arguments.py, miles/backends/sglang_utils/sglang_config.py, miles/ray/rollout/eval_fleet.py, miles/ray/rollout/eval_dispatch.py, miles/ray/rollout/rollout_executor.py, miles/rollout/checkpoint_eval.py.

@@ -82,7 +82,7 @@ caption: Mean answer length per step for the same three seeds.
 | What you see | What it means | Where to go |
 |---|---|---|
 | no step lines after ten minutes | the engine or the trainer did not start | [section 7.1](#s-troubleshoot-by-symptom) |
-| `503 Service Unavailable` lines | the rollout engine died | [section 1.2](#s-add-a-watchdog) |
+| `503 Service Unavailable` lines that do not stop for minutes | the rollout engine died. Short bursts of a minute or less can come from a healthy engine | [section 1.2](#s-add-a-watchdog) |
 | the log probability gap grows step after step | the trainer and the engine hold different weights | [section 5.2](#s-check-the-first-step) |
 | the reward stays flat and many groups score the same | most groups give no learning signal | [section 3.1](#s-train-math-on-gsm8k) |
 

@@ -4,7 +4,7 @@
 
 Reinforcement learning on a language model spends most of its time generating text. A training library can generate, but slowly: one sequence at a time, with no shared cache. An inference engine generates fast, but it was built to serve users, not to agree with a trainer.
 
-When you finish this section, you can explain why Miles runs its own inference engine, and name the four ways the two sides can disagree.
+When you finish this section, you can explain why Miles runs its own inference engine, and name the five ways the two sides can disagree.
 
 Miles puts an SGLang engine under the trainer's control. This page explains why, and what that control has to cover. The Inside Miles guide walks one step from start to end, so this page stays with the reasons.
 
@@ -29,24 +29,25 @@ A serving engine never changes its weights while it runs. An RL engine must:
 
 Each of these needs a hook into the engine. That is why Miles runs a patched SGLang build, and why the SGLang inside the image is not a stock release.
 
-## Four ways the two sides disagree
+## Five ways the two sides disagree
 
-GRPO assumes that the trainer and the engine agree on the probability of each sampled token. They can disagree in four ways:
+GRPO assumes that the trainer and the engine agree on the probability of each sampled token. They can disagree in five ways:
 
 | Source | What happens | What Miles offers |
 |---|---|---|
 | Tokens | text turns into tokens in a different way on each side, often between agent turns | the session server, which passes tokens and not text |
 | Routing | a MoE router picks different experts on each side | routing replay |
-| Numbers | different kernels add in a different order, or one side uses lower precision | sampling replay, importance-sampling corrections, true on-policy mode |
+| Sampling | with top-p or top-k, the engine samples from a cut-down set of tokens, and the trainer scores over the full vocabulary | sampling replay |
+| Numbers | different kernels add in a different order, or one side uses lower precision | importance-sampling corrections, true on-policy mode |
 | Staleness | a sample came from older weights than the trainer now holds | limits on sample age, and corrections |
 
-Our runs on one GB10 had only the numbers source. In our Qwen3-0.6B runs, the gap stayed at 0.013 to 0.016 per token. [Section 8.2](#s-the-correction-methods) matches each correction to its source.
+Most of our runs on one GB10 had only the numbers source. One run sampled with top-p and top-k, so it also had the sampling source. In our Qwen3-0.6B runs, the gap stayed at 0.013 to 0.016 per token. [Section 8.2](#s-the-correction-methods) matches each correction to its source.
 
-Our view: most of what makes an RL framework hard is not the loss function. It is keeping these four sources small and measured while the engine runs at full speed.
+Our view: most of what makes an RL framework hard is not the loss function. It is keeping these five sources small and measured while the engine runs at full speed.
 
 ```takeaways
 - RL needs a real inference engine for speed, and the engine needs RL hooks for weights, memory, and probabilities.
-- The trainer and the engine disagree through tokens, routing, numbers, and staleness.
+- The trainer and the engine disagree through tokens, routing, sampling, numbers, and staleness.
 - Measure the gap first, then pick the correction that matches its source.
 ```
 

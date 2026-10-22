@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" role="img" aria-labelledby="fig-8-4-title fig-8-4-desc" font-family="JetBrains Mono, ui-monospace, monospace">
   <title id="fig-8-4-title">The engine and the trainer take turns on one memory</title>
-  <desc id="fig-8-4-desc">One colocated step drawn to scale from the phase medians of 48 steps of a run made before we added the heat guard. The engine holds its weights and its KV cache during rollout, 47.5 s, then gives them back. The trainer moves its state onto the GPU in 0.87 s, trains in 100.3 s, of which 23.4 s compute the log probabilities, and moves its state off in 0.76 s. The engine loads again and gets the new weights in 0.64 s. The other 2.6 s of the 152.6 s step have no timer.</desc>
+  <desc id="fig-8-4-desc">One colocated step drawn to scale from the phase medians of 48 steps of a run made before we added the heat guard. The engine holds its weights and its KV cache during rollout, 47.5 s, then gives them back. The trainer moves its state onto the GPU in 0.87 s, trains in 100.3 s, of which 23.4 s compute the log probabilities, and moves its state off in 0.76 s. The engine loads again and gets the new weights in 0.64 s. Over the same 48 steps, a median of 2.2 s of each 152.6 s step has no timer.</desc>
   <text x="20" y="28" font-size="11" letter-spacing="1.2" fill="var(--m-ink-mute, #6f6f6a)">PHASE MEDIANS OF 48 STEPS, TO SCALE</text>
   <text x="20" y="74" font-size="12" font-weight="700" fill="var(--m-violet-ink, #5b4fa3)">engine</text>
   <text x="20" y="92" font-size="11" class="m-serif" fill="var(--m-ink-soft, #4a4a4a)">weights, KV cache</text>
@@ -18,5 +18,5 @@
   <text x="614.04" y="214" font-size="11" text-anchor="end" fill="var(--m-amber-ink, #85590c)">then the update 0.64 s</text>
   <text x="20" y="252" font-size="12" class="m-serif">Only one side holds the GPU memory at a time.</text>
   <text x="20" y="274" font-size="12" class="m-serif">The timed hand-offs take about 2 s of a step of about 2.5 minutes.</text>
-  <text x="20" y="304" font-size="11.5" class="m-serif" fill="var(--m-ink-soft, #4a4a4a)">The other 2.6 s of the 152.6 s step have no timer, such as the engine release.</text>
+  <text x="20" y="304" font-size="11.5" class="m-serif" fill="var(--m-ink-soft, #4a4a4a)">A median of 2.2 s of each step has no timer, such as the engine release.</text>
 </svg>

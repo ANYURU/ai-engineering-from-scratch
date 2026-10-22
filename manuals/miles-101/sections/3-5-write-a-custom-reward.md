@@ -28,10 +28,21 @@ Add the prefix `boxed_` to a math type, such as `boxed_math`, to grade only the 
 Write the function in a Python file that the container can import:
 
 ```python
+import re
+
+
+def last_number(text):
+    found = re.findall(r"-?\d+(?:\.\d+)?", text.replace(",", ""))
+    return float(found[-1]) if found else None
+
+
 async def custom_rm(args, sample, **kwargs):
-    answer = sample.response.strip()
-    return 1.0 if answer.endswith(str(sample.label)) else 0.0
+    answer = last_number(sample.response)
+    label = last_number(str(sample.label))
+    return 1.0 if answer is not None and answer == label else 0.0
 ```
+
+This example grades a number answer. It compares the last number in the answer with the label as a value. So an answer of 142 does not match a label of 42. Change the extraction for answers that are not numbers.
 
 Then pass its import path:
 

@@ -34,7 +34,7 @@ Each hook down the table replaces less of Miles. Pick the lowest one that covers
 - A DAPO-style filter needs only the group filter. Miles has one built in that drops groups where every answer got the same reward.
 - Replace the whole rollout only when the step itself changes shape.
 
-A smaller hook keeps the rest of Miles working for you: batching, partial rollout, the metrics, and the gap checks.
+A smaller hook keeps the rest of Miles working for you: batching, the metrics, and the gap checks. Partial rollout keeps working only when the generate function supports it. The built-in multi-turn and agent generate functions do not, as [section 4.2](#s-handle-long-responses) shows.
 
 ## Fork only when no hook fits
 

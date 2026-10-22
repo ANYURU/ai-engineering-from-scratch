@@ -48,4 +48,4 @@ Under `--colocate`, Miles uses a copy inside the GPU instead, and the transfer m
 - Measure the update time and the idle time on both sides after a split.
 ```
 
-Sources: Miles placement code, weight update arguments, and documentation at main 08752a12.
+Sources: Miles main 08752a12 files miles/ray/placement_group.py, miles/utils/arguments.py, miles/backends/training_utils/weight_update/protocol.py, miles/backends/training_utils/weight_update/protocols/broadcast.py, miles/backends/training_utils/weight_update/protocols/delta.py, miles/backends/training_utils/metrics/perf.py, docs/advanced/disaggregated-rollout.md, docs/advanced/p2p-weight-transfer.md.
