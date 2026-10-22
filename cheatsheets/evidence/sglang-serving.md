@@ -9,7 +9,7 @@ Abbreviations: S = manuals/sglang-101/sections, R = manuals/sglang-101, C = manu
 - /ready returns 200 when ready: S/7-1-operating-sglang.md:12
 
 ## Three processes (architecture, 6 nodes)
-- Client sends POST /generate: S/1-2-one-request-end-to-end.md:20
+- Client sends POST /generate: S/1-1-install-sglang-and-serve-your-first-model.md:135
 - TokenizerManager converts text to token ids: S/2-1-sglang-serve-and-the-three-processes.md:18
 - Scheduler runs batches over the KV pool: S/2-1-sglang-serve-and-the-three-processes.md:22
 - Detokenizer turns ids back to text: S/2-1-sglang-serve-and-the-three-processes.md:24
@@ -17,7 +17,7 @@ Abbreviations: S = manuals/sglang-101/sections, R = manuals/sglang-101, C = manu
 - KV pool stores slots per token: S/3-1-kv-bytes-per-token-and-the-kv-pool.md:30
 
 ## Requests and checks (task-table, 8 rows)
-- POST /generate native request: S/1-2-one-request-end-to-end.md:24
+- POST /generate native request: S/1-1-install-sglang-and-serve-your-first-model.md:135
 - POST /v1/chat/completions OpenAI format: S/2-5-streaming-stop-strings-and-the-openai-api.md:20
 - meta_info field cached_tokens: S/2-5-streaming-stop-strings-and-the-openai-api.md:30
 - /ready readiness probe: S/7-1-operating-sglang.md:12
@@ -63,7 +63,7 @@ Abbreviations: S = manuals/sglang-101/sections, R = manuals/sglang-101, C = manu
 - sglang:num_queue_reqs above 0 for minutes: S/5-2-the-metrics-endpoint.md:60
 - sglang:cache_hit_rate and sglang:prefill_effective_tokens_total: S/5-2-the-metrics-endpoint.md:30, 50
 - cached_tokens reused prompt tokens: S/2-5-streaming-stop-strings-and-the-openai-api.md:30
-- Goodput meets TTFT and TPOT together: S/1-1-what-a-serving-engine-owns.md:30
+- Goodput meets TTFT and TPOT together: S/1-3-what-the-server-does-with-your-request.md:48
 
 ## Incidents on record (concepts, 4 bullets)
 - Issue #36889 Mamba cap to 2: S/2-2-the-scheduler-loop-and-schedule-policy.md:150
@@ -72,7 +72,7 @@ Abbreviations: S = manuals/sglang-101/sections, R = manuals/sglang-101, C = manu
 - Issue #35129 hash removal 66.8 to 94.4 percent: S/3-4-prefix-friendly-prompts.md:60
 
 ## Glossary (glossary, 5 bullets)
-- ITL inter-token latency: S/1-1-what-a-serving-engine-owns.md:30
+- ITL inter-token latency: S/1-3-what-the-server-does-with-your-request.md:46
 - MLA multi-head latent attention: S/3-1-kv-bytes-per-token-and-the-kv-pool.md:50
 - MoE mixture of experts: S/6-2-moe-serving-deepep-and-eplb.md:10
 - EPLB expert placement load balancing: S/6-2-moe-serving-deepep-and-eplb.md:60

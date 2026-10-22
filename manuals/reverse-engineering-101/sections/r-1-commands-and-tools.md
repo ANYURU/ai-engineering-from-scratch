@@ -2,7 +2,7 @@
 
 > Every rea command and MCP tool the captures ran, with what it answers, the capture file that holds its output, and the section that explains it.
 
-rea 6.7.0 has 153 CLI commands and 207 MCP tools. `binary_session` reports these counts in its catalog (capture/out/10-mcp-04-binary-session.json). The capture kit ran 17 one-shot commands and 13 tools, plus `rea mcp` and the two MCP methods that every session starts with. CLI names join words with `-` and MCP names with `_`. Three native commands map to tools with other names: `function` calls `analyze_function`, `decompile` calls `procedure_pseudo_code`, and `analyze` calls `binary_overview`. The capture passed `--format json` to every command and `--filter-output` with a key list where a record was too large to keep whole (capture/out/00-commands.txt).
+rea 6.7.0 has 153 CLI commands and 207 MCP tools. `binary_session` reports these counts in its catalog ([the capture](manuals/reverse-engineering-101/capture/out/10-mcp-04-binary-session.json)). The capture kit ran 17 one-shot commands and 13 tools, plus `rea mcp` and the two MCP methods that every session starts with. CLI names join words with `-` and MCP names with `_`. Three native commands map to tools with other names: `function` calls `analyze_function`, `decompile` calls `procedure_pseudo_code`, and `analyze` calls `binary_overview`. The capture passed `--format json` to every command and `--filter-output` with a key list where a record was too large to keep whole ([the capture](manuals/reverse-engineering-101/capture/out/00-commands.txt)).
 
 The output flags `--format`, `--filter-output`, `--token-limit`, and `--token-offset` accept the form `--flag=value`, as in `--format=json` {{cli Output and exit status}}. The setup runs used the same form for `--skill=false`.
 
@@ -66,7 +66,7 @@ The hints column reads the four annotations of each tool in `tools/list`: `readO
 | `REA_WABT_BIN_DIRECTORY` | the absolute directory that holds `wasm-validate`, `wasm-objdump`, and `wasm2wat` from WABT 1.0.42 | rea docs/wasm-artifacts.md, Offline WebAssembly artifacts |
 | `HOME` and `CLAUDE_CONFIG_DIR` | for the setup runs only, a private work directory, so setup found and wrote only the copied test file | {{install Limit REA to one project or agent profile}} |
 
-The capture kit also removed `PWD` and `JAVA_TOOL_OPTIONS` from the environment of every rea process (capture/README.md). The paths in the records and the Java launch then stayed the same from run to run.
+The capture kit also removed `PWD` and `JAVA_TOOL_OPTIONS` from the environment of every rea process ([the capture](manuals/reverse-engineering-101/capture/README.md)). The paths in the records and the Java launch then stayed the same from run to run.
 
 The kit did not set `REA_KUNA_COMMAND`, the absolute path of a `kuna` executable that you supply. Without it the Kuna provider reports `not_configured` ([Section 2.3](#s-rea-capabilities)).
 

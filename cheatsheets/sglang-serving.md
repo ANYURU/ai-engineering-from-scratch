@@ -11,7 +11,7 @@ source_hash: d7a954f07c2cb645
 ## Start a server
 type: annotated-code
 lang: bash
-from: manuals/sglang-101/capture/gpu/out-l4/server-default.command.txt, manuals/sglang-101/capture/README.md, manuals/sglang-101/sections/1-2-one-request-end-to-end.md
+from: manuals/sglang-101/capture/gpu/out-l4/server-default.command.txt, manuals/sglang-101/capture/README.md, manuals/sglang-101/sections/1-1-install-sglang-and-serve-your-first-model.md
 
 ```bash
 export HF_HUB_OFFLINE=1   # no Hub contact once the models are cached
@@ -40,7 +40,7 @@ edge | detok | client | text
 
 ## Requests and checks
 type: task-table
-from: manuals/sglang-101/sections/1-2-one-request-end-to-end.md, manuals/sglang-101/sections/2-5-streaming-stop-strings-and-the-openai-api.md, manuals/sglang-101/sections/5-1-sglang-benchmark-serving.md, manuals/sglang-101/sections/4-6-deterministic-inference-and-logprobs.md, manuals/sglang-101/sections/7-1-operating-sglang.md
+from: manuals/sglang-101/sections/1-1-install-sglang-and-serve-your-first-model.md, manuals/sglang-101/sections/2-5-streaming-stop-strings-and-the-openai-api.md, manuals/sglang-101/sections/5-1-sglang-benchmark-serving.md, manuals/sglang-101/sections/4-6-deterministic-inference-and-logprobs.md, manuals/sglang-101/sections/7-1-operating-sglang.md
 
 | Task | Code |
 |---|---|
@@ -105,7 +105,7 @@ from: manuals/sglang-101/sections/7-1-operating-sglang.md, manuals/sglang-101/se
 
 ## Numbers to watch
 type: concepts
-from: manuals/sglang-101/sections/5-2-the-metrics-endpoint.md, manuals/sglang-101/sections/1-1-what-a-serving-engine-owns.md, manuals/sglang-101/sections/2-5-streaming-stop-strings-and-the-openai-api.md
+from: manuals/sglang-101/sections/5-2-the-metrics-endpoint.md, manuals/sglang-101/sections/1-3-what-the-server-does-with-your-request.md, manuals/sglang-101/sections/2-5-streaming-stop-strings-and-the-openai-api.md
 
 - **sglang:token_usage**: near 1.0 means the KV pool is full.
 - **sglang:num_queue_reqs**: above 0 for minutes means the server is past its knee.
@@ -124,7 +124,7 @@ from: manuals/sglang-101/sections/2-2-the-scheduler-loop-and-schedule-policy.md,
 
 ## Glossary
 type: glossary
-from: manuals/sglang-101/sections/1-1-what-a-serving-engine-owns.md, manuals/sglang-101/sections/3-1-kv-bytes-per-token-and-the-kv-pool.md, manuals/sglang-101/sections/6-2-moe-serving-deepep-and-eplb.md, manuals/sglang-101/sections/6-3-prefill-decode-disaggregation.md
+from: manuals/sglang-101/sections/1-3-what-the-server-does-with-your-request.md, manuals/sglang-101/sections/3-1-kv-bytes-per-token-and-the-kv-pool.md, manuals/sglang-101/sections/6-2-moe-serving-deepep-and-eplb.md, manuals/sglang-101/sections/6-3-prefill-decode-disaggregation.md
 
 - **ITL**: inter-token latency, the gap between tokens.
 - **MLA**: multi-head latent attention, a compact KV layout used by DeepSeek.
