@@ -46,7 +46,7 @@ Shared memory also changes what other tools see. Ray reads the memory of the who
 
 ## What we do not know yet
 
-We do not yet know whether keeping the engine loaded between phases saves rollout time on a GB10. Our first run hinted at it, but that run changed two settings and ran on a hot card. [Section 2.2](#s-choose-what-to-offload) tracks the runs that decide it.
+Keeping the engine loaded between phases saved little rollout time on our GB10. We ran a same-day pair on one seed. On the steps that were clean in both runs, it saved 0.6 to 1.8 s of a rollout of about a minute. [Section 2.2](#s-choose-what-to-offload) has the runs.
 
 ```takeaways
 - With --colocate, the engine and the trainer take turns, and offload decides what each side gives back.
