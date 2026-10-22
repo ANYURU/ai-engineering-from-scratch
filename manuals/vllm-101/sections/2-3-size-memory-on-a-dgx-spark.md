@@ -61,7 +61,9 @@ note: 330 seconds to load 56.93 GiB of weights.
 (EngineCore pid=143) INFO 10-21 10:58:45 [model_runner.py:407] Model loading took 56.93 GiB memory and 330.542793 seconds
 ```
 
-The load copies each tensor from the memory-mapped safetensors file into the GPU allocation, one tensor at a time. On the GB10, a copy from a file-backed page is slow. An open vLLM issue measured about 1.7 ms for each tensor copied from the file view. A copy in host memory first took about 0.2 ms. Release 0.31.0 fixed one part of the cost for one family of mixture-of-experts models. For other models the cost stays.
+The load copies each tensor from the memory-mapped safetensors file into the GPU allocation, one tensor at a time. On the GB10, a copy from a file-backed page is slow. An open vLLM issue measured about 1.7 ms for each tensor copied from the file view. A copy in host memory first took about 0.2 ms.
+
+Release 0.31.0 made a different part of the load faster. An indexed lookup of expert names saves about 25 s on a DGX Spark. The cost of each tensor copy stays.
 
 Two things help:
 
@@ -85,4 +87,4 @@ If `free -g` shows almost no available memory while the server is idle, lower th
 - Expect minutes for the first weight load, and keep the server running.
 ```
 
-Sources: the vLLM source at v0.31.0 (vllm/utils/mem_utils.py, vllm/platforms/cuda.py), the v0.31.0 release notes (weight loading on DGX Spark), vLLM issue 58726 (slow weight loading on GB10), capture/gpu/out-gb10/server-load-vllm.log, capture/gpu/summary/gb10.json, vLLM issue 44740 (negative CUDA graph memory estimate with MTP speculation on the GB10), vLLM issue 46307 (memory use above the share during the startup profile on the GB10), vLLM documentation at v0.31.0 (--kv-cache-memory-bytes).
+Sources: the vLLM source at v0.31.0 (vllm/utils/mem_utils.py, vllm/platforms/cuda.py), the v0.31.0 release notes (weight loading on DGX Spark), vLLM issue 58726 (slow weight loading on GB10), vLLM pull request 58720 (indexed expert lookups in the weight load), capture/gpu/out-gb10/server-load-vllm.log, capture/gpu/summary/gb10.json, vLLM issue 44740 (negative CUDA graph memory estimate with MTP speculation on the GB10), vLLM issue 46307 (memory use above the share during the startup profile on the GB10), vLLM documentation at v0.31.0 (--kv-cache-memory-bytes).
