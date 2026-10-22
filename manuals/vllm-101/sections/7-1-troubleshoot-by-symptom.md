@@ -4,17 +4,35 @@
 
 Something is wrong and you know what you see, not why. When you finish this section, you can match the symptom to a cause, run one check, and apply one fix.
 
-Find your symptom in the list. Each entry gives the likely cause, the check that confirms it, and the fix. Issue numbers refer to the vLLM repository, with their state at version 0.31.0.
+Find your symptom in the list. Each entry gives the likely cause, the check that confirms it, and the fix. Issue numbers refer to the vLLM repository, with their state at version 0.31.0. The entries marked "from the vLLM documentation" come from the vLLM troubleshooting guide at 0.31.0, and we did not reproduce them.
 
 ```figure
 id: fig-7-1
 kind: decision
 title: symptom to page
 claim: Start from the symptom, check one number or log line, and then go to the page that fixes it.
-caption: Each row is one symptom. The sections below give the detail for each. From our runs and the vLLM issues.
+caption: Each row is one entry below, in the same order. Read the symptom, the first check, and where the fix is. From our runs, the vLLM issues, and the vLLM documentation.
 ```
 
 ## The server does not start
+
+### The start hangs while it downloads the model
+
+- **Cause:** the download is slow, or the model needs a Hugging Face token. From the vLLM documentation.
+- **Check:** the log stops before the `Model loading took` line, and the Hugging Face cache folder grows slowly or not at all.
+- **Fix:** download the model first with the `hf download` command, and set `HF_TOKEN` for a model with restricted access. Then set `HF_HUB_OFFLINE=1`, so vLLM uses the local copy only.
+
+### The start stops with a message that the model is not supported
+
+- **Cause:** the model architecture is not in vLLM 0.31.0, or a missing package stops vLLM from importing the model code. From the vLLM documentation.
+- **Check:** the error names the architectures that failed, such as `Model architectures [...] are not supported for now` or `failed to be inspected`.
+- **Fix:** check the supported models list for your version. If the model is in the list, read the log above the error for an import failure.
+
+### The start stops with a message about the driver or the PTX toolchain
+
+- **Cause:** the CUDA build of vLLM is newer than your NVIDIA driver supports. From the vLLM documentation.
+- **Check:** the error says `The NVIDIA driver on your system is too old`, or that the PTX was compiled with an unsupported toolchain.
+- **Fix:** update the driver. In the official image, on some datacenter GPUs, `-e VLLM_ENABLE_CUDA_COMPATIBILITY=1` turns on the CUDA compatibility libraries.
 
 ### The start stops with a message about the KV cache and the maximum length
 
@@ -30,13 +48,13 @@ caption: Each row is one symptom. The sections below give the detail for each. F
 
 ### The server crashes at start after you set an FP8 KV cache
 
-- **Cause:** on some GPUs, FlashAttention cannot read an FP8 KV cache, so vLLM picks FlashInfer. If FlashInfer cannot compile its kernels on your machine, the start crashes. It does not try the Triton backend. Issue 60262 tracks this, and it is open.
+- **Cause:** the FP8 cache moved vLLM to the FlashInfer backend, and FlashInfer could not compile its kernels. Issue 60262 tracks this, and it is open.
 - **Check:** find the line that names the attention backend, and the FlashInfer error after it.
-- **Fix:** add `--attention-backend TRITON_ATTN`.
+- **Fix:** add `--attention-backend TRITON_ATTN`. [The FP8 KV cache page](#s-fit-more-users-with-an-fp8-kv-cache) shows our case.
 
 ### A DGX Spark runs out of memory although the fraction leaves room
 
-- **Cause:** on unified memory, `--gpu-memory-utilization` does not always limit what vLLM takes. A field report saw about 101 GiB taken at a fraction of 0.50. Issue 44740 reports a KV cache that was too large with MTP speculation on the GB10, and it is open.
+- **Cause:** on unified memory, `--gpu-memory-utilization` does not always limit what vLLM takes. Issue 46307 reports about 112 GiB in use at a fraction of 0.70, and it was closed after 0.31.0. Issue 44740 reports a KV cache that was too large with MTP speculation on the GB10, and it is open.
 - **Check:** compare the `Available KV cache memory` line with the share you expect, and watch `free -g` during the start.
 - **Fix:** set the cache size in bytes with `--kv-cache-memory-bytes`. [The DGX Spark page](#s-size-memory-on-a-dgx-spark) has the details.
 
@@ -46,11 +64,37 @@ caption: Each row is one symptom. The sections below give the detail for each. F
 - **Check:** read the `Model loading took` line. Our 57 GiB load took 330 seconds.
 - **Fix:** keep the weights on a local drive and keep the server running. [The DGX Spark page](#s-size-memory-on-a-dgx-spark) has the details.
 
+### The start fails in the compile step
+
+- **Cause:** a broken compile cache, or a Triton library that does not match your PyTorch. From the vLLM documentation.
+- **Check:** the error comes from `torch.compile` or from the `torch/_inductor` folder.
+- **Fix:** start once with `VLLM_DISABLE_COMPILE_CACHE=1`. If that works, delete `~/.cache/vllm/torch_compile_cache`. Use `-O0` to start without the compile while you debug.
+
+### A server on several GPUs hangs at start
+
+- **Cause:** the GPUs cannot reach each other through NCCL, because of the network, the drivers, or a missing shared memory mount. From the vLLM documentation.
+- **Check:** start again with `NCCL_DEBUG=TRACE` and read where the log stops. Run the NCCL test that [the parallelism page](#s-choose-tensor-pipeline-or-data-parallelism) describes.
+- **Fix:** give a container `--ipc=host` or a large `/dev/shm`. On PCIe machines, the vLLM guide suggests `NCCL_CUMEM_HOST_ENABLE=0` or a driver update for a peer access error.
+
 ### The maximum length is shorter after an upgrade
 
 - **Cause:** release 0.30.0 changed how vLLM reads context scaling such as YaRN, and some models now get a shorter derived length.
 - **Check:** compare the derived length in the startup log with the old one.
 - **Fix:** set `--max-model-len` yourself, after you confirm that the model supports the length.
+
+## Requests fail while the server runs
+
+### A request returns HTTP 400 about the maximum context length
+
+- **Cause:** the prompt tokens plus `max_tokens` are more than `--max-model-len`.
+- **Check:** the error says `This model's maximum context length is` and gives the counts.
+- **Fix:** send a shorter prompt or a smaller `max_tokens`, or start the server with a larger maximum length if the pool allows it.
+
+### Every request fails after an error in the engine
+
+- **Cause:** the engine core process stopped, for example after a GPU error. The API server stays up, but it cannot serve. From the vLLM source.
+- **Check:** the log shows `EngineCore encountered an issue`, and the real error is in the lines above it.
+- **Fix:** fix the cause in the earlier lines, then restart the server. Let your orchestrator restart it, because the server does not recover alone.
 
 ## The server is slow
 
@@ -60,11 +104,11 @@ caption: Each row is one symptom. The sections below give the detail for each. F
 - **Check:** `vllm:num_requests_waiting` is above 0 and `vllm:kv_cache_usage_perc` is near 1.
 - **Fix:** serve fewer users on the GPU, or make room in the pool with an FP8 KV cache or a shorter maximum length.
 
-### The stream stutters when many users are active
+### The stream has long gaps when many users are active
 
 - **Cause:** new prompts share decode steps with running requests, and long prompts take a large part of each step.
 - **Check:** compare the P99 ITL with the median ITL. A large gap means stalls, not a slow GPU.
-- **Fix:** measure your traffic shape. On our machines the stutter depended on the prompt lengths and on the card. [The engine page](#s-decide-between-vllm-and-sglang) has the numbers.
+- **Fix:** lower the token budget, as [the token budget page](#s-keep-long-prompts-from-stalling-short-ones) shows. On our machines the gaps also depended on the prompt lengths and on the engine, as [the engine page](#s-decide-between-vllm-and-sglang) shows.
 
 ### The preemption counter rises
 
@@ -91,6 +135,12 @@ caption: Each row is one symptom. The sections below give the detail for each. F
 - **Fix:** pin the faster release for that model until the issue closes.
 
 ## The output is wrong
+
+### The answer starts with a long thinking block
+
+- **Cause:** a reasoning model, such as Qwen3, runs without a reasoning parser.
+- **Check:** the `content` field starts with `<think>`.
+- **Fix:** start the server with the parser for the model, such as `--reasoning-parser qwen3`. [The reasoning models page](#s-serve-reasoning-models) has the details.
 
 ### The model repeats one token after a prefix-cache hit
 
@@ -124,4 +174,4 @@ caption: Each row is one symptom. The sections below give the detail for each. F
 - Test one change at a time, with the same benchmark and clock.
 ```
 
-Sources: vLLM issues 58726, 59770, 60174, 60262, and 60830; the release notes for v0.30.0, v0.31.0, and v0.32.0; vLLM documentation at v0.31.0 (docs/configuration/optimization.md, docs/usage/reproducibility.md, docs/benchmarking/cli.md); the vLLM source at v0.31.0 (vllm/config/vllm.py, vllm/config/model.py); capture/gpu/out-gb10/server-load-vllm.log, vLLM issue 44740, a user report of about 101 GiB taken at a fraction of 0.50 on a GB10, a 2026 study of prefix-cache effects on greedy outputs on vLLM 0.11.
+Sources: vLLM issues 44740, 46307, 58726, 59770, 60174, 60262, and 60830; the release notes for v0.30.0, v0.31.0, and v0.32.0; vLLM documentation at v0.31.0 (docs/usage/troubleshooting.md, docs/design/torch_compile.md, docs/configuration/optimization.md, docs/usage/reproducibility.md, docs/benchmarking/cli.md, docs/features/reasoning_outputs.md); the vLLM source at v0.31.0 (vllm/config/vllm.py, vllm/config/model.py, vllm/renderers/params.py, vllm/v1/engine/exceptions.py, vllm/envs.py); capture/gpu/out-gb10/server-load-vllm.log; Same Request, Different Answer: Quantization Amplifies Cache-Induced Divergence in LLM Serving (arXiv 2609.04748, 2026).
