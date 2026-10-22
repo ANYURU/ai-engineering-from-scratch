@@ -6,6 +6,16 @@ We start from an empty folder and end with one finished GRPO step, logged to a f
 
 When you finish this section, you can start a GRPO run on one GPU. You can also find the log lines that prove the first step finished.
 
+**Our result:** on one GB10 with Qwen3-0.6B, the first GRPO step took 233 s and the median step 167 s.
+
+```figure
+id: fig-1-1
+kind: flow
+title: One GRPO step on one GPU
+claim: Each step runs rollout, scoring, log probabilities, training, and a weight update, in that order, on one GPU.
+caption: Medians of 48 steps with no heat pause, Qwen3-0.6B on one GB10. The numbers follow the order of the arrows.
+```
+
 ## Check what you need
 
 You need one NVIDIA GPU, Docker, and the NVIDIA container toolkit. Run this check first:
@@ -138,6 +148,14 @@ note: Each line is cut to the fields that this section uses.
 The first step took 233 s. The median step took 167 s. In a typical step, the rollout took 57 s and the training phase took 105 s, and 25 s of that computed log probabilities. The weight update from the trainer to the engine took 0.65 s.
 
 [Section 1.3](#s-read-your-first-ten-steps) explains how to read these numbers over the first ten steps.
+```figure
+id: fig-1-1b
+kind: chart
+title: Where the time of one step goes
+claim: Training and rollout take almost all of a step, and the hand-offs take about 2 s.
+caption: Median seconds per phase over 48 steps with no heat pause.
+```
+
 
 ```takeaways
 - Record the image digest and the Miles commit before every run.
