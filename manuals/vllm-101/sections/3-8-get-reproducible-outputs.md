@@ -32,7 +32,9 @@ Set one environment variable when you start the server:
 VLLM_BATCH_INVARIANT=1 vllm serve Qwen/Qwen3-8B 2>&1 | tee server.log
 ```
 
-The mode needs an NVIDIA GPU with compute capability 8.0 or higher, which includes the L4 and the GB10. The vLLM documentation lists Qwen3-8B among the models it tested in this mode. The mode turns off some speed features that change the order of the sums, such as custom all-reduce with tensor parallelism. We did not run this mode, so check the result with the test at the end of this page.
+The mode needs an NVIDIA GPU with compute capability 8.0 or higher, which includes the L4 and the GB10. The vLLM documentation lists Qwen3-8B among the models it tested in this mode. The mode turns off some speed features that change the order of the sums, such as custom all-reduce with tensor parallelism.
+
+We ran one probe with the small Qwen3-0.6B on an L4. With the mode on, a greedy prompt gave the same text alone and inside a batch of 32 requests. With the mode off, the two texts differed. One prompt on one small model proves little for yours, so run the test at the end of this page on your own model.
 
 ## Know what the batch-invariant mode does not cover
 
@@ -57,4 +59,4 @@ Not measured on our hardware. We have not measured the speed cost of the batch-i
 - Reset the prefix cache between two runs that you compare.
 ```
 
-Sources: vLLM documentation at v0.31.0 (docs/usage/reproducibility.md, docs/features/batch_invariance.md), the vLLM source at v0.31.0 (vllm/envs.py), Same Request, Different Answer: Quantization Amplifies Cache-Induced Divergence in LLM Serving (arXiv 2609.04748, 2026), Defeating Nondeterminism in LLM Inference by Horace He and Thinking Machines Lab (2025-09-10), CoRun: Padding is Simple and Efficient for Deterministic LLM Inference (arXiv 2608.14376, 2026), Vosti: Specifying, Implementing, and Verifying Deterministic LLM Inference (arXiv 2609.38981, 2026), the release notes for v0.32.0 (attention backend check for the batch-invariant mode), vLLM pull request 61118 (inductor batch-invariant mode, merged on 2026-10-17 and not in v0.32.0).
+Sources: vLLM documentation at v0.31.0 (docs/usage/reproducibility.md, docs/features/batch_invariance.md), the vLLM source at v0.31.0 (vllm/envs.py), Same Request, Different Answer: Quantization Amplifies Cache-Induced Divergence in LLM Serving (arXiv 2609.04748, 2026), Defeating Nondeterminism in LLM Inference by Horace He and Thinking Machines Lab (2025-09-10), CoRun: Padding is Simple and Efficient for Deterministic LLM Inference (arXiv 2608.14376, 2026), Vosti: Specifying, Implementing, and Verifying Deterministic LLM Inference (arXiv 2609.38981, 2026), the release notes for v0.32.0 (attention backend check for the batch-invariant mode), vLLM pull request 61118 (inductor batch-invariant mode, merged on 2026-10-17 and not in v0.32.0), capture/gpu/out-l4/livecheck-2026-10-22.txt.
