@@ -25,6 +25,14 @@ Read the last 30 lines of the server log. Most startup failures match one of thr
 | The free memory on the device is less than the desired GPU memory utilization | Another process holds GPU memory | Lower `--gpu-memory-utilization` below the free share, or stop the other process |
 | CUDA out of memory during the profile run or the graph capture | The batch in the profile pass or the graphs need more memory than is left | Lower `--max-num-seqs` or `--max-num-batched-tokens`, or lower `--max-cudagraph-capture-size` |
 
+```figure
+id: fig-2-2
+kind: decision
+title: where a start fails
+claim: The last line before the start fails tells you which of three settings to change.
+caption: Read down each column: where the log stops, the cause, and the flag to change. From the vLLM source at v0.31.0 and our runs on the L4.
+```
+
 ## Fix a shared GPU
 
 On a shared GPU, set the fraction yourself. We ran vLLM 0.31.0 on an L4 that another team also used. Their processes held about 3.5 GB, so we set `--gpu-memory-utilization 0.83`.
