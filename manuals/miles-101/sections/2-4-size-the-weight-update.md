@@ -12,22 +12,22 @@ When you finish this section, you can measure the weight update and decide if it
 
 Every step logs `perf/update_weights_time` in seconds. Read it next to `perf/step_time`. We ran 4 short steps for two model sizes, with answers cut at 256 tokens:
 
-| Model | Weight update, 4 steps | Release, median | Resume, median |
+| Model | Weight update, 4 steps | Trainer offload, median | Trainer onload, median |
 |---|---|---|---|
 | Qwen3-0.6B | 0.63 to 0.65 s | 1.6 s | 0.8 s |
 | Qwen3-1.7B | 0.89 to 0.95 s | 3.8 s | 1.4 s |
 
-**Release:** the time the engine takes to give back its memory before training, logged as `perf/sleep_time`. **Resume:** the time it takes to load again after training, logged as `perf/wake_up_time`.
+**Trainer offload:** the time the trainer takes to move its weights and optimizer state to host memory after training, logged as `perf/sleep_time`. **Trainer onload:** the time it takes to move them back before the next log probabilities, logged as `perf/wake_up_time`.
 
-The larger model is about 2.8 times the size, and its update took about 1.4 times as long. Release and resume grew faster than the update did.
+The larger model is about 2.8 times the size, and its update took about 1.4 times as long. The trainer offload and onload grew faster than the update did, because the optimizer state grows with the model.
 
 The short answers cut almost every reply, so the reward in these runs stayed near 0. These runs measure the copy, not the training.
 
 ```figure
 id: fig-2-4
 kind: chart
-title: A larger model costs more to release than to update
-claim: From 0.6B to 1.7B, the weight update grew 1.4 times, and the release grew 2.4 times.
+title: A larger model costs more to offload than to update
+claim: From 0.6B to 1.7B, the weight update grew 1.4 times, and the trainer offload grew 2.4 times.
 caption: Median seconds over 4 short steps for each model.
 ```
 
@@ -46,7 +46,7 @@ A larger bucket means fewer transfers and a higher memory peak during the update
 ```takeaways
 - Read perf/update_weights_time next to perf/step_time for each model size.
 - Tune the rollout and the training phase before the weight update.
-- Watch release and resume too, because they grew faster than the update did.
+- Watch the trainer offload and onload too, because they grew faster than the update did.
 ```
 
 Sources: capture/gpu/summary/miles-gb10-lab.json (runs.e4-0.6b, runs.e4-1.7b, runs.plain-48); capture/gpu/miles_grpo.py.
