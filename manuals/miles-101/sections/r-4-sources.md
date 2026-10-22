@@ -27,6 +27,16 @@ The troubleshooting entries that we did not reproduce come from reports in the M
 - Score Centering Stabilizes Off-policy Reinforcement Learning, arXiv 2609.20807.
 - The first public Miles post, November 2025, and the Miles v0.1 post, August 2026, both from the RadixArk team.
 - The slime repository and its README, for the history of the project.
+- Defeating the Training-Inference Mismatch via FP16, arXiv 2510.26788, October 2025.
+- Deterministic Inference across Tensor Parallel Sizes That Eliminates Training-Inference Mismatch, arXiv 2511.17826, November 2025.
+- Jet-RL, on-policy FP8 reinforcement learning, arXiv 2601.14243, January 2026.
+- Scaling Laws for Collapse in Asynchronous GRPO, arXiv 2607.01083, July 2026.
+- Unified FP8 for MoE RL, an LMSYS post by the Miles team and its partners, November 2025.
+- The vime announcement, a vLLM team post, June 2026.
+- SGLang pull request 42408, DeepSeek-V4.1 on GB300 with Miles, October 2026.
+- The SGLang speculative decoding documentation.
+- The SkyRL quantized rollouts documentation, 2026.
+- TRL issue 6789, the importance-sampling bias of truncated sampling, August 2026.
 
 Results that other teams measured appear on the pages with the team named, and with the hardware they used.
 
