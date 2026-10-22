@@ -47,9 +47,29 @@ Not measured on our hardware. We have not run vLLM on two L4s with tensor parall
 
 vLLM runs one server across machines with Ray, the default for more than one machine, or with its own multiprocess launcher. We did not run either. The steps below come from the vLLM 0.31.0 documentation, for two machines with 8 GPUs each.
 
-First, check that the GPUs can talk to each other. The vLLM troubleshooting guide has a short test script that runs NCCL and Gloo all-reduce calls. Run it with `torchrun` on each machine, with `NCCL_DEBUG=TRACE` set. When the network and the drivers work, each process prints four success lines, the first of them `PyTorch NCCL is successful!`. The guide text names a different line, so trust the lines that the script prints.
+First, check that the GPUs can talk to each other. The vLLM troubleshooting guide has a short test script that runs NCCL and Gloo all-reduce calls. Save it as `test.py` on each machine. Run it on both machines at once, with `NODE_RANK=0` on the first machine and `NODE_RANK=1` on the second:
 
-**With Ray.** The vLLM repository has a `run_cluster.sh` script that starts the vLLM image and a Ray node on each machine. Run it with `--head` on the first machine and with `--worker` on the other. Give each machine its own `VLLM_HOST_IP`, on a private network. Then, inside a container, check that Ray sees every node and GPU:
+```bash
+NCCL_DEBUG=TRACE torchrun --nnodes 2 --nproc-per-node 8 \
+  --rdzv_backend=static --rdzv_endpoint=<head-ip>:29400 \
+  --node-rank $NODE_RANK test.py
+```
+
+ When the network and the drivers work, each process prints four success lines, the first of them `PyTorch NCCL is successful!`. The guide text names a different line, so trust the lines that the script prints.
+
+**With Ray.** The vLLM repository has a `run_cluster.sh` script that starts the vLLM image and a Ray node on each machine. Give each machine its own `VLLM_HOST_IP`, on a private network. On the first machine, run:
+
+```bash
+bash run_cluster.sh vllm/vllm-openai:v0.31.0 <head-ip> --head ~/.cache/huggingface -e VLLM_HOST_IP=<head-ip>
+```
+
+On the second machine, run:
+
+```bash
+bash run_cluster.sh vllm/vllm-openai:v0.31.0 <head-ip> --worker ~/.cache/huggingface -e VLLM_HOST_IP=<worker-ip>
+```
+
+Keep both shells open, because closing one stops the cluster. Then, inside a container, check that Ray sees every node and GPU:
 
 ```bash
 ray status
