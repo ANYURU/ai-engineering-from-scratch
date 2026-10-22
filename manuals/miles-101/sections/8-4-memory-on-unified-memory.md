@@ -22,7 +22,7 @@ The `--colocate` flag also turns on offload for both sides. `--offload-rollout-l
 id: fig-8-4
 kind: timeline
 title: The engine and the trainer take turns on one memory
-claim: Only one side holds the GPU memory at a time, and the hand-offs take about 2 s of each step.
+claim: Only one side holds the GPU memory at a time, and the timed hand-offs take about 2 s of each step.
 caption: Phase medians of 48 steps, drawn to scale.
 ```
 
@@ -30,9 +30,9 @@ caption: Phase medians of 48 steps, drawn to scale.
 
 On a machine with a separate GPU, offload copies bytes from GPU memory to CPU memory over the bus. The copy is the cost.
 
-On a GB10 there is no second memory. GPU memory and CPU memory are the same 128 GB. So offload frees the GPU allocation, and the bytes stay in the same pool. For Qwen3-0.6B, our release took a median of 1.6 s and our resume 0.8 s. That is small next to a step of more than two minutes.
+On a GB10 there is no second memory. GPU memory and CPU memory are the same 128 GB. So offload frees the GPU allocation, and the bytes stay in the same pool. For Qwen3-0.6B, the trainer moved its state to host memory in a median of 1.6 s and back in 0.8 s. That is small next to a step of more than two minutes. The engine release and resume have no timer of their own.
 
-Our view: on a GB10, part of the release and resume time is probably setup work, not copying. We have not measured that split.
+Our view: on a GB10, part of the trainer offload and onload time is probably setup work, not copying. We have not measured that split.
 
 ## The weight update stays inside the GPU
 
