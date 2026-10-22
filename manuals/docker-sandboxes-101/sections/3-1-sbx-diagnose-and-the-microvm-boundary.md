@@ -33,7 +33,7 @@ note: The Installation and Storage groups are cut. The capture kit masks byte an
 
 `kern.hv_support is 1` is the macOS flag for hardware virtualization. The guest runs on the host hypervisor: Hypervisor.framework on macOS, Windows Hypervisor Platform on Windows, and KVM on Linux ([conflict C3](#s-ref-sources-and-the-conflicts-register)). The `mkfs.erofs` line names the guest root filesystem format and its page size, which `getconf PAGESIZE` inside reports as `16384` ([conflict C45](#s-ref-sources-and-the-conflicts-register)). The last line is the sign-in check. `sbx` runs without Docker Desktop, and it still refuses to create a sandbox without a Docker account ([conflict C15](#s-ref-sources-and-the-conflicts-register)).
 
-The FAQ gives Docker's reasons: "Tie sandboxes to a real person" and "Authenticate against Docker infrastructure" {{docs-sbx FAQ}}. It also lists the product's own egress hosts, starting with `login.docker.com`.
+The FAQ gives two reasons: a sandbox belongs to a real person, and it authenticates against Docker infrastructure {{docs-sbx FAQ}}. It also lists the product's own egress hosts, starting with `login.docker.com`.
 
 ## Five layers, from the kernel up
 
@@ -69,10 +69,10 @@ The docs name five isolation layers: hypervisor, network, Docker Engine, workspa
 label: where the boundary is
 source: docs-sbx Isolation layers
 ---
-"The agent runs as a non-root user with sudo privileges inside the VM. The hypervisor boundary is the isolation control, not in-VM privilege separation."
+The agent runs as a non-root user with sudo rights inside the VM. The hypervisor boundary isolates the agent. Privilege separation inside the VM does not.
 ```
 
-Docker Engine 29.8.1 and containerd v2.3.5 in the listing belong to the VM, and so does every image the agent builds. The docs state the consequence in one sentence: "The agent has no path to your host Docker daemon." {{docs-sbx Docker Engine isolation}}
+Docker Engine 29.8.1 and containerd v2.3.5 in the listing belong to the VM, and so does every image the agent builds. The docs state the consequence: the agent cannot reach the Docker daemon on your host {{docs-sbx Docker Engine isolation}}.
 
 The host side has no Docker API for the sandbox either. Kevin Wittek said on 2026-04-23 that the Moby API is not offered from the host {{talk 2026-04-23 T06}}. REST clients that expect it do not work against a sandbox, and `sbx exec` is the way in, as [sbx exec, cp, and ports](#s-sbx-exec-cp-and-ports) shows.
 

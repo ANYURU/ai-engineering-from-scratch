@@ -160,7 +160,9 @@ caption: Read top down. Plum is the agent's question, indigo boxes are the MCP c
 
 ## The ledger
 
-**Evidence ledger:** the table an agent keeps during an investigation, with one row per claim. A row holds the kind of the claim, the Evidence id that supports it, and the boundary that limits it. The packaged skill at the tag asks for exactly this: "Keep a concise finding ledger linking each conclusion to Evidence IDs, confidence/evidence type, search boundary, and remaining unknowns.". The kinds are the three values of the Evidence `confidence` field, `observed`, `derived`, and `inferred`. A claim with no record behind it is `unknown`. Here is the ledger of this session:
+**Evidence ledger:** the table an agent keeps during an investigation, with one row per claim. A row holds the kind of the claim, the Evidence id that supports it, and the boundary that limits it. The packaged skill at the tag asks for exactly this: a short ledger that links each conclusion to its Evidence ids. Each row also gives the confidence and evidence type, the search boundary, and the unknowns that remain.
+
+The kinds are the three values of the Evidence `confidence` field, `observed`, `derived`, and `inferred`. A claim with no record behind it is `unknown`. Here is the ledger of this session:
 
 | Claim | Kind | Evidence | Boundary |
 |---|---|---|---|

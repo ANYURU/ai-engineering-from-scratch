@@ -20,14 +20,14 @@ After the last part, you can:
 
 ## How it was made
 
-The manual pins tag `v1.0.1` of the A2A repository, commit `3303592`. In requests and cards, that release is protocol version `1.0`, because "Patch version numbers SHOULD NOT be used in requests, responses and Agent Cards" {{spec §3.6}}. The facts were also checked against the main branch at commit `679ab3a` of 2026-10-05, where v1.0.1 was still the latest release.
+The manual pins tag `v1.0.1` of the A2A repository, commit `3303592`. In requests and cards, that release is protocol version `1.0`, because requests, responses, and Agent Cards should not carry a patch version number {{spec §3.6}}. The facts were also checked against the main branch at commit `679ab3a` of 2026-10-05, where v1.0.1 was still the latest release.
 
 Facts come from five sources, ranked by authority. When two of them disagree, the higher one wins and the text says so.
 
 | Rank | Source | What the manual takes from it | Source key |
 |---|---|---|---|
 | 1 | `specification/a2a.proto` at v1.0.1 | every object, field, enum value, and method | `proto` and a message or enum name |
-| 2 | `docs/specification.md` at v1.0.1 | every behavior rule, quoted word for word | `spec` and a section number |
+| 2 | `docs/specification.md` at v1.0.1 | every behavior rule, stated in our own words | `spec` and a section number |
 | 3 | the project's documentation pages at v1.0.1 | the project's own framing, flagged where a page is out of date | `docs` and a page name |
 | 4 | the reference SDK, a2a-python 1.2.2 | what a production implementation does where the specification is silent | `sdk` and a source file |
 | 5 | the capture kit in `capture/` | every request, response, and stream frame the manual shows | the capture file name |

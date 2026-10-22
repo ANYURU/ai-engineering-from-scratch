@@ -34,7 +34,7 @@ Facts come from seven sources, ranked by authority. When two of them disagree, t
 | 6 | Docker blog posts and talks | history and positioning, never a rule | `blog` or `talk` and a date |
 | 7 | the capture kit in `capture/` | every command output, file, and record shown | the capture file name |
 
-Sources 1 to 5 are vendored under `research/sources/`, so the audit checks each quote word for word. Blog posts and talks are not vendored, and their quotes are not checked.
+Sources 1 to 5 are vendored under `research/sources/`, so each rule can be checked against its source. The manual states every rule in its own words. Blog posts and talks are not vendored.
 
 The sources disagree in many places. The largest are the kit generations ([conflict C13](#s-ref-sources-and-the-conflicts-register)) and the agent names and template image of each launch path ([C9 and C61](#s-ref-sources-and-the-conflicts-register)). Others are host secrets that `sbx` never injects ([C7](#s-ref-sources-and-the-conflicts-register)) and the two agent binaries on one Mac ([C48](#s-ref-sources-and-the-conflicts-register)). [The sources reference](#s-ref-sources-and-the-conflicts-register) lists every conflict with the ruling this manual prints.
 

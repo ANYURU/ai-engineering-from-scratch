@@ -61,7 +61,7 @@ EPLB is off by default (`--enable-eplb` is false). Turn it on when your measurem
 
 For prefill, SGLang splits by token count. If no split puts at least 48 percent of the tokens on each side, it cuts one sequence across both halves. That is `--tbo-token-distribution-threshold`, 0.48 by default.
 
-The SGLang docs say that TBO can "unlock up to 2x throughput" {{docs}}. The blog post that the docs link to measured 27 to 35 percent on 96 H100 GPUs {{team 2025-05}}. Plan for the measured number.
+The SGLang docs say that TBO can give up to twice the throughput {{docs}}. The blog post that the docs link to measured 27 to 35 percent on 96 H100 GPUs {{team 2025-05}}. Plan for the measured number.
 
 Ant Group turned TBO down on H20 {{field Ant-Group 2025-09}}. It helped only at batch sizes of 64 or 128, and at those sizes their time per output token missed its target. They used single-batch overlap instead, `--enable-single-batch-overlap`, which overlaps shared experts with the combine step. They measured 8 to 10 percent at batches of 20 to 56.
 

@@ -177,8 +177,7 @@
 .m-box-label { color: var(--m-part); margin-bottom: 0.6em; }
 .m-takeaways ul { margin-bottom: 0.6em; }
 .m-rule { background: var(--m-panel); border-color: var(--m-panel-edge); border-left: 3px solid var(--m-part); }
-.m-rule blockquote { margin: 0 0 0.5em; font-size: 0.95em; }
-.m-rule-src { font-family: var(--m-font-mono); font-size: 11px; color: var(--m-ink-mute); margin-bottom: 0.6em; }
+.m-rule p { margin: 0 0 0.6em; font-size: 0.95em; }
 
 
 .m-part { padding: 2.4em 0 1.6em; }

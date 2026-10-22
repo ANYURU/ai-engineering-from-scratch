@@ -24,7 +24,7 @@ Every error carries a code, a message, and optional `details`, each detail namin
 label: the detail that names the error
 source: spec §11.6
 ---
-"implementations **MUST** include a `google.rpc.ErrorInfo` object in the `details` array for A2A-specific errors"
+For an A2A error, an implementation must put a `google.rpc.ErrorInfo` object in the `details` array.
 ```
 
 Its `reason` is the error's name in upper snake case without the `Error` suffix, such as `TASK_NOT_FOUND`, and its `domain` is `a2a-protocol.org` {{spec §11.6}}. The gRPC binding carries the same MUST {{spec §10.6}}, and JSON-RPC only a SHOULD {{spec §9.5}}. The `metadata` is free-form: the kit fills it, and the reference SDK leaves it empty, as the kit README lists.

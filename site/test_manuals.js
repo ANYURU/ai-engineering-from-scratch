@@ -42,7 +42,7 @@ Your test needs a manual. When you finish this section, you can render one and c
 label: core rule
 source: spec §1
 ---
-"The server MUST reply with a task."
+The server must reply with a task.
 \`\`\`
 
 **Task:** a unit of work with an id {{spec §1}}. See [the figures](#s-ref-figures) and [figure](#fig-1-1).
@@ -205,6 +205,13 @@ test('paths and quote keys fail closed', () => {
   assert.ok(!rules(declared.dir).has('quote-key'));
 });
 
+test('quoted source prose is flagged and literal output in code font is not', () => {
+  const quoted = SECTION.replace('**Task:** a unit of work with an id {{spec §1}}.', '**Task:** the spec says "a task is a unit of work with a stable id" {{spec §1}}.');
+  assert.ok(rules(fixture({ 'sections/1-1-intro.md': quoted }).dir).has('quote'));
+  const literal = SECTION.replace('**Task:** a unit of work with an id {{spec §1}}.', '**Task:** a unit of work with an id. The server logs `task created with a stable id` {{spec §1}}.');
+  assert.ok(!rules(fixture({ 'sections/1-1-intro.md': literal }).dir).has('quote'));
+});
+
 test('a clean fixture passes the editorial audit', () => {
   assert.deepEqual(issuesFor(fixture().dir), []);
 });
@@ -212,7 +219,7 @@ test('a clean fixture passes the editorial audit', () => {
 test('audit flags prose, provenance, and quote violations', () => {
   const broken = SECTION
     .replace('Your test needs a manual.', 'Your test needs a manual; it can’t wait — really.')
-    .replace('"The server MUST reply with a task."', '"The server SHOULD reply with a task."')
+    .replace('The server must reply with a task.', '"The server must reply with a task."')
     .replace('  "kind": "task",', '  "kind": "message",');
   const found = rules(fixture({ 'sections/1-1-intro.md': broken }).dir);
   for (const rule of ['semicolon', 'contraction', 'dash', 'quote', 'provenance']) assert.ok(found.has(rule), `expected ${rule}`);

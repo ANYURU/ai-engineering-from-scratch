@@ -8,11 +8,11 @@ The capture ran `rea function fixtures/ledger-arm64-O1 NAME --provider ghidra` f
 
 The word covers three things in rea, and only one of them is a cache you can keep.
 
-**Target snapshot:** the private copy of the input that the Ghidra launcher imports with `-readOnly` and `-deleteProject`. It is deleted when the session closes, and nothing of the analysis survives it: "Each new provider session still imports the target into a fresh temporary project." {{mcp Ghidra first-query deadlines and recovery}}
+**Target snapshot:** the private copy of the input that the Ghidra launcher imports with `-readOnly` and `-deleteProject`. It is deleted when the session closes, and nothing of the analysis survives it. Every new provider session imports the target again into a new temporary project {{mcp Ghidra first-query deadlines and recovery}}.
 
 **Analysis snapshot cache:** the in-memory table of one session, `AnalysisSnapshotCache`, which holds up to 10,000 entries for one target identity. This is the cache this section is about.
 
-**Snapshot file:** the JSON file that `close_binary` writes and `open_binary` reads. It holds the target identity, the provider binding, the cache entries, and the session's Evidence bundle. The CLI documentation says what it is and what it is not: "These are cached observations, not a saved provider database: only eligible exact queries can reuse a result, and new or live queries can still require provider startup." {{cli Save and reuse analysis snapshots}}
+**Snapshot file:** the JSON file that `close_binary` writes and `open_binary` reads. It holds the target identity, the provider binding, the cache entries, and the session's Evidence bundle. The CLI documentation says what it is and what it is not. It holds cached observations, not a saved provider database. Only an exact query that qualifies can reuse a result, and a new or live query can still start the provider {{cli Save and reuse analysis snapshots}}.
 
 ## The query id
 
@@ -75,7 +75,9 @@ caption: Read top to bottom. The dashed reply is a replay, and the solid call is
 
 ## Save and load
 
-`close_binary` takes `snapshot_path` and `overwrite`. `closeWithSnapshot` drains the calls in progress, exports the snapshot, writes the file, and closes the provider. Its receipt adds `primitive_entries`, `workflow_entries`, and `evidence_records`. `open_binary` takes `snapshot_path` too, reads the file before it opens the target, and imports the entries into the new session. The capture closed both targets without a path, so its two `close_binary` results are `null` (`10-mcp-15-close-binary-O1.json`, `10-mcp-25-close-binary-O2.json`). On the CLI the flag is `--snapshot`: "An exact CLI cache hit is normally read before starting a provider process." {{cli Save and reuse analysis snapshots}} On Windows the Ghidra provider can start first, because it must admit the source file.
+`close_binary` takes `snapshot_path` and `overwrite`. `closeWithSnapshot` drains the calls in progress, exports the snapshot, writes the file, and closes the provider. Its receipt adds `primitive_entries`, `workflow_entries`, and `evidence_records`. `open_binary` takes `snapshot_path` too, reads the file before it opens the target, and imports the entries into the new session. The capture closed both targets without a path, so its two `close_binary` results are `null` (`10-mcp-15-close-binary-O1.json`, `10-mcp-25-close-binary-O2.json`). On the CLI the flag is `--snapshot`.
+
+An exact cache hit is normally read before rea starts a provider process {{cli Save and reuse analysis snapshots}}. On Windows the Ghidra provider can start first, because it must admit the source file.
 
 Loading a file is a full check. The entries must be in canonical id order, and every query id is recomputed and must match. No id appears twice. Every entry must have an Evidence record in the bundle with the same profile and the same result. A bundle record for another target fails the whole file.
 
@@ -112,7 +114,9 @@ note: Two of the three limitations are cut.
 
 Before rea sends such a call to the provider, `BinarySession` calls `invalidateSnapshot`. The cache is emptied and a flag is set. From then on every lookup returns nothing, every new result is not stored, and an export fails with "Analysis snapshots are unavailable because analysis metadata may have changed". The error adds the way out: export the Evidence with `export_evidence_bundle`, close the target without a snapshot, and reopen it. An import after a mutation is refused the same way.
 
-At 6.7.0 the order is: invalidate, then call the provider. A failed reply cannot prove that the write did not reach Ghidra. So a mutating call that fails also turns the cache off. The 6.4.0 release used the other order and invalidated only after a successful call. The CLI documentation states the rule: "Dispatching a metadata write invalidates the active session's snapshot cache, even if its reply fails: the provider may already have applied the write." {{cli Save and reuse analysis snapshots}}
+At 6.7.0 the order is: invalidate, then call the provider. A failed reply cannot prove that the write did not reach Ghidra. So a mutating call that fails also turns the cache off. The 6.4.0 release used the other order and invalidated only after a successful call.
+
+The CLI documentation states the rule. A metadata write clears the snapshot cache of the active session, even when its reply fails. The provider can already have applied the write {{cli Save and reuse analysis snapshots}}.
 
 ```takeaways
 - Repeat a query with the same parameters to get the cached answer, and read the added limitation.
