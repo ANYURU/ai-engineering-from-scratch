@@ -26,10 +26,10 @@ The routes below exist only when you start the server with `VLLM_SERVER_DEV_MODE
 
 ## Try sleep and wake by hand
 
-Start a server in development mode with sleep mode on, on a machine that no one else can reach:
+Start a server in development mode with sleep mode on. `--host 127.0.0.1` keeps the control routes on your own machine:
 
 ```bash
-VLLM_SERVER_DEV_MODE=1 vllm serve Qwen/Qwen3-8B --enable-sleep-mode 2>&1 | tee server.log
+VLLM_SERVER_DEV_MODE=1 vllm serve Qwen/Qwen3-8B --enable-sleep-mode --host 127.0.0.1 2>&1 | tee server.log
 ```
 
 In a second terminal, put the server to sleep, check it, and wake it:
@@ -66,4 +66,4 @@ Not measured on our hardware. We have not timed sleep, wake, or a weight update 
 - At 0.31.0, read the draft acceptance after a level 2 wake, and wake before a weight update.
 ```
 
-Sources: the vLLM source at v0.31.0 (vllm/config/model.py, vllm/config/parallel.py, vllm/entrypoints/serve/dev/sleep/api_router.py and the api routers for rlhf and rpc, vllm/distributed/weight_transfer/), vLLM documentation at v0.31.0 (docs/training/rlhf.md, docs/training/async_rl.md, docs/features/sleep_mode.md, docs/training/weight_transfer/), the release notes for v0.31.0 and v0.32.0, vLLM issues 52479 and 57853, the release notes for v0.32.0 (level 2 sleep and calibrated KV scales).
+Sources: the vLLM source at v0.31.0 (vllm/config/model.py, vllm/config/parallel.py, vllm/entrypoints/serve/dev/sleep/api_router.py, vllm/entrypoints/serve/dev/rlhf/api_router.py, vllm/entrypoints/serve/dev/rpc/api_router.py, vllm/distributed/weight_transfer/base.py, vllm/distributed/weight_transfer/factory.py, vllm/distributed/weight_transfer/nccl_engine.py, vllm/distributed/weight_transfer/ipc_engine.py), vLLM documentation at v0.31.0 (docs/training/rlhf.md, docs/training/async_rl.md, docs/features/sleep_mode.md, docs/training/weight_transfer/), the release notes for v0.31.0 and v0.32.0, vLLM issues 52479 and 57853, the release notes for v0.32.0 (level 2 sleep and calibrated KV scales).
