@@ -88,7 +88,11 @@ Our probe sends one prompt at temperature 0 with 128 new tokens. It sends the pr
 
 **We measured** two different answers from the default server. The first request alone and all five batched requests wrote one text. The next four requests alone wrote another text, which left the first after 238 characters. Nothing in the request changed between those runs.
 
-Our reading is that the first request computed its prompt from nothing. The four later ones found that prompt in the radix cache and ran a different prefill path. The `radix_cache` mode of the test above checks that case. On an L4 with `Qwen/Qwen3-8B`, the four later requests alone also matched each other and not the first. The batched requests there wrote two more texts, so the default server gave four different answers to one prompt. With the flag on, all ten matched on the L4 too.
+Our reading is that the first request computed its prompt from nothing. The four later ones found that prompt in the radix cache and ran a different prefill path. The `radix_cache` mode of the test above checks that case.
+
+On an L4 with `Qwen/Qwen3-8B`, the four later requests alone also matched each other and not the first. The batched requests there wrote two more texts, so the default server gave four different answers to one prompt. With the flag on, all ten matched on the L4 too.
+
+A 2026 study of two serving engines found the same split. With prefix reuse on, the cache-hit and the recompute paths gave different greedy outputs. With prefix reuse off, repeated runs matched in every token. We did not run that study ourselves.
 
 With the flag on, all ten requests wrote the same text. The startup log shows the switches from the list above:
 
@@ -105,11 +109,23 @@ note: Three lines from the startup log. Timestamps and the end of the second lin
 
 In one run per server, the price at concurrency 8 was 18 percent of the throughput. Output fell from 78.92 to 64.83 tok/s, and the median time per token rose from 97.30 to 117.43 ms. The radix cache was off, so a workload with shared prefixes pays more than this test shows.
 
+## Know the limits of our result
+
+Our 18 percent is one run at one concurrency on one model. Other teams measured the cost and the gaps of deterministic modes. We did not measure these results ourselves:
+
+- **The speed cost.** Thinking Machines Lab ran 1,000 Qwen3-8B requests on vLLM in 26 s by default and in 55 s with batch-invariant kernels. A better attention kernel brought it to 42 s.
+- **A larger cost under load.** A 2026 study, CoRun, measured batch-invariant kernels at more than twice the latency and up to 74 percent less throughput.
+- **Other changes in execution.** A 2026 verification study, Vosti, tested changes such as prompt chunking and KV cache reuse. The deterministic mode of SGLang gave different logits under some of them.
+
+So measure the cost at the concurrency you serve. Test the exact setup: the model, the attention backend, the parallel layout, the chunk size, and the cache setting.
+
 ## Our position
 
 Treat `--enable-deterministic-inference` as a promise for one model on one backend, and test that promise. Turn it on for reinforcement learning rollouts and for evaluations you want to reproduce. Leave it off for production traffic, where prefix caching and faster kernels are worth more than identical bits. Do not assume that temperature 0 alone gives identical text. On the GB10 it did not.
 
 Set `sampling_seed` on each request that must reproduce. Seed 42 for everyone makes every sampled request draw the same random numbers.
+
+Run the same eval twice and compare the outputs token by token, not only the score. Between the two runs, call `POST /flush_cache` or restart the server, as [section 5.1](#s-sglang-benchmark-serving) shows. Write the cache setting and the cached tokens next to the result.
 
 ## Incidents
 
@@ -123,8 +139,10 @@ Set `sampling_seed` on each request that must reproduce. Seed 42 for everyone ma
 - Run sglang.test.test_deterministic on your model and backend before you rely on reproducible output.
 - Expect deterministic mode to turn off prefix caching on flashinfer. Pick triton, or fa3 and fa4 where your GPU supports them.
 - Send one prompt alone and in a batch, and count distinct outputs, before you trust temperature 0.
+- Flush the cache between two eval runs that you compare, and record the cached tokens.
+- Measure the cost of deterministic mode at the concurrency you serve, not at one point.
 - Set SGLANG_RETURN_ORIGINAL_LOGPROB when a trainer compares logprobs at temperature 1.
 - Pass --mlx-enable-sampling on Apple silicon when requests need temperature or logprobs.
 ```
 
-Sources: capture/gpu/out-gb10/determinism.txt, deterministic-determinism.txt, server-deterministic.log, bench-random-c8.txt, deterministic-bench-random-c8.txt, capture/gpu/out-l4/determinism.txt, deterministic-determinism.txt, capture/gpu/determinism_probe.py, python/sglang/srt/batch_invariant_ops/batch_invariant_ops.py (enable_batch_invariant_mode), arg_groups/attention_hook.py (handle_deterministic_inference), arg_groups/choices.py (DETERMINISTIC_ATTENTION_BACKEND_CHOICES, RADIX_SUPPORTED_DETERMINISTIC_ATTENTION_BACKEND), sampling/sampling_batch_info.py, layers/sampler.py, and python/sglang/test/test_deterministic.py at v0.5.22; capture/out/serve-help.txt; issues #43055, #43413, #36174, #31261, and #39597; Thinking Machines, Defeating Nondeterminism in LLM Inference (2025-09).
+Sources: capture/gpu/out-gb10/determinism.txt, deterministic-determinism.txt, server-deterministic.log, bench-random-c8.txt, deterministic-bench-random-c8.txt, capture/gpu/out-l4/determinism.txt, deterministic-determinism.txt, capture/gpu/determinism_probe.py, python/sglang/srt/batch_invariant_ops/batch_invariant_ops.py (enable_batch_invariant_mode), arg_groups/attention_hook.py (handle_deterministic_inference), arg_groups/choices.py (DETERMINISTIC_ATTENTION_BACKEND_CHOICES, RADIX_SUPPORTED_DETERMINISTIC_ATTENTION_BACKEND), sampling/sampling_batch_info.py, layers/sampler.py, and python/sglang/test/test_deterministic.py at v0.5.22; capture/out/serve-help.txt; issues #43055, #43413, #36174, #31261, and #39597; Thinking Machines, Defeating Nondeterminism in LLM Inference (2025-09), the 1,000 Qwen3-8B requests on vLLM; python/sglang/srt/entrypoints/http_server.py (flush_cache) at v0.5.22; a 2026 study of prefix-cache effects on greedy outputs in two serving engines; the 2026 study CoRun; the 2026 verification study Vosti.
