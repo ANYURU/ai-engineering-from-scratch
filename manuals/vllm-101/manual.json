@@ -340,7 +340,7 @@
   ],
   "reference": {
     "title": "Reference",
-    "thesis": "Look up a flag, a metric, an incident, or a version pin here.",
+    "thesis": "Look up a flag, a metric, an incident, a version pin, or a figure here.",
     "accent": "grey",
     "sections": [
       {
@@ -370,6 +370,10 @@
       {
         "id": "R.7",
         "file": "sections/r-7-lab-notes.md"
+      },
+      {
+        "id": "R.8",
+        "file": "sections/r-8-figure-index.md"
       }
     ]
   },
