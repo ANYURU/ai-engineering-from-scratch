@@ -21,7 +21,7 @@ In the first mode, with the default update interval, every sample is at most one
 
 ## What async gives on one GPU
 
-With `--colocate`, the trainer and the engine share the GPU. Miles allows colocation only with `--fully-async`, so the one-step-ahead mode needs separate GPUs. The fully async mode works down to one GPU, but generation stops for the whole training window. The two phases still take turns.
+With `--colocate`, the trainer and the engine share the GPU. Miles allows colocation only with `--fully-async`, so the one-step-ahead mode needs separate GPUs. The fully async mode can run on one GPU with `--colocate`, but only with the Megatron trainer, not the FSDP trainer of this manual. Generation also stops for the whole training window, so the two phases still take turns.
 
 So on one GPU, async training does not save time. It adds the cost of older samples and buys no overlap. Use it on one GPU only to learn its settings before a larger run.
 
@@ -33,7 +33,7 @@ On a layout with separate rollout GPUs, these settings decide how old a sample c
 - `--max-weight-staleness` drops samples that are older than this many weight versions. Unset means no limit.
 - `--async-unused-samples-handler` decides what happens to a dropped sample: `drop` or `retry`.
 - `--async-max-concurrent-samples` caps the number of samples that the engines generate at one time.
-- `--pause-generation-mode` decides what happens to running requests during a weight update: `retract` or `in_place`.
+- `--pause-generation-mode` decides what happens to running requests during a weight update: `abort`, `retract`, or `in_place`. The default is `retract`. The fully async mode refuses `abort`, and refuses `in_place` with `--colocate`.
 
 `--over-sampling-batch-size` has no effect under `--fully-async`.
 
