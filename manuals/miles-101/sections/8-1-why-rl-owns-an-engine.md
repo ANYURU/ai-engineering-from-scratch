@@ -40,7 +40,7 @@ GRPO assumes that the trainer and the engine agree on the probability of each sa
 | Numbers | different kernels add in a different order, or one side uses lower precision | sampling replay, importance-sampling corrections, true on-policy mode |
 | Staleness | a sample came from older weights than the trainer now holds | limits on sample age, and corrections |
 
-Our runs on one GB10 had only the numbers source. Their gap stayed at 0.013 to 0.016 per token. [Section 8.2](#s-the-correction-methods) matches each correction to its source.
+Our runs on one GB10 had only the numbers source. In our Qwen3-0.6B runs, the gap stayed at 0.013 to 0.016 per token. [Section 8.2](#s-the-correction-methods) matches each correction to its source.
 
 Our view: most of what makes an RL framework hard is not the loss function. It is keeping these four sources small and measured while the engine runs at full speed.
 
