@@ -83,14 +83,14 @@ sglang serve --model-path Qwen/Qwen3-8B --host 127.0.0.1 --port 30000 \
 With Docker, run the same server inside the container. Mount your Hugging Face cache, so the weights download once:
 
 ```bash
-docker run --rm --gpus all --ipc=host --shm-size 32g -p 30000:30000 \
+docker run --rm --gpus all --ipc=host --shm-size 32g -p 127.0.0.1:30000:30000 \
   -v "$HOME/.cache/huggingface:/root/.cache/huggingface" \
   lmsysorg/sglang:v0.5.22 \
   sglang serve --model-path Qwen/Qwen3-8B --host 0.0.0.0 --port 30000 \
   --enable-cache-report --enable-metrics --mem-fraction-static 0.85
 ```
 
-We ran the uv path. The Docker command follows the SGLang install page {{docs}}. It uses `--host 0.0.0.0` because the port must be open outside the container.
+We ran the uv path. The Docker command follows the SGLang install page {{docs}}. It uses `--host 0.0.0.0` because the port must be open outside the container. The `127.0.0.1:` prefix on `-p` keeps that port on your own machine. The server has no API key, so do not publish it on a network interface.
 
 Three flags in the command are our choice:
 
