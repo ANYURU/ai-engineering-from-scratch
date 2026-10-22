@@ -26,11 +26,11 @@ note: The first line gives the share of node memory in use. The table lists the 
 To adjust the kill threshold, set the environment variable `RAY_memory_usage_threshold` when starting Ray. To disable worker killing, set the environment variable `RAY_memory_monitor_refresh_ms` to zero.
 ```
 
-The node held 115.86 GB of 121.69 GB, which is 95.2 percent. The trainer process alone held 36.77 GB.
+The node held 115.86 GB of 121.69 GB, which is 95.2 percent. The trainer process alone held 36.77 GB. The rest of the used memory was not in the process list.
 
 ## Why this happens on a GB10
 
-On a GB10, the CPU and the GPU use one pool of memory. Ray reads the memory of the whole node. Our reading is that the model weights, the optimizer state, and the KV cache all count in the number that Ray watches.
+On a GB10, the CPU and the GPU use one pool of memory. Ray reads the memory of the whole node. So the GPU allocations count in the number that Ray watches. Those are the model weights, the optimizer state, and the KV cache. That is our explanation of the memory that the process list does not show. We did not measure the split.
 
 That number is real. When it reaches 100 percent, the machine has no memory left for anyone. So a Ray kill at 95 percent is a warning that the run does not fit, and not a false alarm.
 
@@ -52,7 +52,7 @@ Change the run, not the watcher:
 
 The log also names `RAY_memory_usage_threshold`. Do not raise it on unified memory. A higher threshold lets the node get closer to full. If the node does run out, the operating system can stop any process on the machine, and that stop leaves no Ray message to read.
 
-We ran the same Qwen3-4B job again with `--sglang-mem-fraction-static 0.2` and the default Ray threshold. Ray stopped it again, at 119.18 GB. [Section 2.1](#s-pick-a-model-size) has that run.
+We ran the same Qwen3-4B job again with `--sglang-mem-fraction-static 0.2` and the default Ray threshold. Ray stopped it again, at 119.18 GB. The trainer process held 36.75 GB, almost the same as in the first run, so the smaller engine share did not make room. [Section 2.1](#s-pick-a-model-size) shows how to choose a model size that fits.
 
 ```takeaways
 - Read the Ray OutOfMemoryError line before you change anything.
