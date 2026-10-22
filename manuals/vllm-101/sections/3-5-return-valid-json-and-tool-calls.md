@@ -4,17 +4,65 @@
 
 Your application needs JSON that always parses. When you finish this section, you can request structured output and check its cost.
 
-## Draft: not written yet
+## Ask for a schema
 
-This page is a plan. The list below says what the page will cover and the evidence it will use.
+With structured output, vLLM limits each next token to the tokens that keep the output valid for your schema. The model cannot produce text that breaks the schema. You ask for it in the request, not with a server flag.
 
-- Mode: how-to (recipe).
-- Covers: the response format field, the structured output options, and the known problems with speculative decoding.
-- Evidence: planned. We have not measured the structured output overhead yet.
+With the OpenAI client, use `response_format`:
 
-```takeaways
-- Use the response format field for JSON.
-- Serve structured requests without speculative decoding until the known bugs close.
+```python
+from openai import OpenAI
+
+client = OpenAI(base_url="http://localhost:8000/v1", api_key="none")
+schema = {
+    "type": "object",
+    "properties": {"city": {"type": "string"}, "days": {"type": "integer"}},
+    "required": ["city", "days"],
+}
+reply = client.chat.completions.create(
+    model="Qwen/Qwen3-8B",
+    messages=[{"role": "user", "content": "Plan a trip to Lisbon. Answer in JSON."}],
+    response_format={"type": "json_schema", "json_schema": {"name": "trip", "schema": schema}},
+)
+print(reply.choices[0].message.content)
 ```
 
-Sources: vLLM documentation at v0.31.0 (docs/features/structured_outputs.md), issues 60830 and 61383.
+For other limits, send `structured_outputs` in `extra_body`. It takes one of `json`, `regex`, `choice`, `grammar`, or `structural_tag`. The older `guided_json` and `guided_*` fields were removed in 0.12.0. A recipe that uses them is out of date.
+
+## Know what runs on the server
+
+The default backend setting is `auto`, which picks a backend for the request. You can also name one: `xgrammar`, `guidance`, `outlines`, or `lm-format-enforcer`. The server compiles your schema into a grammar the first time it sees the schema, and it caches the result. On each step it builds a mask of the allowed tokens and applies it before sampling.
+
+Two costs follow:
+
+- The first request with a new schema waits for the compile.
+- Each step builds a mask, which adds CPU time for each token.
+
+Not measured on our hardware. We have not timed the compile or the mask cost on the L4 or the GB10.
+
+## Return tool calls
+
+For tool calls, start the server with a parser for your model's tool format:
+
+```bash
+vllm serve Qwen/Qwen3-8B --enable-auto-tool-choice --tool-call-parser hermes
+```
+
+The parser turns the model's text into the `tool_calls` field of the response. Pick the parser that matches your model family. The vLLM documentation lists them.
+
+## Avoid two known problems
+
+- **Speculative decoding.** A schema and a speculation method can disagree on the next tokens. An issue on 0.31 showed invalid JSON with MTP speculation for one model, and the issue is now closed. Test your schema with and without `--speculative-config` before you rely on both.
+- **Reasoning models.** A model that thinks before it answers needs the schema to apply to the answer only. Set the reasoning parser for your model, so the limit starts after the thinking ends.
+
+## Check the result
+
+Parse every response in your client, even with structured output on. Count the parse failures and the requests that hit `max_tokens` before the JSON closed. A response cut by the token limit is not valid JSON.
+
+```takeaways
+- Ask for a schema in the request, with response_format or structured_outputs.
+- Do not use the guided_* fields, which were removed in 0.12.0.
+- Test a schema with speculative decoding and with reasoning models before you rely on it.
+```
+
+Sources: the vLLM source at v0.31.0 (vllm/config/structured_outputs.py, vllm/v1/structured_output/), vLLM documentation at v0.31.0 (docs/features/structured_outputs.md, docs/features/tool_calling.md), vLLM issue 60830.
