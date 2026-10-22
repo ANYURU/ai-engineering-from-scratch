@@ -4,16 +4,19 @@
 
 This manual is for the engineer who wants an open model on their own GPU this week. It starts with a server that answers, and it ends with a fleet that you can measure and run.
 
-Three commands start a server and send it one request:
+These commands make an environment, install SGLang, start a server, and send it one request:
 
 ```bash
+uv venv --python 3.12
+source .venv/bin/activate
 uv pip install --prerelease=allow "sglang==0.5.22"
-sglang serve --model-path Qwen/Qwen3-8B --enable-cache-report --enable-metrics
+sglang serve --model-path Qwen/Qwen3-8B --host 127.0.0.1 --port 30000 \
+  --enable-cache-report --enable-metrics --mem-fraction-static 0.85
 curl -s http://127.0.0.1:30000/generate -H 'Content-Type: application/json' \
   -d '{"text": "The capital of France is", "sampling_params": {"max_new_tokens": 12, "temperature": 0}}'
 ```
 
-[Section 1.1](#s-install-sglang-and-serve-your-first-model) runs them step by step, with the output to expect after each one and the fix for each common error. Every command and number in this manual was tested on SGLang 0.5.22 with an NVIDIA L4 and an NVIDIA DGX Spark.
+[Section 1.1](#s-install-sglang-and-serve-your-first-model) runs them step by step, with the output to expect after each one and the fix for each common error. We ran the uv install and the server command on an NVIDIA L4 with SGLang 0.5.22. The Apple silicon steps come from our Mac runs, and the Docker command follows the SGLang install page. Every measured number in this manual names the machine that it came from: an NVIDIA L4, an NVIDIA DGX Spark, or the Mac.
 
 ## What you can do after this manual
 
