@@ -16,7 +16,7 @@ We cannot measure the dedicated fleet on our single GB10, because it needs GPUs 
 | A dedicated fleet | `--eval-num-gpus N` | N GPUs of the job go to eval, and training never stops for it |
 | Your own service | `--eval-function-path` set to a checkpoint eval function | only the checkpoint export |
 
-You cannot select the fleet and your own service at the same time.
+You cannot select the fleet together with a checkpoint eval function for your own service. Rollout fault tolerance from [section 6.3](#s-survive-failures) also does not work with a fleet.
 
 ## Evaluate on the training engines
 
