@@ -32,8 +32,8 @@ The ranges come from our lab runs: Qwen3-0.6B on GSM8K on one GB10, 32 prompts w
 | `perf/log_probs_time` | the trainer scoring of the samples | 23.4 s median in a run without pauses |
 | `perf/train_time` | the training phase, with the scoring | 100.3 s median in a run without pauses |
 | `perf/update_weights_time` | the copy of new weights into the engine | 0.63 to 0.65 s for Qwen3-0.6B |
-| `perf/sleep_time` | the engine release before training | 1.6 s median for Qwen3-0.6B |
-| `perf/wake_up_time` | the engine load after training | 0.8 s median for Qwen3-0.6B |
+| `perf/sleep_time` | the trainer moving its state to host memory after training | 1.6 s median for Qwen3-0.6B |
+| `perf/wake_up_time` | the trainer moving its state back before the log probabilities | 0.8 s median for Qwen3-0.6B |
 | `perf/train_wait_time` | the time the trainer waits for samples | logged in every step |
 
 Time values hold only for steps that no heat-guard pause touched. [The lab notes](#s-ref-lab-notes) give the rule.
