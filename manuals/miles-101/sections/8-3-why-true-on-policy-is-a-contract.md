@@ -45,12 +45,30 @@ Every pinned item is a piece of code that someone checked on specific hardware. 
 
 That is why we call it a contract and not a setting. A setting asks the code to try. A contract lists the cases where the code has been proven, and refuses the rest.
 
-Our view: on a GPU outside the contract, do not chase a gap of 0. Measure the gap at step 0, keep it inside the range of your healthy runs, and remove the part that the sampler adds. That is the work you can finish.
+## Our gap is the floor of our setup
+
+Our gap of about 0.015 is the floor of one setup. That setup is BF16 on both sides, SGLang kernels in the engine, and FSDP kernels in the trainer. It is not a law of RL. Other setups move it. We did not measure the changes below. They come from published work:
+
+- **Precision.** A 2025 study ran the trainer and the engine in FP16 and reported that the gap almost went away. FP16 keeps more bits of each number than BF16, so each rounding is smaller. A 2026 field guide warns that FP16 does not always help. A new dtype does not make the two sides add in the same order, and some FP16 kernels gave a larger gap.
+- **Tensor parallel size.** A 2025 paper showed that an engine split over several GPUs adds in a different order than a trainer on one GPU. That gap stays even with batch-invariant kernels, so the tensor parallel size of the engine is a source of its own.
+- **Bitwise setups.** Some teams make the two sides agree bit for bit outside the Miles contract. The reports give a cost of about 20 to 25 percent of the step time.
+
+Other teams publish their healthy gaps too. Use them as a reference for the size of a working gap, not as a target for your run:
+
+| Setup, as reported | Gap per token |
+|---|---|
+| Qwen3-4B on A100, the vLLM team's RL framework | about 0.011 |
+| Qwen3-30B-A3B MoE on GB200, the same framework | about 0.018 |
+| GLM-4.5-Air on GB200, the same framework | 0.02 to 0.03 |
+| DeepSeek-V4.1 in BF16 on GB300, with Miles | 0.019 to 0.023 |
+| GLM-5.3-Flash on GB300, with Miles and routing replay | 0.0068 to 0.0106, see [section 3.4](#s-train-a-moe-model) |
+
+Our view: on a GPU outside the contract, first decide if the gap matters for your run. If it does, precision, tensor parallel size, and bitwise kernels are the levers, and each one costs speed or work. If it does not, measure the gap at step 0 and keep it inside the range of your healthy runs. Then remove the part that the sampler adds.
 
 ```takeaways
 - The gap comes from two programs that add in a different order, not from a bug.
 - Deterministic inference makes the engine repeat itself, and true on-policy mode makes the two sides agree.
-- Outside the contract, keep the gap in your healthy range instead of chasing 0.
+- Our gap of about 0.015 is the floor of our BF16 setup and kernels, not a law.
 ```
 
-Sources: Miles true on-policy contract, model profiles, and documentation at main 08752a12; capture/gpu/summary/miles-gb10-lab.json (runs.e6a-base, runs.e6b-det-triton, runs.e6c-det-flashinfer, runs.e6d-det-triton-repeat); Qwen3-0.6B model configuration.
+Sources: Miles true on-policy contract, model profiles, and documentation at main 08752a12; capture/gpu/summary/miles-gb10-lab.json (runs.e6a-base, runs.e6b-det-triton, runs.e6c-det-flashinfer, runs.e6d-det-triton-repeat); Qwen3-0.6B model configuration; Defeating the Training-Inference Mismatch via FP16, arXiv 2510.26788; Deterministic Inference across Tensor Parallel Sizes, arXiv 2511.17826; A Field Guide to Training-Inference Corrections, 2026-09-05; vime announcement, vLLM blog, 2026-06-09; SGLang pull request 42408; Miles GLM-5.3-Flash model documentation.
