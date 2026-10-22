@@ -2,7 +2,7 @@
 
 > Start from what you see, and each entry gives the likely cause, the check, and the fix.
 
-The first five entries are failures we met on a GB10. The sixth uses our healthy runs as the reference. The others come from reports in the Miles issue tracker, and we have not reproduced them.
+The first five entries are problems we met on a GB10: four symptoms of failed runs and one timing effect of heat. The sixth uses our healthy runs as the reference. The others come from reports in the Miles issue tracker, and we have not reproduced them.
 
 When you finish this section, you can find the cause of a failed or wrong run from its first symptom.
 
@@ -28,9 +28,9 @@ caption: The five symptoms from our runs. The entries below add six more from is
 
 ## The job stops with a Ray OutOfMemoryError
 
-- **Cause:** on unified memory, the GPU allocations count as node memory, and the node is close to full. Ray stops a worker above its threshold.
+- **Cause:** on unified memory, Ray reads one memory for the whole node, and the node is close to full. Ray stops a worker above its threshold.
 - **Check:** the line `Memory on the node ... was 115.86GB / 121.69GB` or similar, and no CUDA out-of-memory error.
-- **Fix:** lower the engine memory fraction or the work per step, and leave the Ray threshold at its default. [Section 2.3](#s-stop-ray-killing-the-job) has the details.
+- **Fix:** use a smaller model or less work per step, and leave the Ray threshold at its default. A lower engine memory fraction did not help our 4B run. [Section 2.3](#s-stop-ray-killing-the-job) has the details.
 
 ## The trainer rejects the attention implementation
 
@@ -47,7 +47,7 @@ caption: The five symptoms from our runs. The entries below add six more from is
 ## The gap at step 0 is far above your range
 
 - **Cause:** the engine and the trainer do not start from the same weights, or they read the same weights in different formats.
-- **Check:** compare `train/train_rollout_logprob_abs_diff` at step 0 with your healthy runs. Ours were 0.0149 to 0.0157 for Qwen3-0.6B.
+- **Check:** compare `train/train_rollout_logprob_abs_diff` at step 0 with your healthy runs. Ours were 0.0148 to 0.0157 for Qwen3-0.6B.
 - **Fix:** stop the run before it trains on wrong numbers. Check the checkpoint paths of both sides.
 
 ## A reward function with fractions moves a group that should stay still
@@ -58,8 +58,8 @@ caption: The five symptoms from our runs. The entries below add six more from is
 
 ## Training goes wrong after offload on FSDP
 
-- **Cause:** a report in the tracker shows that offloading the trainer state with FSDP2 can corrupt shards of uneven size.
-- **Check:** a loss or a gradient norm that jumps after the first offload, with a model whose layer sizes do not split evenly across ranks.
+- **Cause:** a report in the tracker shows that offloading the trainer state with FSDP2 on two or more GPUs can corrupt shards of uneven size.
+- **Check:** nonfinite values, a jump in the loss or the gradient norm, or a collective timeout after the first offload. The model has layers that do not split evenly across ranks.
 - **Fix:** run once with `--no-offload-train` and compare. Follow the issue for the code fix.
 
 ## The weight update fails on many GPUs
@@ -76,9 +76,9 @@ caption: The five symptoms from our runs. The entries below add six more from is
 
 ## The launcher stops a Ray cluster you started yourself
 
-- **Cause:** a report in the tracker shows the launcher cleanup stops an external Ray cluster.
+- **Cause:** a report in the tracker shows that six agent example launchers stop every process with `sglang` in its command line. With `MILES_SCRIPT_EXTERNAL_RAY=1`, that stops your Ray cluster too.
 - **Check:** your other Ray jobs stop when a Miles run ends.
-- **Fix:** run Miles on its own Ray cluster until the issue is fixed.
+- **Fix:** remove the cleanup from those launchers, or give Miles its own Ray cluster until the issue is fixed.
 
 ```takeaways
 - Start from the first symptom in the log, and read the engine lines before the trainer lines.

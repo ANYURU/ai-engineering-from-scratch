@@ -4,7 +4,7 @@ const { figure } = require('../../../_shared/figkit.js');
 
 const rows = [
   ['GPU idle, log grows', 'count 503 lines', 'read the first error'],
-  ['FlashAttention 3 error', 'compute capability', 'not 8.0 to 9.0: no FA3'],
+  ['FlashAttention 3 error', 'compute capability', 'not Hopper: no FA3'],
   ['Ray OutOfMemoryError', 'memory at the kill', 'use a smaller model'],
   ['step times differ', 'heat pauses', 'compare clean steps'],
   ['attention name rejected', 'the ValueError list', 'pick a listed name'],
@@ -13,7 +13,7 @@ const rows = [
 module.exports = figure('fig-7-1', {
   height: 360,
   title: 'Start from what you see',
-  desc: 'Five symptoms from our runs, each with the first check and the fix. An idle GPU with a growing log means a dead engine. A FlashAttention 3 error means a GPU outside compute capability 8.0 to 9.0. A Ray out-of-memory error means the node was full. Step times that differ mean heat pauses. A rejected trainer attention name means a name that the installed transformers library does not accept.',
+  desc: 'Five symptoms from our runs, each with the first check and the fix. An idle GPU with a growing log means a dead engine. A FlashAttention 3 error means a GPU that is not Hopper, because the FA3 build in the image is for Hopper only. A Ray out-of-memory error means the node was full. Step times that differ mean heat pauses. A rejected trainer attention name means a name that the installed transformers library does not accept.',
 }, f => {
   f.kicker(20, 28, 'symptom', { hue: 'rose' });
   f.kicker(240, 28, 'first check', { hue: 'amber' });
