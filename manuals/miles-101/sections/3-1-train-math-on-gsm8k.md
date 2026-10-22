@@ -24,8 +24,8 @@ We changed only `--n-samples-per-prompt` and set `--global-batch-size` to match.
 
 | Answers per prompt | Runs | Reward gain | Answer length, first 8 to last 8 steps | Rollout time per step |
 |---|---|---|---|---|
-| 4 | 1 seed | +0.053 | 735 to 673 tokens | 32.5 s, 14 clean steps |
-| 8 | 3 seeds | +0.038 to +0.098 | 712 to 734, then 580 to 637 | 47.5 s, 48 clean steps |
+| 4 | 1 seed | +0.053 | 735 to 673 tokens | 32.5 s on 14 clean steps |
+| 8 | 3 seeds | +0.038 to +0.098 | 712 to 734, then 580 to 637 | 59.1 s on the same 14 steps, first seed |
 | 16 | 1 seed | +0.097 | 728 to 591 tokens | 188.2 s, no clean step |
 
 ```figure
@@ -38,9 +38,11 @@ caption: Reward gain over the first 24 steps for each run. The three green bars 
 
 **We measured** no clear effect of the group size on the reward in 24 steps. The 16-answer run gained +0.097, and one of the three 8-answer seeds gained +0.098. The seed spread at 8 answers, 0.038 to 0.098, covers all the runs.
 
-The cost is clear. More answers mean more tokens to write in each step. The 4-answer rollout took 32.5 s on its clean steps, and the 8-answer rollout 47.5 s. Every step of the 16-answer run overlapped a heat pause, so it has no clean time. Its median of 188.2 s includes the pauses.
+The cost is clear. More answers mean more tokens to write in each step. The 4-answer rollout took 32.5 s on its 14 clean steps. Our first 8-answer seed had no pause, and on the same 14 step numbers it took 59.1 s. Every step of the 16-answer run overlapped a heat pause, so it has no clean time. Its median of 188.2 s includes the pauses.
 
-Read this result with its limits. The runs with 4 and 16 answers have one seed each. The 16-answer run stopped at its time limit during the training of step 24. Its 24 rollouts are complete, and its last update is not.
+The 16-answer run also logged 22,357 `503 Service Unavailable` lines, in bursts of up to 60 s. The client retried each request, and the run went on. Our reading: with 512 open requests, the router found no free engine for a short time. [Section 1.2](#s-add-a-watchdog) shows why the watchdog lets such bursts pass.
+
+Read this result with its limits. The runs with 4 and 16 answers have one seed each. The 16-answer run finished all 24 steps, and its time limit ended the container during shutdown.
 
 ## What we did not run
 
