@@ -125,4 +125,4 @@ Not measured on our hardware. We have no cluster run, and we did not apply the m
 - Check that your vLLM version supports the metrics, events, and connectors your layer reads.
 ```
 
-Sources: vLLM documentation at v0.31.0 (docs/deployment/k8s.md, docs/deployment/frameworks/helm.md, docs/deployment/integrations/), the llm-d v1.0.0 release notes and architecture documents (2026-10-20), the CNCF announcement of llm-d (2026-03-24), the production-stack, AIBrix, and KServe documentation (accessed 2026-10-21).
+Sources: vLLM documentation at v0.31.0 (docs/deployment/k8s.md, docs/deployment/frameworks/helm.md, docs/deployment/integrations/), the llm-d v1.0.0 release notes and architecture documents (2026-10-20), the CNCF announcement of llm-d (2026-03-24), the production-stack, AIBrix, and KServe documentation (accessed 2026-10-21), our GB10 start log capture/gpu/out-gb10/server-load-vllm.log (arguments at 10:53:02, server ready at 11:00:59), vLLM source at v0.31.0 vllm/entrypoints/serve/middleware/authenticate.py (the key guards only paths under /v1, /v2, /inference and /cohere).
