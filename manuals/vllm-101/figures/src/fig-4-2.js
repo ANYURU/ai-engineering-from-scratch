@@ -19,5 +19,5 @@ module.exports = figure('fig-4-2', {
     { name: '4 users, none', value: tpot('vllm-fast-b', 4), hue: 'grey', label: '272.6' },
     { name: '4 users, n-gram', value: tpot('vllm-ngram', 4), hue: 'green', label: '101.3' },
   ], { width: 70 });
-  f.text(66, 306, 'Lower is faster. Random prompts favour n-gram lookup.', { size: 11.5, serif: true, hue: 'ink-soft' });
+  f.text(66, 306, 'Lower is faster. Random prompts, acceptance counters not recorded.', { size: 11.5, serif: true, hue: 'ink-soft' });
 });

@@ -4,7 +4,7 @@
 
 Your users ask for edits of documents they send. When you finish this section, you can decide when n-gram speculation beats a draft model.
 
-**Our result:** on our L4, n-gram speculation cut the time per token from 242 to 77 ms for one user. Our random prompts are a favourable case.
+**Our result:** on our L4, n-gram speculation cut the time per token from 242 to 77 ms for one user, on random prompts.
 
 ## Turn it on
 
@@ -47,11 +47,11 @@ caption: Each bar is the median of two runs. Lower is faster. From capture/gpu/s
 | 1 | 241.7 / 76.6 ms | 3.98 / 7.39 | 274 / 284 ms | 375 / 413 MHz |
 | 4 | 272.6 / 101.3 ms | 13.02 / 19.22 | 290 / 1,691 ms | 428 / 443 MHz |
 
-The GPU ran at 375 to 443 MHz, far below its full clock, because the card is shared and hot. The times are slow for that reason. Read the ratio between the two columns, not the absolute times.
+The GPU ran at 375 to 443 MHz, far below its full clock, because the card is shared and hot. The times are slow for that reason. Read the ratio between the two columns, not the absolute times. The n-gram runs had a clock about 10 percent higher, which is small next to the threefold gain.
 
 At one user, output rose by 86 percent. At four users it rose by 48 percent, and the worst token gap grew from 290 to 1,691 ms. We did not trace the cause of that gap.
 
-Our prompts came from the random dataset of the benchmark tool. Random prompts repeat tokens, so many guesses match. Treat our gain as a favourable case. On your own prompts, the gain depends on how much the output copies the input.
+Our prompts came from the random dataset of the benchmark tool. We did not record the acceptance counters, so we cannot say how many guesses matched. Treat our gain as a result for these prompts only. On your own prompts, the gain depends on how much the output copies the input.
 
 ## Know what it costs
 
@@ -70,7 +70,7 @@ Divide the accepted tokens by the draft tokens. A high share means that your out
 
 ```takeaways
 - Try n-gram speculation for edits, quotes, code changes, and extraction.
-- Measure on your own prompts, because random prompts flatter it.
+- Measure on your own prompts, because our gain comes from random prompts.
 - Expect async scheduling to turn off when you add it.
 ```
 
