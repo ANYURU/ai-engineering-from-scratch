@@ -49,9 +49,9 @@ That is why we call it a contract and not a setting. A setting asks the code to 
 
 Our gap of about 0.015 is the floor of one setup. That setup is BF16 on both sides, SGLang kernels in the engine, and FSDP kernels in the trainer. It is not a law of RL. Other setups move it. We did not measure the changes below. They come from published work:
 
-- **Precision.** A 2025 study ran the trainer and the engine in FP16 and reported that the gap almost went away. FP16 keeps more bits of each number than BF16, so each rounding is smaller. A 2026 field guide warns that FP16 does not always help. A new dtype does not make the two sides add in the same order, and some FP16 kernels gave a larger gap.
+- **Precision.** A 2025 study ran the trainer and the engine in FP16 and reported that the gap almost went away. FP16 keeps more bits of each number than BF16, so each rounding is smaller.
 - **Tensor parallel size.** A 2025 paper showed that an engine split over several GPUs adds in a different order than a trainer on one GPU. That gap stays even with batch-invariant kernels, so the tensor parallel size of the engine is a source of its own.
-- **Bitwise setups.** Some teams make the two sides agree bit for bit outside the Miles contract. The reports give a cost of about 20 to 25 percent of the step time.
+- **Bitwise kernels.** The same paper then made a vLLM engine and an FSDP trainer agree bit for bit, with kernels that add in one fixed tree order. In their test on Qwen3-8B, inference took 22 to 63 percent longer.
 
 Other teams publish their healthy gaps too. Use them as a reference for the size of a working gap, not as a target for your run:
 
@@ -71,4 +71,4 @@ Our view: on a GPU outside the contract, first decide if the gap matters for you
 - Our gap of about 0.015 is the floor of our BF16 setup and kernels, not a law.
 ```
 
-Sources: Miles true on-policy contract, model profiles, and documentation at main 08752a12; capture/gpu/summary/miles-gb10-lab.json (runs.e6a-base, runs.e6b-det-triton, runs.e6c-det-flashinfer, runs.e6d-det-triton-repeat); Qwen3-0.6B model configuration; Defeating the Training-Inference Mismatch via FP16, arXiv 2510.26788; Deterministic Inference across Tensor Parallel Sizes, arXiv 2511.17826; A Field Guide to Training-Inference Corrections, 2026-09-05; vime announcement, vLLM blog, 2026-06-09; SGLang pull request 42408; Miles GLM-5.3-Flash model documentation.
+Sources: Miles true on-policy contract, model profiles, and documentation at main 08752a12; capture/gpu/summary/miles-gb10-lab.json (runs.e6a-base, runs.e6b-det-triton, runs.e6c-det-flashinfer, runs.e6d-det-triton-repeat); Qwen3-0.6B model configuration; Defeating the Training-Inference Mismatch via FP16, arXiv 2510.26788; Deterministic Inference across Tensor Parallel Sizes, arXiv 2511.17826; vime announcement, vLLM blog, 2026-06-09; SGLang pull request 42408; Miles GLM-5.3-Flash model documentation.
