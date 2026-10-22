@@ -30,7 +30,7 @@ The node held 115.86 GB of 121.69 GB, which is 95.2 percent. The trainer process
 
 ## Why this happens on a GB10
 
-On a GB10, the CPU and the GPU use one pool of memory. Ray reads the memory of the whole node. So the model weights, the optimizer state, and the KV cache all count in the number that Ray watches.
+On a GB10, the CPU and the GPU use one pool of memory. Ray reads the memory of the whole node. Our reading is that the model weights, the optimizer state, and the KV cache all count in the number that Ray watches.
 
 That number is real. When it reaches 100 percent, the machine has no memory left for anyone. So a Ray kill at 95 percent is a warning that the run does not fit, and not a false alarm.
 
@@ -38,7 +38,7 @@ That number is real. When it reaches 100 percent, the machine has no memory left
 id: fig-2-3
 kind: layers
 title: Ray reads one memory for the whole GB10
-claim: On a GB10, Ray counts the GPU allocations as used node memory, so its kill means the machine is close to full.
+claim: On a GB10, Ray reads one memory for the whole node, so its kill means the machine is close to full.
 caption: The memory Ray read when it stopped the first 4B run, drawn as one bar.
 ```
 
@@ -46,9 +46,9 @@ caption: The memory Ray read when it stopped the first 4B run, drawn as one bar.
 
 Change the run, not the watcher:
 
-1. Lower the engine memory. `--sglang-mem-fraction-static` sets the share of GPU memory that the rollout engine takes. Our runs used 0.4.
-2. Lower the work per step. Use fewer prompts per step or fewer answers per prompt.
-3. Use a smaller model, if the first two changes do not fit the model.
+1. Use a smaller model. On our GB10, only a smaller model got past the kill.
+2. Lower the work per step. Use fewer prompts, fewer answers per prompt, or shorter answers. We did not test this on 4B.
+3. Lower the engine memory. `--sglang-mem-fraction-static` sets the share of GPU memory that the rollout engine takes. In our 4B test, 0.2 in place of 0.4 did not prevent the kill.
 
 The log also names `RAY_memory_usage_threshold`. Do not raise it on unified memory. A higher threshold lets the node get closer to full. If the node does run out, the operating system can stop any process on the machine, and that stop leaves no Ray message to read.
 
@@ -57,7 +57,7 @@ We ran the same Qwen3-4B job again with `--sglang-mem-fraction-static 0.2` and t
 ```takeaways
 - Read the Ray OutOfMemoryError line before you change anything.
 - On unified memory, treat a Ray memory kill as a real shortage.
-- Lower the engine memory fraction or the work per step, and leave the Ray threshold at its default.
+- Use a smaller model or less work per step, and leave the Ray threshold at its default.
 ```
 
-Sources: capture/gpu/out-gb10/ray-oom-4b.log; capture/gpu/summary/miles-gb10-lab.json (excluded.e4-4b); Ray memory monitor message in the e4-4b run log.
+Sources: capture/gpu/out-gb10/ray-oom-4b.log; capture/gpu/out-gb10/ray-oom-4b-timing.txt; capture/gpu/out-gb10/ray-oom-4b-lowmem.log; capture/gpu/summary/miles-gb10-lab.json (excluded.e4-4b); Ray memory monitor message in the e4-4b run log.

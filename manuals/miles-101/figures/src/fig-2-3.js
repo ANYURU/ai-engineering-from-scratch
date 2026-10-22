@@ -13,7 +13,7 @@ const parts = [
 module.exports = figure('fig-2-3', {
   height: 300,
   title: 'Ray reads one memory for the whole GB10',
-  desc: 'The memory Ray read when it stopped the first 4B run, as one bar of 121.69 GB. The trainer process used 36.77 GB and the engine processes 4.06 GB. The rest of the 115.86 GB in use was not in the process list, and it includes the GPU allocations. 5.83 GB was free.',
+  desc: 'The memory Ray read when it stopped the first 4B run, as one bar of 121.69 GB. The trainer process used 36.77 GB and the engine processes 4.06 GB. The rest of the 115.86 GB in use was not in the process list. Our reading is that most of it is GPU allocations. 5.83 GB was free.',
 }, f => {
   const x0 = 20;
   const w = 600;
@@ -32,6 +32,6 @@ module.exports = figure('fig-2-3', {
   f.line(limit, 40, limit, 112, { style: 'fail', head: false, packet: false });
   f.text(limit - 4, 40, 'kill above 95 percent', { size: 11, anchor: 'end', hue: 'rose' });
   f.text(20, 210, 'On a GB10 the GPU and the CPU share this memory.', { size: 12, serif: true });
-  f.text(20, 234, 'GPU allocations count as used memory, so a Ray kill is real.', { size: 12, serif: true });
+  f.text(20, 234, 'Our reading: GPU allocations count as used memory, so a Ray kill is real.', { size: 12, serif: true });
   f.text(20, 270, 'Process sizes are the resident memory that Ray listed for its top processes.', { size: 11, serif: true, hue: 'ink-soft' });
 });
