@@ -54,7 +54,7 @@ caption: The logprob gap per step for two 12-step runs with seed 1.
 
 ## What replay does not fix
 
-Replay removes the part of the gap that comes from the sampler. The rest comes from the kernels: the engine and the trainer add the same numbers in a different order. [Section 4.5](#s-use-deterministic-inference) shows that deterministic inference does not remove that part. [Section 8.3](#s-why-true-on-policy-is-a-contract) explains what does.
+Replay removes the part of the gap that comes from the sampler. Our reading is that the rest comes from the kernels: the engine and the trainer add the same numbers in a different order. [Section 4.5](#s-use-deterministic-inference) shows that deterministic inference does not remove that part. [Section 8.3](#s-why-true-on-policy-is-a-contract) explains what does.
 
 ```takeaways
 - Set top-p and top-k together, and Miles replays the sampled set in the trainer.
