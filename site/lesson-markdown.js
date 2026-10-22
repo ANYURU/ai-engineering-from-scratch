@@ -628,26 +628,38 @@
     return -1;
   }
 
+  function sectionIds(markdown) {
+    var ids = [];
+    var fence = false;
+    var lines = String(markdown || '').split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      if (/^\s*```/.test(lines[i])) { fence = !fence; continue; }
+      if (fence) continue;
+      var h2 = lines[i].match(/^## (.+)/);
+      if (h2) ids.push(slugify(h2[1]));
+    }
+    return ids;
+  }
+
   function quizPlacement(ids, referenceIds) {
     var n = ids.length;
-    var source = ids;
-    var shift = 0;
-    if (referenceIds && referenceIds.length && n - referenceIds.length >= 0 && n - referenceIds.length <= 2) {
-      source = referenceIds;
-      shift = n - referenceIds.length;
-    }
+    var source = referenceIds && referenceIds.length ? referenceIds : ids;
     var m = source.length;
     var pre = anchorIndex(source, QUIZ_ANCHORS.pre);
     var post = anchorIndex(source, QUIZ_ANCHORS.post);
     var check = anchorIndex(source, QUIZ_ANCHORS.check);
-    if (pre < 0) pre = m >= 2 ? 1 : 0;
+    var first = m && source[0].indexOf('learning-objectives') === 0 ? 1 : 0;
+    if (pre < 0) pre = m - first >= 2 ? first + 1 : first;
     if (post < 0) post = m;
     if (post < pre) post = pre;
     if (check < 0 || check > post) {
       check = post - 1 > pre ? post - 1 : post;
     }
     if (check < pre) check = pre;
-    return { pre: pre + shift, check: check + shift, post: post + shift, count: n };
+    function toPage(index) {
+      return index >= m ? n : Math.min(index, n);
+    }
+    return { pre: toPage(pre), check: toPage(check), post: toPage(post), count: n };
   }
 
   function quizPanelQuestions(data) {
@@ -663,6 +675,7 @@
   return {
     parseMd: parseMd,
     headingIds: headingIds,
+    sectionIds: sectionIds,
     quizPlacement: quizPlacement,
     quizPanelQuestions: quizPanelQuestions,
     extractMath: extractMath,

@@ -3797,12 +3797,12 @@
             }
             var referencePromise = documentResult.lang === 'en'
               ? Promise.resolve(null)
-              : fetchRepositoryFile(enPath)
-                .then(function (res) { return res.text(); })
-                .then(function (english) {
-                  return window.AIFSLessonMarkdown.headingIds(window.AIFSLessonMarkdown.parseMd(english));
-                })
-                .catch(function () { return null; });
+              : Promise.race([
+                fetchRepositoryFile(enPath)
+                  .then(function (res) { return res.text(); })
+                  .then(function (english) { return window.AIFSLessonMarkdown.sectionIds(english); }),
+                new Promise(function (resolve) { setTimeout(function () { resolve(null); }, 4000); })
+              ]).catch(function () { return null; });
             Promise.all([quizPromiseForRequest, referencePromise])
               .then(function (results) {
                 var data = results[0];

@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
-const { parseMd, headingIds, quizPlacement, quizPanelQuestions } = require('./lesson-markdown.js');
+const { parseMd, headingIds, sectionIds, quizPlacement, quizPanelQuestions } = require('./lesson-markdown.js');
 
 const ROOT = path.join(__dirname, '..');
 
@@ -31,8 +31,7 @@ function stages(quiz) {
 }
 
 function translatedIds(lesson) {
-  const ids = lesson.ids.map((_, i) => (i % 2 ? '' : 'secao-' + i));
-  return /^## Learning Objectives/m.test(lesson.markdown) ? ['objetivos'].concat(ids) : ids;
+  return sectionIds(lesson.markdown).map((_, i) => (i % 2 ? '' : 'secao-' + i));
 }
 
 function assertPlaced(place, count, name) {
@@ -52,14 +51,31 @@ test('every lesson quiz reaches a placement before the footer panels', () => {
 test('translated headings keep the English placement', () => {
   for (const lesson of LESSONS) {
     const english = quizPlacement(lesson.ids);
+    const reference = sectionIds(lesson.markdown);
     const translated = translatedIds(lesson);
-    const place = quizPlacement(translated, lesson.ids);
+    const place = quizPlacement(translated, reference);
     assertPlaced(place, translated.length, lesson.name);
-    const shift = translated.length - lesson.ids.length;
+    const shift = reference.length - lesson.ids.length;
     for (const stage of ['pre', 'check', 'post']) {
       if (english[stage] < lesson.ids.length) assert.equal(place[stage], english[stage] + shift, `${lesson.name}: ${stage}`);
     }
   }
+});
+
+test('a Chinese translation that lacks a later English section keeps each quiz at its section', () => {
+  const english = ['learning-objectives', 'before-you-start', 'the-problem', 'tables', 'section-headers', 'symbols', 'relocations', 'program-headers', 'mach-o', 'build-it', 'use-it', 'interactive-lab', 'practice-lab', 'graded-lab', 'lesson-artifact', 'verify-it', 'production-failure-modes', 'operational-rule', 'further-reading'];
+  const chinese = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
+  const place = quizPlacement(chinese, english);
+  assert.equal(place.pre, 9);
+  assert.equal(place.check, 10);
+  assert.equal(place.post, chinese.length);
+});
+
+test('a Portuguese translation keeps the pre, mid and post quizzes at their sections', () => {
+  const english = ['learning-objectives', 'the-problem', 'the-concept', 'build-it', 'use-it', 'ship-it', 'exercises', 'key-terms', 'further-reading'];
+  const portuguese = ['objetivos-de-aprendizagem', 'o-problema', 'o-conceito', 'construa', 'us-lo', 'entregue', 'exerc-cios', 'termos-chave', 'leitura-adicional'];
+  const place = quizPlacement(portuguese, english);
+  assert.deepEqual([place.pre, place.check, place.post], [2, 4, 7]);
 });
 
 test('without Key Terms the post quiz closes the lesson content, after any exercises', () => {
