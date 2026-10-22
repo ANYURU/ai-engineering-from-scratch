@@ -40,7 +40,7 @@ Our GB10 runs hot. A heat guard pauses the container when the GPU reaches 84 C, 
 
 So we report times from steps whose rollout overlapped no pause. Our summary script finds those steps from the pause log and the step timestamps. [The lab notes](#s-ref-lab-notes) give the rule.
 
-Clean steps are not enough on their own. The same setting gave a median rollout of 47.5 s in our 48-step run. A 12-step run on another day gave 59.1 s over its 6 clean steps. On the same 6 step numbers, the 48-step run took 60.9 s. The rollout time follows the answer length, and the 48-step median includes the late steps with short answers. So compare times on the same step numbers, and repeat them with a second seed.
+Clean steps are not enough on their own. The same setting gave a median rollout of 47.5 s in our first 48-step run. That run came before we added the heat guard, so no pause could touch it. A 12-step run four days later gave 59.1 s over its 6 clean steps. On the same 6 step numbers, the 48-step run took 60.9 s. The rollout time follows the answer length, and the 48-step median includes the late steps with short answers. So compare times on the same step numbers, and repeat them with a second seed.
 ```figure
 id: fig-5-3
 kind: chart
