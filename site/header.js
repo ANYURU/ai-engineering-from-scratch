@@ -465,7 +465,7 @@
 
   function setupBanner() {
     var header = document.querySelector('.site-header');
-    if (!header || !header.parentNode || document.querySelector('.site-banner') || bannerDismissed()) return;
+    if (!header || !header.parentNode || document.documentElement.hasAttribute('data-poster') || document.querySelector('.site-banner') || bannerDismissed()) return;
 
     var root = document.documentElement;
     var banner = document.createElement('aside');
@@ -512,7 +512,7 @@
       root.classList.remove('has-site-banner');
       root.style.removeProperty('--site-banner-h');
       root.style.removeProperty('--site-banner-offset');
-      if (scrollY > 0) window.scrollTo(0, Math.max(0, scrollY - height));
+      if (scrollY > 0) window.scrollTo({ top: Math.max(0, scrollY - height), behavior: 'instant' });
       var logo = header.querySelector('.logo');
       if (logo) logo.focus();
     });
