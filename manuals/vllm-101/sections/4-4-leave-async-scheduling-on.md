@@ -40,7 +40,7 @@ The two runs differed by at most 1.8 percent of output and 0.8 percent of time p
 
 At one user, the time per token rose by 3.3 percent with async scheduling off, and the seed ranges did not overlap. That gap is larger than the 0.8 percent that two runs of one setting differed by. But we measured that variation on the other GPU at full clocks. At four users, it rose by 1.7 percent, from one seed only.
 
-The GPU ran at 368 to 450 MHz, far below its full clock. The off runs at one user had a clock 2 percent lower, close to the size of the effect. So read this as an unconfirmed result. The gain is small at these batch sizes, and we did not test it at a full clock or at high concurrency.
+The GPU ran at 368 to 450 MHz, far below its full clock. The runs with async scheduling off at one user had a clock 2 percent lower, close to the size of the effect. So read this as an unconfirmed result. The gain is small at these batch sizes, and we did not test it at a full clock or at high concurrency.
 
 ## Decide
 
@@ -49,7 +49,7 @@ Set no flag, and let vLLM choose. If you add a speculation method or pipeline pa
 ```takeaways
 - Set no flag, and let vLLM turn async scheduling on.
 - Read the startup log for the warning after you add speculation or pipeline parallelism.
-- Treat a gap of under 2 percent between two runs as run-to-run variation.
+- Treat a small gap with overlapping seed ranges as run-to-run variation.
 ```
 
 Sources: capture/gpu/summary/l4.json (load.vllm-b, load.vllm-async, load.vllm), capture/gpu/summary/l4-gpu1.json (load.vllm-fast-b, load.vllm-no-async), the vLLM source at v0.31.0 (vllm/config/scheduler.py, vllm/config/vllm.py, vllm/v1/core/sched/async_scheduler.py), vLLM documentation at v0.31.0 (docs/design/model_runner_v2.md).
