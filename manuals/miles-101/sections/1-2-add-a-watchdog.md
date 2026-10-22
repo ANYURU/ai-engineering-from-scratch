@@ -6,7 +6,7 @@ We left a run alone for an hour. When we came back, the GPU was idle and the log
 
 When you finish this section, you can recognize a run whose engine died. You can also start a watchdog that stops that run within a few minutes.
 
-**Our result:** a run whose engine died logged 200,533 HTTP 503 errors in 63 minutes and never failed. The watchdog stopped a test of the same error in 183 s. A replay of a healthy run showed that its default of six checks is too few, so we run it with ten.
+**Our result:** a run whose engine died logged 200,533 HTTP 503 errors in 63 minutes and never failed. The watchdog stopped a test of the same error in 183 s. A replay of a healthy run showed that six checks in a row are too few, so the script waits for ten.
 
 ## What a dead engine looks like
 
@@ -35,7 +35,11 @@ $ grep -c "503 Service Unavailable" true-on-policy-fa3.log
 200533
 ```
 
-The run wrote 200,533 error lines and never reported a failure. **503 Service Unavailable:** the HTTP status the router returns when no rollout engine can take the request.
+The run wrote 200,533 error lines and never reported a failure.
+
+**Router:** the small service that forwards each rollout request to an engine. [Section 8.6](#s-which-router-to-use) explains it.
+
+**503 Service Unavailable:** the HTTP status that the router returns when no rollout engine can take the request.
 
 ```figure
 id: fig-1-2
@@ -75,13 +79,13 @@ The script reads the last 60 seconds of the container log every 30 seconds. It s
 
 If Docker itself fails, the script says so. It exits with 2 when it cannot list the containers. A failed log read does not count as a check. The script also exits with 2 for a bad limit or number of checks: a value that is not a whole number, or 0 checks.
 
-The default is 6 checks, which is too few for a run you leave alone, so always pass 10 as the third value:
+The third value is the number of checks in a row. Its default is 10, which a healthy run did not reach in our replay:
 
 ```bash
 #!/bin/sh
 name=${1:-miles-plain}
 limit=${2:-100}
-checks=${3:-6}
+checks=${3:-10}
 for value in "$limit" "$checks"; do
   case $value in
     ''|*[!0-9]*|??????????*) echo "limit and checks must be whole numbers below one billion"; exit 2;;
@@ -118,7 +122,13 @@ done
 echo "$(date -u +%FT%TZ) $name: the run ended"
 ```
 
-Save it as `~/miles-lab/watchdog.sh`. Start it in a second terminal right after the run starts, with the container name from [section 1.1](#s-run-grpo-on-one-gpu) and 10 checks:
+Save it as `~/miles-lab/watchdog.sh`, or download the same script:
+
+```bash
+curl -fsSL -o ~/miles-lab/watchdog.sh https://raw.githubusercontent.com/rohitg00/ai-engineering-from-scratch/main/manuals/miles-101/capture/gpu/watchdog.sh
+```
+
+Start it in a second terminal right after the run starts, with the container name from [section 1.1](#s-run-grpo-on-one-gpu):
 
 ```bash
 sh ~/miles-lab/watchdog.sh miles-plain 100 10
@@ -141,9 +151,26 @@ $ echo $?
 1
 ```
 
-The watchdog stopped the container 183 s after it started, and exited with 1. This test used the default of 6 checks. With 10 checks, the same rule needs four more checks, so it stops about two minutes later. A script that starts runs one after another can read that exit code and skip to the next run. An exit code of 2 means that the watchdog lost Docker, and the run has no guard.
+The watchdog stopped the container 183 s after it started, and exited with 1. We ran this test before we raised the default to 10, so it used 6 checks. With 10 checks, the same rule needs four more checks, so it stops about two minutes later. A script that starts runs one after another can read that exit code and skip to the next run. An exit code of 2 means that the watchdog lost Docker, and the run has no guard.
 
 The second container prints the error for 60 s and then stays quiet for two minutes. It does this three times, like the bursts of a busy engine. The watchdog let it run to its end after 541 s, and exited with 0. Its quiet gaps of two minutes are longer than the real gaps of 45 s, so test with the replay above too.
+
+## Guard the GPU heat
+
+Our GB10 reached 84 C again and again under hours of load. The heat guard from [the front matter](#s-front-how-we-tested-it) paused our runs 1,005 times in five days. Run it on a GB10, or on any GPU that gets hot when you leave a run alone for hours. A short run of a few steps does not need it.
+
+Download the script that we ran, and start it in a third terminal on the host, not in the container:
+
+```bash
+curl -fsSL -o ~/miles-lab/heat-guard.sh https://raw.githubusercontent.com/rohitg00/ai-engineering-from-scratch/main/manuals/miles-101/capture/gpu/heat-guard.sh
+sh ~/miles-lab/heat-guard.sh
+```
+
+Every 5 s, the script reads the GPU temperature with `nvidia-smi`. It pauses the first running container of the `radixark/miles:latest` image at 84 C. It resumes the container at 74 C or below after at least 45 s, or after 120 s at most. Each pause and resume goes to `~/miles-lab/runs/thermostat.log`.
+
+Stop the script with Ctrl+C. It resumes a paused container before it exits, so no run stays paused. It also stops when the file `~/miles-lab/queue2.done` exists, which is how our run queue stopped it.
+
+Read the pause log when you compare times. A step that overlapped a pause took longer for a reason that is not the work. [Section 5.3](#s-repeat-a-run) shows how to time only clean steps.
 
 The watchdog only stops the run. To find out why the engine died, read the engine lines above the first error. [Section 7.1](#s-troubleshoot-by-symptom) lists the causes we met.
 
@@ -151,7 +178,8 @@ The watchdog only stops the run. To find out why the engine died, read the engin
 - Start the watchdog in a second terminal for every run you leave alone.
 - Run the watchdog with 10 checks, because healthy bursts can come 45 s apart.
 - Test the watchdog on a fake container before you trust it.
+- Run the heat guard on a GPU that gets hot, and keep its pause log.
 - Read the engine lines above the first 503 error to find the cause.
 ```
 
-Sources: capture/gpu/watchdog.sh; capture/gpu/watchdog_replay.py; capture/gpu/out-gb10/503-bursts.txt; capture/gpu/out-gb10/e2-n16-503-per-second.txt; capture/gpu/out-gb10/engine-died-503.log; capture/gpu/out-gb10/engine-died-count.txt; capture/gpu/out-gb10/watchdog-test.txt; capture/gpu/summary/miles-gb10-lab.json (excluded runs); Miles rollout client at main 08752a12.
+Sources: capture/gpu/watchdog.sh; capture/gpu/heat-guard.sh; capture/gpu/out-gb10/thermostat.log; capture/gpu/watchdog_replay.py; capture/gpu/out-gb10/503-bursts.txt; capture/gpu/out-gb10/e2-n16-503-per-second.txt; capture/gpu/out-gb10/engine-died-503.log; capture/gpu/out-gb10/engine-died-count.txt; capture/gpu/out-gb10/watchdog-test.txt; capture/gpu/summary/miles-gb10-lab.json (excluded runs); Miles rollout client at main 08752a12.

@@ -1,7 +1,7 @@
 #!/bin/sh
 name=${1:-miles-plain}
 limit=${2:-100}
-checks=${3:-6}
+checks=${3:-10}
 for value in "$limit" "$checks"; do
   case $value in
     ''|*[!0-9]*|??????????*) echo "limit and checks must be whole numbers below one billion"; exit 2;;
