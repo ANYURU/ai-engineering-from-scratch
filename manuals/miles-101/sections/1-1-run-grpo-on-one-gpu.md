@@ -71,7 +71,7 @@ mkdir -p ~/miles-lab/runs
 curl -fsSL -o ~/miles-lab/miles_grpo.py https://raw.githubusercontent.com/rohitg00/ai-engineering-from-scratch/main/manuals/miles-101/capture/gpu/miles_grpo.py
 ```
 
-If you have a clone of this repository, copy the file from `manuals/miles-101/capture/gpu/miles_grpo.py` instead.
+If you have a clone of this repository, run `cp manuals/miles-101/capture/gpu/miles_grpo.py ~/miles-lab/` from its root instead.
 
 The launcher downloads `Qwen/Qwen3-0.6B` and the `zhuzilin/gsm8k` dataset into the folder on its first run. Then it builds the Miles command and starts it.
 
