@@ -4,7 +4,7 @@
 
 One GPU is not enough. When you finish this section, you can pick the parallel layout from a short decision tree.
 
-## Answer two questions
+## Answer three questions
 
 | Question | If yes | If no |
 |---|---|---|
@@ -14,8 +14,8 @@ One GPU is not enough. When you finish this section, you can pick the parallel l
 ```figure
 id: fig-6-1
 kind: decision
-title: two questions
-claim: Two questions pick the layout, and inside one machine the link between GPUs picks tensor or pipeline parallelism.
+title: three questions
+claim: Three questions pick the layout, and inside one machine the link between GPUs and the split pick tensor or pipeline parallelism.
 caption: Start at the top and follow the answer. From the vLLM documentation at v0.31.0.
 ```
 
