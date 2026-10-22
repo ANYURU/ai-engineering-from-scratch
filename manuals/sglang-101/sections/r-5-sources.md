@@ -2,18 +2,18 @@
 
 > The manual ranks its sources by authority, and this page lists every external source the sections cite, with the sections that use each one.
 
-The ranks match [the front matter](#s-front). When two sources disagree, the higher one wins and the section says so. The SGLang source files each section used are named in the Sources line at its end, at the tag, and are not repeated here. Every page below was read on 2026-10-16.
+The ranks match [how this manual was made](#s-ref-how-this-manual-was-made). When two sources disagree, the higher one wins and the section says so. The SGLang source files each section used are named in the Sources line at its end, at the tag, and are not repeated here. Every page below was read on 2026-10-16.
 
 ## The ranked sources
 
 | Rank | Source | What the manual takes from it | Cited as |
 |---|---|---|---|
 | 1 | the SGLang source at the tag, `baa9befa` | every default and every mechanism | the file list in the Sources line of each section |
-| 2 | the captured runs in `capture/out/` | every listing and every number marked as measured | the capture file name |
+| 2 | the captured runs in `capture/out/` and `capture/gpu/` | every listing and every number marked as measured | the capture file name |
 | 3 | SGLang issues and pull requests | incidents and the design history of each feature | `issue` and its number |
 | 4 | papers | the original design of RadixAttention and the methods SGLang implements | `paper` and a title |
 | 5 | the SGLang documentation at the tag | documented behaviour, checked against the code | `docs` and a heading |
-| 6 | independent field reports | GPU behaviour that this manual could not run | `field`, the author, and the month |
+| 6 | independent field reports | GPUs and scales that this manual could not run | `field`, the author, and the month |
 | 7 | SGLang team and vendor reports | claims, always labeled as the claim of the author | `team` or the vendor, and the month |
 
 ## Rank 1 and rank 2: the code and the captures
@@ -23,6 +23,8 @@ The ranks match [the front matter](#s-front). When two sources disagree, the hig
 | SGLang 0.5.22, tag `v0.5.22`, commit `baa9befa381511cd4d56f83980951e5a45fffc6d`, [github.com/sgl-project/sglang](https://github.com/sgl-project/sglang) | every section |
 | Miles 0.1.2, tag `v0.1.2`, commit `a22fd824`, [github.com/radixark/miles](https://github.com/radixark/miles) | [7.2](#s-sglang-as-an-rl-rollout-engine) |
 | The capture kit and `capture/out/`, recorded on 2026-10-16 | every section with a listing |
+| The GPU kit and `capture/gpu/`, recorded from 2026-10-16 to 2026-10-21 on an NVIDIA L4 node and a DGX Spark (GB10) | every section with a GPU measurement |
+| The Miles image `radixark/miles:latest` at Miles commit `08752a12`, with SGLang 0.5.22.dev46+g7b6993a | [7.2](#s-sglang-as-an-rl-rollout-engine) |
 
 ## Rank 3: pull requests
 
