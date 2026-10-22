@@ -4,7 +4,7 @@
 
 Your chat service streams smoothly for a few users and stutters for many. When you finish this section, you can keep the stream steady as the number of users grows.
 
-**Our result:** on our L4, 16 chat users met our latency target and 32 did not. Capping the batch did not fix it.
+**Our result:** on our L4, about two in three requests met our latency target at 16 users, and none at 32. Capping the batch did not fix it.
 
 ## Know what a chat user feels
 
@@ -16,20 +16,20 @@ Watch the P99 ITL, the worst gap in 100. One long pause in a stream feels worse 
 
 **We measured** users at once from 1 to 64 on our L4 with `Qwen/Qwen3-8B` on 2026-10-21. Each request sent 512 prompt tokens and asked for 128 tokens, with three seeds per point.
 
-| Users | Output tok/s | Median TTFT | P99 ITL | Requests per second that met the target | Median SM clock |
+| Users | Output tok/s | Median TTFT | P99 ITL | Share of requests that met the target | Median SM clock |
 |---|---|---|---|---|---|
-| 8 | 112.8 | 0.25 s | 67 ms | 0.66 | 1,485 MHz |
-| 16 | 201.3 | 0.29 s | 85 ms | 1.01 | 1,455 MHz |
-| 32 | 275.1 | 1.80 s | 613 ms | 0 | 1,275 MHz |
-| 64 | 242.3 | 11.18 s | 1,233 ms | 0 | 1,005 MHz |
+| 8 | 112.8 | 0.25 s | 67 ms | 75% | 1,485 MHz |
+| 16 | 201.3 | 0.29 s | 85 ms | 64% | 1,455 MHz |
+| 32 | 275.1 | 1.80 s | 613 ms | 0% | 1,275 MHz |
+| 64 | 242.3 | 11.18 s | 1,233 ms | 0% | 1,005 MHz |
 
-Up to 16 users, each new user added output, and the stream stayed steady. At 32 users, the output still rose, but the P99 ITL grew seven times and no request met the target. The server was busy, and the users waited.
+Up to 16 users, each new user added output, and the stream stayed steady. But at 16 users, one request in three already got its first token too late. At 32 users, the output still rose, but the P99 ITL grew seven times and no request met the target. The server was busy, and the users waited.
 
 Each step has a budget of 2,048 tokens on this GPU. When new prompts arrive, their chunks share the step with the running streams, so the running streams pause. [The token budget page](#s-why-one-token-budget-replaces-a-prefill-phase) explains the order.
 
 ## Know what a cap on sequences does
 
-`--max-num-seqs` sets how many requests run at once. For `vllm serve` on a GPU with less than 70 GiB, such as the L4, the default is 256. On a larger GPU it is 1,024. We set it to 16 and ran the same sweep:
+`--max-num-seqs` sets how many requests run at once. For `vllm serve` on a GPU with less than 70 GiB, such as the L4, the default is 256. On a larger GPU other than an A100, it is 1,024. We set it to 16 and ran the same sweep:
 
 ```figure
 id: fig-3-1
@@ -59,7 +59,7 @@ The KV pool limits the users too. **We measured** a pool of 6,560 tokens, with `
 
 A request of 640 tokens needs 640 tokens of pool by its end. So only about 10 requests fit in 6,560 tokens at once. The other 22 waited for a running request to finish.
 
-vLLM starts a new request only when its blocks fit in the pool. A running request that needs a new block can push another one out, which vLLM counts as a preemption. The log of this run had no preemption count, so the requests waited in the queue.
+vLLM starts a new request only when its blocks fit in the pool. A running request that needs a new block can push another one out, which vLLM counts as a preemption. So most of the 32 requests waited in the queue before they started.
 
 The small-pool run fell to about 250 MHz, below the lock. A clock 3.6 times lower can make a step up to 3.6 times slower. The first token came 10 times later, so the queue caused most of the wait. Do not compare the throughput or the time per token of these two runs.
 
