@@ -36,7 +36,7 @@ note: The request and the result. The text copy of the result is cut by the capt
 
 The handler calls `session.open` with the path and the provider id, then returns five fields: `path`, `format`, `kind`, `sha256`, and `architecture`. To fill them rea reads the magic bytes: `7f 45 4c 46` for ELF, `MZ` for DOS and PE, and four Mach-O values. It hashes the whole file in 64 KiB chunks. A file with no header needs an explicit `format`. With `format: "raw-binary"` you also give `architecture` and `entry_point`, and the result adds `entry_point`. rea refuses a WebAssembly module here and sends it to `inspect_wasm_artifact`. For every other target, rea selects the provider you asked for, and `binary_session` records that choice.
 
-The selection waits for the provider's readiness checks. On the capture Mac, the server log shows about 1.6 s for the first `open_binary` and about 0.4 s for the second. The design docs allow the wait: "Readiness observations may await owned prerequisite commands." Release 6.5.0 answered the same calls in 36 ms and 1 ms. Neither version imports the target at this step.
+The selection waits for the provider's readiness checks. On the capture Mac, the server log shows about 1.6 s for the first `open_binary` and about 0.4 s for the second. The design docs allow the wait: a readiness check can wait for the commands that it owns. Release 6.5.0 answered the same calls in 36 ms and 1 ms. Neither version imports the target at this step.
 
 ```listing
 title: the binding that binary_session reports

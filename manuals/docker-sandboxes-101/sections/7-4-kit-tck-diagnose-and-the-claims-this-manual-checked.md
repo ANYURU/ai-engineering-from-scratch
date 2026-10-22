@@ -94,7 +94,7 @@ This edition did not run it. The capture kit built a v3 artifact and pushed it t
 
 ## The agent regression check
 
-For agent runs, the planned check is `docker-agent sessions diff --fail-on-divergence`, which compares two recorded sessions "over the sequence of tool calls, not over the assistant's prose" and stops at the first divergence {{help-agent docker-agent sessions diff}}. The capture kit ran it on recorded sessions (`21-sessions-diff.txt`). Two replays of one run are identical across five turns, and a run that called `shell` first diverges at turn 0 and exits 1. A relative reference such as `-1` needs `--` before it, or the parser reads it as a flag. [The sessions section](#s-session-db-sessions-diff-and-eval) explains the session store.
+For agent runs, the planned check is `docker-agent sessions diff --fail-on-divergence`, which compares the tool calls of two recorded sessions, not the prose of the assistant {{help-agent docker-agent sessions diff}}. It stops at the first divergence. The capture kit ran it on recorded sessions (`21-sessions-diff.txt`). Two replays of one run are identical across five turns, and a run that called `shell` first diverges at turn 0 and exits 1. A relative reference such as `-1` needs `--` before it, or the parser reads it as a flag. [The sessions section](#s-session-db-sessions-diff-and-eval) explains the session store.
 
 ```takeaways
 - Treat a claim as confirmed only when a file under `capture/out/` shows the behaviour.

@@ -122,7 +122,7 @@ Beside them, the v0.47.0 tree in `capture/out/01-help-sbx.txt` groups `policy`, 
 | `docker cp` the agent binary into a sandbox, then `agent run dev-team.yaml` inside | blog 2026-03-11 | the `docker-agent` template | `sbx run docker-agent .` or `docker agent run --sandbox agent.yaml` |
 | `--yolo` | everywhere | still accepted | `--safety autonomous`, of which `--yolo` is the alias |
 | the eval judge is a paid Anthropic model | v1.32.4 help | v1.147.0, 2026-10-05 | default `openai/gpt-5.6-terra`, or any `provider/model` |
-| `--sandbox` "requires Docker Desktop with sandbox support" | v1.32.4 help | sbx | `--sbx` defaults to true, and `--sbx=false` has no target after Desktop 4.80.0 |
+| `--sandbox` needs Docker Desktop with sandbox support | v1.32.4 help | sbx | `--sbx` defaults to true, and `--sbx=false` has no target after Desktop 4.80.0 |
 | mcp-gateway v0.22.0 in the GitHub Action | the action's defaults | the repository is at v0.44.1 | pin the gateway version yourself |
 
 The rows restate the register's stale-advice list S1 to S30 and the plugin rows C107 to C112, which [the sources section](#s-ref-sources-and-the-conflicts-register) prints in full.

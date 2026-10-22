@@ -109,7 +109,7 @@ A note for Mac readers. On MLX at v0.5.22, decode is greedy unless you pass `--m
 
 **Stop condition:** a rule that ends a request. It can be a stop token, a stop string, a regex, the `max_new_tokens` limit, an abort, or the end of a grammar.
 
-SGLang checks stop conditions in the scheduler, after each step, in a fixed order {{code}}. A stop string is checked before the end-of-sequence token. The code comment gives the reason. Speculative decoding can accept more than one token in a step. A token-based check "would trim only the last token and leak the stop string." The detokenizer only trims the matched stop text from the output.
+SGLang checks stop conditions in the scheduler, after each step, in a fixed order {{code}}. A stop string is checked before the end-of-sequence token. The code comment gives the reason. Speculative decoding can accept more than one token in a step. A check by token would trim only the last token, and the rest of the stop string would leak into the output. The detokenizer only trims the matched stop text from the output.
 
 ```figure
 id: fig-2-5

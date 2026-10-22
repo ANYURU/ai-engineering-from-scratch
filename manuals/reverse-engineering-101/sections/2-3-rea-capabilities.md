@@ -8,7 +8,7 @@ When you finish this section, you can read a capability group, name the seven ef
 
 ## The command and its record
 
-`capabilities` and `providers` are registered together, and `capabilities` is described as "List provider capabilities and side effects". Both print the session status, the same object that `binary_session` returns over MCP. With no target open it starts `open: false`:
+`capabilities` and `providers` are registered together, and the help describes `capabilities` as the list of provider capabilities and side effects. Both print the session status, the same object that `binary_session` returns over MCP. With no target open it starts `open: false`:
 
 ```listing
 title: the head of the status record

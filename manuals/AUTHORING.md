@@ -27,7 +27,7 @@ manuals/<id>/
   figures/src/<figure-id>.js  optional figure kit source for each figure
   capture/                    the capture kit and its output in capture/out/
   research/brief.md           the fact brief the sections were written from
-  research/sources/           vendored primary sources for quote checks, with their license
+  research/sources/           vendored primary sources that the research checks against, with their license
 ```
 
 The `<id>` is lowercase and hyphenated, such as `a2a-101`. It matches the directory name.
@@ -44,7 +44,7 @@ The `<id>` is lowercase and hyphenated, such as `a2a-101`. It matches the direct
 | `outcomes` | at least three things the reader can do after the manual |
 | `palette` | the colour table: each `hue` and the one `meaning` it has in this manual |
 | `sources` | the ranked source list: `name`, `path`, `usedFor` |
-| `quoteSources` | map from a citation key such as `spec` to a vendored file, for quote checks; `null` declares a key whose quotes cannot be checked |
+| `quoteSources` | map from a source key such as `spec` to a vendored file; `null` declares a key with no vendored file. Every source marker must use a declared key |
 | `capture` | `run` and `check` argv arrays, run from the manual directory, and an optional `timeoutSeconds` for the check (default 300) |
 | `front` | the front matter file |
 | `plate` | the cover figure: `figure`, `title`, `caption` |
@@ -129,14 +129,14 @@ note: The history array is cut after the first message.
 ```
 ````
 
-A quoted rule. The quote is checked verbatim against the file that `quoteSources` maps to the citation key:
+A rule from a source, stated in our own words. The `source` key must be declared in `quoteSources`:
 
 ````text
 ```rule
 label: the core rule
 source: spec §3.1
 ---
-"Quoted text, word for word."
+The server must reply with a task.
 ```
 ````
 
@@ -253,8 +253,11 @@ Save it as `figures/src/fig-1-2.js` and run `node manuals/_shared/figkit.js buil
 
 - `sources` in `manual.json` is ranked by authority. When two sources disagree, the higher one wins and the text says so.
 - Vendor a source under `research/sources/` only when its license allows it, and keep its license file beside it.
-- Every `rule` block and every inline quote followed by a citation such as `{{spec §4.1}}` must use a key declared in `quoteSources`. The build fails on an undeclared key or a missing file.
-- The audit checks each of those quotes, word for word, against the vendored file for its key. A key declared as `null` marks a source that cannot be vendored, and its quotes are not checked.
+- The manuals present our own research, so we write every claim in our own words. Do not quote prose from a spec, docs, an issue, a post, or a code comment. Keep the force of a MUST, SHOULD, or MAY with "must", "should", or "is allowed to".
+- Quote marks are for literal strings only: log lines, error messages, CLI output, field values, and titles of reports. Put literal output in code font where you can.
+- Name another team only where you show their research or results, once, in plain prose, such as "SemiAnalysis measured ...".
+- Every source marker such as `{{spec §4.1}}` and every `rule` block must use a key declared in `quoteSources`. The build fails on an undeclared rule key or a missing file, and the audit flags an undeclared marker key.
+- The audit flags quoted prose of 24 or more characters next to a source marker, and a `rule` block that starts with a quote mark.
 - Citations, `Sources:` lines, and listing source paths live in the markdown for verification. They never render in a section. A reader sees no file paths, capture file names, commits, or citation chips in the prose.
 - The sources reference page is the one place a reader sees where the facts came from. Write it for people: the kinds of sources, such as the code and docs, our measured runs, issues and pull requests, and papers, and the external reports by title and date. Do not list repository file paths there.
 
@@ -275,7 +278,7 @@ The audit enforces these limits from Simplified Technical English:
 
 The word list is `LEXICON` in `scripts/audit_manuals.js`. Each entry names the plain word to use instead.
 
-Quotes, code, and citations are exempt.
+Code, literal strings, and source markers are exempt.
 
 ## Build and check
 

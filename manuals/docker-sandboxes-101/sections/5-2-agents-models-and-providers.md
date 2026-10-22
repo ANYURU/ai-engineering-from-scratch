@@ -61,7 +61,7 @@ models:
 - a name under `models`, such as `local`, with `provider`, `model`, and parameters such as `temperature: 0`.
 - a `first_available` list: at load time, Docker Agent picks the first candidate that has its credentials configured {{docs-agent Models}}.
 - an alloy: two references with a comma between them, which the runtime alternates in one conversation.
-- `auto`: "the first cloud provider with a configured credential", then a pulled Model Runner model {{docs-agent Set Up a Model}}.
+- `auto`: the first cloud provider that has a configured credential, then a pulled Model Runner model {{docs-agent Set Up a Model}}.
 
 `run --model [agent=]provider/model` replaces the reference for one run {{help-agent docker-agent run}}. On the recording Mac, `doctor` resolved `auto` to `dmr/docker.io/ai/qwen3:4b` with only the 4B tag pulled (`25-doctor.txt`). With no Model Runner, it named `dmr/ai/qwen3:latest` and reported no usable model (`16-doctor.txt`).
 

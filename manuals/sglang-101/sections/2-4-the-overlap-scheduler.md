@@ -10,7 +10,7 @@ When you finish this section, you can explain how SGLang hides the CPU work betw
 
 **Overlap scheduling:** running the CPU work for one batch at the same time as the GPU work of another batch.
 
-The SGLang team described the problem in the v0.4 release post. Batch scheduling, memory allocation, and prefix matching leave the GPU idle between steps {{team 2024-12}}. Their answer: "The scheduler runs one batch ahead and prepares all the metadata required for the next batch." They report a 1.1x throughput gain from it {{team 2024-12}}. That number is their claim, measured on their GPUs.
+The SGLang team described the problem in the v0.4 release post. Batch scheduling, memory allocation, and prefix matching leave the GPU idle between steps {{team 2024-12}}. Their answer is a scheduler that runs one batch ahead and prepares all the metadata for the next batch. They report a 1.1x throughput gain from it {{team 2024-12}}. That number is their claim, measured on their GPUs.
 
 The obvious fix is a second thread that builds batches while the first one runs the GPU. Python threads share one interpreter, so a scheduler thread and a forward thread take turns. SGLang tried a thread first. Since pull request #11210 in October 2025 it uses two CUDA streams in one thread instead {{code}}.
 
@@ -30,7 +30,7 @@ caption: Read left to right in time. Plum bars are GPU forward passes, blue bars
 
 ## How it works on a Mac
 
-The MLX backend has its own overlap loop, `event_loop_overlap_mlx` {{code}}. MLX evaluates lazily, so the loop keeps two decode graphs queued with `mx.async_eval`. The docstring says the GPU executes the next step "back-to-back" with the current one. It adds: "there is no scheduling gap on the device." The chain breaks when a prefill arrives, a request finishes, or the waiting queue has new work. Then the loop builds a fresh step.
+The MLX backend has its own overlap loop, `event_loop_overlap_mlx` {{code}}. MLX evaluates lazily, so the loop keeps two decode graphs queued with `mx.async_eval`. The docstring says that the GPU runs the next step right after the current one, with no scheduling gap on the device. The chain breaks when a prefill arrives, a request finishes, or the waiting queue has new work. Then the loop builds a fresh step.
 
 The scheduler is the same Python scheduler on CUDA and on MLX. The batching, the radix tree bookkeeping, and the log lines in [section 2.2](#s-the-scheduler-loop-and-schedule-policy) are the same. Only the forward pass and the overlap mechanism differ.
 
