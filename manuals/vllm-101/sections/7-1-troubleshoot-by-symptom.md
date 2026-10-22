@@ -124,4 +124,4 @@ caption: Each row is one symptom. The sections below give the detail for each. F
 - Test one change at a time, with the same benchmark and clock.
 ```
 
-Sources: vLLM issues 58726, 59770, 60174, 60262, and 60830; the release notes for v0.30.0, v0.31.0, and v0.32.0; vLLM documentation at v0.31.0 (docs/configuration/optimization.md, docs/usage/reproducibility.md, docs/benchmarking/cli.md); the vLLM source at v0.31.0 (vllm/config/vllm.py, vllm/config/model.py); capture/gpu/out-gb10/server-load-vllm.log.
+Sources: vLLM issues 58726, 59770, 60174, 60262, and 60830; the release notes for v0.30.0, v0.31.0, and v0.32.0; vLLM documentation at v0.31.0 (docs/configuration/optimization.md, docs/usage/reproducibility.md, docs/benchmarking/cli.md); the vLLM source at v0.31.0 (vllm/config/vllm.py, vllm/config/model.py); capture/gpu/out-gb10/server-load-vllm.log, vLLM issue 44740, a user report of about 101 GiB taken at a fraction of 0.50 on a GB10, a 2026 study of prefix-cache effects on greedy outputs on vLLM 0.11.

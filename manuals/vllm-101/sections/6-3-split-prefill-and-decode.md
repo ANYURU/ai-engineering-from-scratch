@@ -59,4 +59,4 @@ The ratio of prefill to decode servers depends on your prompt and answer lengths
 - Compare it with plain servers on the same GPUs, at your real load, before you keep it.
 ```
 
-Sources: vLLM documentation at v0.31.0 (docs/features/disagg_prefill.md, docs/features/nixl_connector_usage.md), the vLLM source at v0.31.0 (vllm/config/kv_transfer.py, vllm/distributed/kv_transfer/), the vLLM CI configuration at v0.31.0 (.buildkite).
+Sources: vLLM documentation at v0.31.0 (docs/features/disagg_prefill.md, docs/features/nixl_connector_usage.md), the vLLM source at v0.31.0 (vllm/config/kv_transfer.py, vllm/distributed/kv_transfer/), the vLLM CI configuration at v0.31.0 (.buildkite), a 2025 study comparing split servers with servers that run both stages.

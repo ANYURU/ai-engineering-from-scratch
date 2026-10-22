@@ -109,4 +109,4 @@ Release 0.32.0 adds an NVFP4 KV cache on SM 8.x and SM 12.x GPUs, which include 
 - Check output quality on your own prompts before production.
 ```
 
-Sources: capture/gpu/summary/l4.json (load.vllm-fast-b, load.vllm-kv-fp8-triton), capture/gpu/incidents/l4-vllm-kv-fp8-flashinfer-attention-jit.txt, capture/gpu/incidents/l4-vllm-flashinfer-jit.txt, the vLLM source at v0.31.0 (vllm/platforms/cuda.py, vllm/v1/attention/backends/fa_utils.py, vllm/v1/attention/backends/triton_attn.py), vLLM documentation at v0.31.0 (docs/features/quantization/quantized_kvcache.md).
+Sources: capture/gpu/summary/l4.json (load.vllm-fast-b, load.vllm-kv-fp8-triton), capture/gpu/incidents/l4-vllm-kv-fp8-flashinfer-attention-jit.txt, capture/gpu/incidents/l4-vllm-flashinfer-jit.txt, the vLLM source at v0.31.0 (vllm/platforms/cuda.py, vllm/v1/attention/backends/fa_utils.py, vllm/v1/attention/backends/triton_attn.py), vLLM documentation at v0.31.0 (docs/features/quantization/quantized_kvcache.md), the vLLM team's 2026 tests of uncalibrated FP8 KV caches (Kimi-K2.5 on the FlashMLA backend), vLLM issues 54623 and 60333, the release notes for v0.32.0 (NVFP4 KV cache).

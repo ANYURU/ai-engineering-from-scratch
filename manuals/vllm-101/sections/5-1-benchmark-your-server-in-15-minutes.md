@@ -85,4 +85,4 @@ Our sweeps used the benchmark client of SGLang, `sglang.benchmark.serving`, with
 - Run a fixed request rate as well as a closed loop before you set a capacity limit.
 ```
 
-Sources: vLLM documentation at v0.31.0 (docs/benchmarking/cli.md, docs/benchmarking/sweeps.md), the vLLM source at v0.31.0 (vllm/benchmarks/serve.py), capture/gpu/summary/l4.json (load.vllm).
+Sources: vLLM documentation at v0.31.0 (docs/benchmarking/cli.md, docs/benchmarking/sweeps.md), the vLLM source at v0.31.0 (vllm/benchmarks/serve.py), capture/gpu/summary/l4.json (load.vllm), a 2026 study of prefix-cache effects on greedy outputs on vLLM 0.11.

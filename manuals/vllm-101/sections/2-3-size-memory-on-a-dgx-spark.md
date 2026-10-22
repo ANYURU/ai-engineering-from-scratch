@@ -86,4 +86,4 @@ If `free -g` shows almost no available memory while the server is idle, lower th
 - Expect minutes for the first weight load, and keep the server running.
 ```
 
-Sources: the vLLM source at v0.31.0 (vllm/utils/mem_utils.py, vllm/platforms/cuda.py), the v0.31.0 release notes (weight loading on DGX Spark), vLLM issue 58726 (slow weight loading on GB10), capture/gpu/out-gb10/server-load-vllm.log, capture/gpu/summary/gb10.json.
+Sources: the vLLM source at v0.31.0 (vllm/utils/mem_utils.py, vllm/platforms/cuda.py), the v0.31.0 release notes (weight loading on DGX Spark), vLLM issue 58726 (slow weight loading on GB10), capture/gpu/out-gb10/server-load-vllm.log, capture/gpu/summary/gb10.json, vLLM issue 44740 (negative CUDA graph memory estimate with MTP speculation on the GB10), a user report of about 101 GiB taken at a fraction of 0.50 on a GB10, vLLM documentation at v0.31.0 (--kv-cache-memory-bytes).

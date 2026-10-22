@@ -70,4 +70,4 @@ vLLM also has `--long-prefill-token-threshold`. It caps the tokens that one long
 - Measure at your real request rate, and again when your load changes.
 ```
 
-Sources: capture/gpu/summary/gb10.json (mixed.vllm, mixed.vllm-mnbt-2048, mixed.vllm-mnbt-16384), capture/gpu/out-gb10/server-load-vllm.log, the vLLM source at v0.31.0 (vllm/engine/arg_utils.py, vllm/config/vllm.py, vllm/config/scheduler.py, vllm/platforms/cuda.py).
+Sources: capture/gpu/summary/gb10.json (mixed.vllm, mixed.vllm-mnbt-2048, mixed.vllm-mnbt-16384), capture/gpu/out-gb10/server-load-vllm.log, the vLLM source at v0.31.0 (vllm/engine/arg_utils.py, vllm/config/vllm.py, vllm/config/scheduler.py, vllm/platforms/cuda.py), the 2026 study P-PAS on token budgets in vLLM.

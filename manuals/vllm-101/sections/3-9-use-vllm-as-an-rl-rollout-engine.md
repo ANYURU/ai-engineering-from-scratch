@@ -47,4 +47,4 @@ Not measured on our hardware. We have not timed sleep, wake, or a weight update 
 - At 0.31.0, read the draft acceptance after a level 2 wake, and wake before a weight update.
 ```
 
-Sources: the vLLM source at v0.31.0 (vllm/config/model.py, vllm/config/parallel.py, vllm/entrypoints/ api routers for sleep, rlhf, and rpc, vllm/distributed/weight_transfer/), vLLM documentation at v0.31.0 (docs/training/rlhf.md, docs/training/async_rl.md, docs/features/sleep_mode.md, docs/training/weight_transfer/), the release notes for v0.31.0 and v0.32.0.
+Sources: the vLLM source at v0.31.0 (vllm/config/model.py, vllm/config/parallel.py, vllm/entrypoints/ api routers for sleep, rlhf, and rpc, vllm/distributed/weight_transfer/), vLLM documentation at v0.31.0 (docs/training/rlhf.md, docs/training/async_rl.md, docs/features/sleep_mode.md, docs/training/weight_transfer/), the release notes for v0.31.0 and v0.32.0, vLLM issues 52479 and 57853, the release notes for v0.32.0 (level 2 sleep and calibrated KV scales).

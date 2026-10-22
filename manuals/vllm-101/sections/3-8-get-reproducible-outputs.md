@@ -47,4 +47,4 @@ Not measured on our hardware. We have not measured the speed cost of the batch-i
 - Reset the prefix cache between two runs that you compare.
 ```
 
-Sources: vLLM documentation at v0.31.0 (docs/usage/reproducibility.md, docs/features/batch_invariance.md), the vLLM source at v0.31.0 (vllm/envs.py).
+Sources: vLLM documentation at v0.31.0 (docs/usage/reproducibility.md, docs/features/batch_invariance.md), the vLLM source at v0.31.0 (vllm/envs.py), a 2026 study of prefix-cache effects on greedy outputs on vLLM 0.11, the Thinking Machines Lab work on batch-invariant inference (1,000 Qwen3-8B requests on vLLM), the 2026 study CoRun, the 2026 verification study Vosti, the release notes for v0.32.0 (attention backend check for the batch-invariant mode).

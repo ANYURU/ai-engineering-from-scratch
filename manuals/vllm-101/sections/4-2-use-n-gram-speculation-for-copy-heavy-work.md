@@ -77,4 +77,4 @@ Divide the accepted tokens by the draft tokens. A high share means that your out
 - Expect async scheduling to turn off when you add it.
 ```
 
-Sources: capture/gpu/summary/l4-gpu1.json (load.vllm-fast-b, load.vllm-ngram), the vLLM source at v0.31.0 (vllm/config/vllm.py, vllm/v1/spec_decode/), vLLM documentation at v0.31.0 (docs/features/speculative_decoding).
+Sources: capture/gpu/summary/l4-gpu1.json (load.vllm-fast-b, load.vllm-ngram), the vLLM source at v0.31.0 (vllm/config/vllm.py, vllm/v1/spec_decode/), vLLM documentation at v0.31.0 (docs/features/speculative_decoding), a 2026 study of speculative decoding in vLLM (acceptance length across requests and datasets), a 2025 study of serving benchmarks (speculation, median and P99 TPOT).
