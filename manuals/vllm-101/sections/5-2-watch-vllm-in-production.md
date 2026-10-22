@@ -14,7 +14,7 @@ vLLM exports Prometheus metrics at `/metrics` on the same port as the API. Point
 |---|---|---|
 | `vllm:num_requests_waiting` | above 0 for more than a minute | the server cannot admit all the traffic |
 | `vllm:kv_cache_usage_perc` | above 0.95 for more than a minute | the pool is full, so new requests wait or preempt |
-| `vllm:num_preemptions` | the rate is above 0 | requests are stopped and computed again |
+| `vllm:num_preemptions_total` | the rate is above 0 | requests are stopped and computed again |
 | `vllm:time_to_first_token_seconds` | the 99th percentile passes your target | users wait for the first word |
 | `vllm:inter_token_latency_seconds` | the 99th percentile passes your target | the stream stutters |
 
@@ -40,7 +40,7 @@ Two more pairs of counters tell you whether a feature pays:
 
 The vLLM metrics do not show the GPU clock or temperature. A hot or shared GPU runs slower, and every latency rises with no change in the vLLM metrics. Export `nvidia-smi` data or use the NVIDIA DCGM exporter next to the vLLM metrics.
 
-Not measured on our hardware. Our sweeps did not scrape `/metrics`. Our run with a small pool made requests wait in the queue, and its log had no preemption count. [The chat page](#s-tune-chat-for-many-users) shows that run.
+Not measured on our hardware. Our sweeps did not scrape `/metrics`. Our run with a small pool made requests wait in the queue, but we did not save its log or its metrics. [The chat page](#s-tune-chat-for-many-users) shows that run.
 
 ```takeaways
 - Alert on the waiting count, the cache usage, preemptions, and the 99th percentile of TTFT and ITL.
