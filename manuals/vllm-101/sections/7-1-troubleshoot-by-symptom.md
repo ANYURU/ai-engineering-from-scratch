@@ -63,7 +63,7 @@ caption: Each row is one symptom. The sections below give the detail for each. F
 ### The preemption counter rises
 
 - **Cause:** a running request needed a new block and none was free. vLLM stops the request and computes it again later.
-- **Check:** `vllm:num_preemptions` rises, and the periodic log line shows a preemption count.
+- **Check:** `vllm:num_preemptions_total` rises, and the periodic log line shows a preemption count.
 - **Fix:** raise `--gpu-memory-utilization`, or lower `--max-num-seqs` or `--max-num-batched-tokens`.
 
 ### N-gram speculation gives less than you expected
@@ -88,7 +88,7 @@ caption: Each row is one symptom. The sections below give the detail for each. F
 
 ### The model repeats one token after a prefix-cache hit
 
-- **Cause:** issue 60174 reports corrupt output on 0.30 and 0.31 when DFlash2 or DSpark speculation runs with the prefix cache. From the third request, each answer that starts from cached blocks is one token, over and over. It is open.
+- **Cause:** issue 60174 reports corrupt output on 0.30 and 0.31 when DFlash2 or DSpark speculation runs with the prefix cache. From the third request, each answer that starts from cached blocks is one token, over and over. It was closed on 2026-10-22, after 0.31.0, so check that your version has the fix.
 - **Check:** the problem starts only after a cache hit, and it goes away with `--no-enable-prefix-caching`.
 - **Fix:** turn off the prefix cache or the speculation method for that model.
 
@@ -109,8 +109,8 @@ caption: Each row is one symptom. The sections below give the detail for each. F
 ### The second benchmark run is faster than the first
 
 - **Cause:** with a fixed seed, the random dataset sends the same prompts again, and the prefix cache serves them.
-- **Check:** `vllm:prefix_cache_hits` rises during the second run.
-- **Fix:** use a new seed for each run, or send `POST /reset_prefix_cache` between runs.
+- **Check:** `vllm:prefix_cache_hits_total` rises during the second run.
+- **Fix:** use a new seed for each run. The `POST /reset_prefix_cache` route exists only with `VLLM_SERVER_DEV_MODE=1`, so use it only on a server that is not exposed.
 
 ```takeaways
 - Read the last log lines and the waiting and cache metrics before you change a flag.
