@@ -11,7 +11,7 @@ The scheduler asks the same question about every request: how many tokens does t
 In each step, the scheduler has a budget of tokens, set by `--max-num-batched-tokens`. For `vllm serve` on a GPU with less than 70 GiB, such as the L4, the default is 2,048. It spends the budget in this order:
 
 1. It gives each running request the tokens it needs, up to the budget.
-2. It admits waiting requests while budget and room for running requests remain. `--max-num-seqs` limits the running requests. For `vllm serve`, the default is 256 on a GPU with less than 70 GiB and 1,024 on a larger one.
+2. It admits waiting requests while budget and room for running requests remain. `--max-num-seqs` limits the running requests. For `vllm serve`, the default is 256 on a GPU with less than 70 GiB and 1,024 on a larger one other than an A100.
 
 A long prompt that does not fit the rest of the budget gets a part of the budget now and the rest in later steps. That is chunked prefill. It is on by default, because the budget design needs nothing else to support it.
 
