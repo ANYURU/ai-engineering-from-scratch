@@ -63,7 +63,7 @@ A pause adds wall-clock time to the phase it falls in. So every time in this man
 - **Rollout times:** the rollout window ends at the timestamp of the rollout metrics line and lasts `perf/rollout_time`. A step counts when that window overlaps no pause.
 - **Whole-step times:** the window ends at the timestamp of the trainer metrics line and lasts `perf/step_time`. A step counts when that window overlaps no pause.
 
-The summary file stores both medians, all steps and clean steps, with the number of clean steps next to each. Under the heat guard, few whole steps escape a pause. So whole-step times in this manual come from `plain` and `plain-48`. Both ran on 2026-10-17, before we added the heat guard, so no pause could touch them. The guard logged its first pause on 2026-10-18.
+The summary file stores both medians, all steps and clean steps, with the number of clean steps next to each. Under the heat guard, few whole steps escape a pause. So whole-step times in this manual come from `plain` and `plain-48`. Both ran before we added the heat guard, so no pause could touch them. `plain-48` ended at 00:11 on 2026-10-18, and the guard logged its first pause at 10:57 that day.
 
 A median over clean steps can still mislead. The default setting gave a 47.5 s rollout in `plain-48` and 59.1 s in the 6 clean steps of `e6a-base`. On the same 6 step numbers, `plain-48` took 60.9 s. The rollout time follows the answer length, so compare times on the same step numbers.
 
