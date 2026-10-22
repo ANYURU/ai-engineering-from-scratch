@@ -12,7 +12,7 @@ The first runner of the V1 engine grew to more than 7,500 lines. The design note
 
 ## Two ideas
 
-**A fixed table of request rows.** Model Runner V2 keeps a persistent batch with a fixed number of rows, 1,024 on most platforms. Each request owns one row for its whole life. A preempted request leaves its row, the same as a finished one. The runner updates only what changed in each step, instead of building the batch again.
+**A fixed table of request rows.** Model Runner V2 keeps a persistent batch with one row for each `--max-num-seqs` slot, 256 on our GPUs. Each request owns one row for its whole life. A preempted request leaves its row, the same as a finished one. The runner updates only what changed in each step, instead of building the batch again.
 
 **No waits for the CPU.** The runner keeps its work on one CUDA stream and avoids points where the CPU must wait for the GPU. That lets the scheduler plan the next step while the GPU still runs the current one. The name for this is async scheduling, and it is on by default for most generate models.
 
