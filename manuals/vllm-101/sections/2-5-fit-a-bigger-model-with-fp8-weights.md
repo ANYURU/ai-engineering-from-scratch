@@ -55,7 +55,7 @@ We did not measure output quality with FP8 weights. Run your own prompts on both
 
 ```takeaways
 - Use a published FP8 checkpoint, and set no extra flag.
-- On an L4, FP8 weights gave 36 percent more output at 32 users with the same pool.
+- On our L4 locked at 900 MHz, FP8 Qwen3-8B gave 36 percent more output at 32 users.
 - The freed memory goes to the KV pool, so you also get more room.
 - Check output quality on your own prompts before production.
 ```
