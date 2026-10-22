@@ -27,10 +27,17 @@ Clients now send `"model": "chat"`. You can then move to a new checkpoint withou
 
 ## Require an API key
 
-`--api-key` makes the server require the key in the `Authorization` header. You can also set it with the `VLLM_API_KEY` environment variable, which keeps the key out of the process list:
+`--api-key` makes the server require the key in the `Authorization` header. You can also set it with the `VLLM_API_KEY` environment variable, which keeps the key out of the process list.
+
+Stop any server that already runs on port 8000. Then start the server with a key in the first terminal:
 
 ```bash
-VLLM_API_KEY=change-me vllm serve Qwen/Qwen3-8B
+VLLM_API_KEY=change-me vllm serve Qwen/Qwen3-8B 2>&1 | tee server.log
+```
+
+When the server is ready, send a request with the key from a second terminal:
+
+```bash
 curl http://localhost:8000/v1/models -H "Authorization: Bearer change-me"
 ```
 
