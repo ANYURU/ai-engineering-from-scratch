@@ -1,20 +1,58 @@
 # Fix out of memory at startup
 
-> One dial, the GPU memory fraction, decides most startup failures, and a lower concurrency cap fixes most of the rest.
+> One dial, the GPU memory fraction, decides most startup failures, and a shorter maximum length or a lower concurrency cap fixes most of the rest.
 
-The server stopped during startup with an out-of-memory error. When you finish this section, you can start a model that failed while vLLM allocated its KV cache.
+The server stopped before it printed the KV cache size line. When you finish this section, you can read the reason from the last lines of the log and pick the one flag that fixes it.
 
-## Draft: not written yet
+## Know what vLLM claims at startup
 
-This page is a plan. The list below says what the page will cover and the evidence it will use.
+vLLM does four things before it serves a request:
 
-- Mode: how-to.
-- Covers: the GPU memory utilization flag and its default of 0.92. Also the exact KV memory flag, a lower sequence cap, and a shared GPU.
-- Evidence: the L4 small-pool run, which shows what the server reports when the pool is too small.
+1. It loads the weights.
+2. It runs one profile pass with a full batch to measure the activation memory.
+3. It captures CUDA graphs.
+4. It gives the KV cache the rest of its share of the GPU.
 
-```takeaways
-- Lower the GPU memory fraction first when startup fails.
-- Lower the maximum number of sequences when the profile run fails.
+The share is `--gpu-memory-utilization`. The default is 0.92, so vLLM claims 92 percent of the total GPU memory for itself. The number is a limit for one vLLM instance. It is not a fraction of the memory that is free when the server starts.
+
+## Find your failure in the log
+
+Read the last 30 lines of the server log. Most startup failures match one of three cases.
+
+| What the log says | Cause | Fix |
+|---|---|---|
+| The KV cache needed for one request at the maximum length is larger than the available KV cache memory | The weights and the profile leave too little for one full-length request | Lower `--max-model-len`. The error gives the largest length that fits. |
+| The free memory on the device is less than the desired GPU memory utilization | Another process holds GPU memory | Lower `--gpu-memory-utilization` below the free share, or stop the other process |
+| CUDA out of memory during the profile run or the graph capture | The batch in the profile pass or the graphs need more memory than is left | Lower `--max-num-seqs` or `--max-num-batched-tokens`, or lower `--max-cudagraph-capture-size` |
+
+## Fix a shared GPU
+
+On a shared GPU, set the fraction yourself. We ran vLLM 0.31.0 on an L4 that another team also used. Their processes held about 3.5 GB, so we set `--gpu-memory-utilization 0.83`.
+
+The first start still failed. The KV cache needed 0.4 GiB for one request at a maximum length of 2,928 tokens, and slightly less than that was free. The error said that 2,912 tokens would fit. We set `--max-model-len 2048`, which is enough for our 640-token requests, and started the server again.
+
+The lesson: on a shared GPU, the fraction and the maximum length work together. Lower the maximum length to the longest request you send before you lower the fraction.
+
+## Set the KV cache size directly
+
+If you know the KV cache size you want, set it in bytes with `--kv-cache-memory-bytes`. vLLM then ignores `--gpu-memory-utilization` for the cache. Use this when two vLLM instances share one GPU and each one needs a known pool.
+
+For a test with a small pool, `--num-gpu-blocks-override` fixes the number of 16-token blocks. Our sweeps used it to give vLLM and SGLang the same pool. Do not use it in production, because it does not check that the memory exists.
+
+## Check the fix
+
+Start the server again and wait for the pool line:
+
+```bash
+grep "GPU KV cache size" server.log
 ```
 
-Sources: vLLM documentation at v0.31.0 (docs/configuration/conserving_memory.md), capture/gpu/summary/l4.json.
+If the line is there, the server has a pool. Compare its size with [your count](#s-count-the-memory-before-you-pick-a-gpu).
+
+```takeaways
+- Read the last 30 lines of the log, and match the failure to one of three cases.
+- On a shared GPU, lower the maximum model length before you lower the memory fraction.
+- Use the exact KV memory flag when two instances share one GPU.
+```
+
+Sources: vLLM documentation at v0.31.0 (docs/configuration/optimization.md), the vLLM source at v0.31.0 (vllm/config/cache.py, vllm/config/scheduler.py), our L4 run on the shared GPU on 2026-10-22.
