@@ -870,7 +870,7 @@ function indexMain(topics, year, phases) {
   const byPhase = phases.filter(phase => phase.topics.length).map(phase => `<li id="p-${phase.slug}"><a href="/phase/${phase.slug}">${escapeHtml(phase.label)}</a><span>${phase.topics.map(topic => `<a href="${topic.href}">${escapeHtml(topic.title)}</a>`).join(', ')}</span></li>`).join('');
   const head = `<header class="cs-index-head"><p class="cs-kicker">AI Engineering from Scratch</p><h1>Cheat sheets</h1><p class="cs-sub">${topics.length} posters. Each poster holds the tasks, commands, code, diagrams, defaults and fixes that you use while you work. Every fact comes from a lesson, a manual or a project of this course.</p>${search}${filters}</header>`;
   const phaseList = byPhase ? `<section class="cs-index-section" aria-labelledby="by-phase"><h2 id="by-phase">By phase</h2><ul class="cs-by-phase">${byPhase}</ul></section>` : '';
-  const how = '<section class="cs-index-section" aria-labelledby="how"><h2 id="how">How to use them</h2><ul class="cs-tips"><li>Each colour means one kind of block. Blue blocks are tasks and commands. Red blocks are fixes. The key is at the top of each poster.</li><li>Click a command to copy it. Replace each value in angle brackets, such as <code>&lt;model&gt;</code>.</li><li>Each block names the lesson or manual section that its facts come from. Open it when you need the reason.</li><li>Print a poster on one or two landscape pages. It fits A4 and Letter paper.</li></ul></section>';
+  const how = '<section class="cs-index-section" aria-labelledby="how"><h2 id="how">How to use them</h2><ul class="cs-tips"><li>Each colour means one kind of block. Blue blocks are tasks and commands. Red blocks are fixes. The key is at the top of each poster.</li><li>Click a command to copy it. Replace each value in angle brackets, such as <code>&lt;model&gt;</code>.</li><li>The foot of each poster lists the lessons and manuals that it covers. Open one when you need the reason.</li><li>Print a poster on one or two landscape pages. It fits A4 and Letter paper.</li></ul></section>';
   return `<main id="main" class="cs-page cs-index">${head}${sections}${phaseList}${how}<footer class="cs-foot"><p class="cs-stamp"><span>aiengineeringfromscratch.com${BASE}</span><span>${copyLine(year)}</span></p></footer></main>`;
 }
 
@@ -1144,7 +1144,7 @@ function checkTopic(topic, root = REPO_ROOT, cache = new Map()) {
   return problems;
 }
 
-const MAINTAINER_ONLY = /capture\/(?:gpu\/)?run\.py|\brun\.py --(?:check|build-fixtures|only)\b|--build-fixtures|build-manuals\.js|build-cheatsheets\.js|build-projects\.js|audit_manuals|audit_lessons|\bmanual\.json\b|site\/data\.js|\.github\/workflows|\bnode (?:site|scripts)\/|\bcapture kit\b|\btimeoutSeconds\b|SGLANG_KIT_PROFILE|\bREA_COMMAND\b/i;
+const MAINTAINER_ONLY = /capture\/(?:gpu\/)?run\.py|\bpython3? run\.py\b|\brun\.py --(?:check|build-fixtures|only)\b|--build-fixtures|build-manuals\.js|build-cheatsheets\.js|build-projects\.js|audit_manuals|audit_lessons|\bmanual\.json\b|site\/data\.js|\.github\/workflows|\bnode (?:site|scripts)\/|\bcapture kit\b|\btimeoutSeconds\b|SGLANG_KIT_PROFILE|\bREA_COMMAND\b/i;
 const BLANK_CELL = /^(?:|-|tbd|todo|\.\.\.|…)$/i;
 
 function blockTexts(block) {
@@ -1165,7 +1165,7 @@ function maintainerContent(topic) {
 function incompleteRows(topic) {
   const found = [];
   for (const block of topic.blocks) {
-    if (!block.rows || block.type === 'comparison') continue;
+    if (!block.rows) continue;
     for (const row of block.rows) {
       if (row.some(cell => BLANK_CELL.test(plain(cell).trim()))) found.push(`${block.title}: ${plain(row[0])}`);
     }

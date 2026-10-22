@@ -127,7 +127,7 @@ test('maintainer-only content and incomplete rows fail the rubric', () => {
   const learner = sheets.parseTopic(TOPIC, 'cheatsheets/demo.md');
   assert.deepEqual(sheets.maintainerContent(learner), []);
   assert.deepEqual(sheets.incompleteRows(learner), []);
-  for (const text of ['`python capture/run.py --check`', '`python capture/gpu/run.py --only 2-1`', '`--build-fixtures`', '`node site/build-manuals.js`', '`python scripts/audit_manuals.py`', '`manuals/demo/manual.json`']) {
+  for (const text of ['`python capture/run.py --check`', '`python3 run.py`', '`python capture/gpu/run.py --only 2-1`', '`--build-fixtures`', '`node site/build-manuals.js`', '`python scripts/audit_manuals.py`', '`manuals/demo/manual.json`']) {
     const topic = sheets.parseTopic(TOPIC.replace('`GET /health`', text), 'cheatsheets/demo.md');
     assert.deepEqual(sheets.maintainerContent(topic), ['Start a server'], text);
     const report = sheets.qualityReport(topic);
@@ -140,6 +140,8 @@ test('maintainer-only content and incomplete rows fail the rubric', () => {
     assert.deepEqual(sheets.incompleteRows(topic), ['Defaults: --port'], cell);
     assert.ok(sheets.qualityReport(topic).failures.some(failure => failure.startsWith('complete:')), cell);
   }
+  const compare = sheets.parseTopic(TOPIC.replace('| `--port` | 30000 | HTTP port |', '| `--port` | 30000 | HTTP port |\n\n## Engines\ntype: comparison\nfrom: phases/demo/01-lesson/docs/en.md\n\n| | A | B |\n|---|---|---|\n| Port | 30000 | ... |\n| Metrics | yes | no |'), 'cheatsheets/demo.md');
+  assert.deepEqual(sheets.incompleteRows(compare), ['Engines: Port']);
 });
 
 test('diagram edges go around nodes and labels do not overlap', () => {
