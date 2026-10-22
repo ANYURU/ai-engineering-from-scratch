@@ -2,18 +2,80 @@
 
 > Start from what you see, and each entry gives the likely cause, the check, and the fix.
 
-Draft: not written yet. This page is a how-to page.
+The first five entries are failures we met on a GB10. The sixth uses our healthy runs as the reference. The others come from reports in the Miles issue tracker, and we have not reproduced them.
 
 When you finish this section, you can find the cause of a failed or wrong run from its first symptom.
 
-## What we know now
+## The GPU is idle and the log keeps growing
 
-- Entries we met on the GB10: the engine died and the run kept going, Ray stopped the job, and FlashAttention 3 refused to start.
-- Entries from the Miles issues: a flat reward, NaN loss after offload, a segfault in the weight update, and slow rollout at many open requests.
+- **Cause:** the rollout engine died, and the trainer keeps sending requests to it.
+- **Check:** count `503 Service Unavailable` in the last minute of the log. Our failed run wrote more than 1,800 a minute, and our healthy runs wrote none.
+- **Fix:** stop the run, then read the engine lines above the first 503 error. Start every unattended run with the watchdog in [section 1.2](#s-add-a-watchdog).
+
+## The engine stops at start with a FlashAttention 3 error
+
+- **Cause:** the run asked for FlashAttention 3, usually through true on-policy mode, on a GPU outside its range.
+- **Check:** look for `FlashAttention v3 Backend requires SM>=80 and SM<=90` in the engine log.
+- **Fix:** on a non-Hopper GPU, drop true on-policy mode and use the default backend. [Section 4.6](#s-know-the-true-on-policy-limits) explains the limit.
+
+## The job stops with a Ray OutOfMemoryError
+
+- **Cause:** on unified memory, Ray counts the GPU allocations as node memory and stops a worker above its threshold.
+- **Check:** the line `Memory on the node ... was 115.86GB / 121.69GB` or similar, and no CUDA out-of-memory error.
+- **Fix:** raise `RAY_memory_usage_threshold` in small steps, or lower the memory the run needs. [Section 2.3](#s-stop-ray-killing-the-job) has the details.
+
+## The trainer rejects the attention implementation
+
+- **Cause:** a trainer attention name that the installed transformers library does not accept, such as `triton`.
+- **Check:** a `ValueError` that lists the attention implementations transformers accepts.
+- **Fix:** pick one from that list. On our GB10 we left the trainer setting at its default.
+
+## Step times change from run to run
+
+- **Cause:** thermal pauses or a lower clock on a hot GPU. The samples and the rewards do not show it.
+- **Check:** the pause log of your heat guard, and the GPU clock during the run.
+- **Fix:** time only steps without a pause, and compare times only within one session. [Section 5.3](#s-repeat-a-run) gives the rule.
+
+## The gap at step 0 is far above your range
+
+- **Cause:** the engine and the trainer do not start from the same weights, or they read the same weights in different formats.
+- **Check:** compare `train/train_rollout_logprob_abs_diff` at step 0 with your healthy runs. Ours were 0.0149 to 0.0157 for Qwen3-0.6B.
+- **Fix:** stop the run before it trains on wrong numbers. Check the checkpoint paths of both sides.
+
+## A reward function with fractions moves a group that should stay still
+
+- **Cause:** a report in the tracker shows that a group of 16 answers, each scored 0.3, got small nonzero advantages from float32 rounding. Binary rewards of 0 and 1 do not hit this.
+- **Check:** a group where every answer has the same reward but the advantages are not 0.
+- **Fix:** use rewards that a float32 can hold exactly, or check the advantages of such groups yourself.
+
+## Training goes wrong after offload on FSDP
+
+- **Cause:** a report in the tracker shows that offloading the trainer state with FSDP2 can corrupt shards of uneven size.
+- **Check:** a loss or a gradient norm that jumps after the first offload, with a model whose layer sizes do not split evenly across ranks.
+- **Fix:** run once with `--no-offload-train` and compare. Follow the issue for the code fix.
+
+## The weight update fails on many GPUs
+
+- **Cause:** two reports in the tracker. A colocated update with pipeline stages crashed in NCCL 2.29 and 2.30 with a tuner plugin, and NCCL 2.31 fixed it. Deterministic serving on two GPUs set a different number of NCCL channels than the trainer, and the transfer failed with a size mismatch.
+- **Check:** a segmentation fault or a `Message truncated` error during the weight update.
+- **Fix:** update NCCL to 2.31 or later for the first case. For the second case, turn off deterministic serving on multi-GPU engines until a fix is released.
+
+## Rollout gets slow with hundreds of open requests
+
+- **Cause:** a report in the tracker measured a client cost that grows with the number of open requests. It was 4.8 s at 256 open requests and 43.7 s at 1,536.
+- **Check:** rollout time that grows faster than the number of samples.
+- **Fix:** keep the number of open requests per engine lower, or follow the issue for the client change.
+
+## The launcher stops a Ray cluster you started yourself
+
+- **Cause:** a report in the tracker shows the launcher cleanup stops an external Ray cluster.
+- **Check:** your other Ray jobs stop when a Miles run ends.
+- **Fix:** run Miles on its own Ray cluster until the issue is fixed.
 
 ```takeaways
-- Start from the first symptom in the log.
-- Read the engine lines before the trainer lines.
+- Start from the first symptom in the log, and read the engine lines before the trainer lines.
+- Add a watchdog to every unattended run.
+- Treat entries from the issue tracker as reports to check, not as results we measured.
 ```
 
-Sources: capture/gpu/out-gb10/engine-died-503.log; Miles issues 4003, 4019, 4134, 4238.
+Sources: capture/gpu/out-gb10/engine-died-503.log; capture/gpu/out-gb10/engine-died-count.txt; capture/gpu/out-gb10/ray-oom-4b.log; capture/gpu/out-gb10/thermostat.log; capture/gpu/summary/miles-gb10-lab.json; manuals/sglang-101/capture/gpu/out-miles/true-on-policy-error.log; Miles issues 3649, 3714, 4003, 4019, 4134, 4238.
