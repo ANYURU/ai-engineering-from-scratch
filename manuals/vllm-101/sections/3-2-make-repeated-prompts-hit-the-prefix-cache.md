@@ -4,6 +4,8 @@
 
 Every request repeats the same long system prompt. When you finish this section, you can order a prompt so that the cache hits, and prove the hit from a metric.
 
+**Our result:** on our L4, the cache kept the first token near 400 ms at every prefix length. Without it, the first token took 1,213 ms at 1,024 shared tokens.
+
 ## See what the cache saves
 
 Prefix caching is on by default in vLLM 0.31.0. We ran the same workload with it on and off on the L4 with `Qwen/Qwen3-8B`. Each run sent 4 groups of 16 prompts at 8 users. The prompts in a group shared a system prompt of the length in the table. Each prompt then added a 128-token question and asked for 64 tokens back.
@@ -31,6 +33,14 @@ note: 87 percent of the prompt tokens came from the cache.
 INFO 10-18 00:43:16 [loggers.py:320] Engine 000: Avg prompt throughput: 231.0 tokens/s, Avg generation throughput: 93.6 tokens/s, Running: 8 reqs, Waiting: 0 reqs, GPU KV cache usage: 77.2%, Prefix cache hit rate: 87.2%
 ```
 
+```figure
+id: fig-3-2b
+kind: chart
+title: the cache on and off
+claim: With the prefix cache on, the first token stayed near 400 ms at every shared length on our L4.
+caption: Read the log scale with care: each grid line is about three times the one below. Bands span three runs. From capture/gpu/summary/l4.json.
+```
+
 ## Put the shared part first
 
 The cache matches a prompt from its first token, one 16-token block at a time. It stops at the first block that differs. So a cache hit needs the same tokens at the start of the prompt, in the same order.
@@ -42,6 +52,14 @@ The cache matches a prompt from its first token, one 16-token block at a time. I
 A timestamp or an ID near the start of the prompt changes the first block, and every later block then misses. Check your chat template too. Some templates put the date into the system prompt.
 
 Only full blocks are cached. A shared part of 20 tokens gives one cached block of 16, and the last 4 tokens are always computed.
+
+```figure
+id: fig-3-2
+kind: structure
+title: a prefix hit
+claim: A new request reuses cached blocks from the start of its prompt and stops at the first block that differs.
+caption: Read the top row first, then the bottom row. Dashed blocks are computed again. From the vLLM source at v0.31.0.
+```
 
 ## Keep tenants apart
 
