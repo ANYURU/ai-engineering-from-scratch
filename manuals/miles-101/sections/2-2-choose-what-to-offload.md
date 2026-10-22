@@ -13,9 +13,9 @@ When you finish this section, you can decide which memory each side gives back w
 - `--no-offload-rollout` keeps the engine weights and its KV cache on the GPU while the trainer works. The engine starts without its memory saver.
 - `--no-offload-train` keeps the trainer weights and its optimizer state on the GPU while the engine works.
 
-`--offload-rollout-level kv_cache` gives back only the KV cache and keeps the engine weights.
+`--offload-rollout-level kv_cache` gives back the KV cache and the CUDA graph memory, and keeps the engine weights.
 
-The trainer side has its own timers. `perf/sleep_time` is the time the trainer takes to move its state to host memory after training. `perf/wake_up_time` is the time it takes to move the state back before the log probabilities. The engine release and resume have no timer of their own.
+The trainer side has its own timers. `perf/sleep_time` is the time the trainer takes to move its state to host memory after training, and Miles logs it with the next step. `perf/wake_up_time` is the time it takes to move the state back before the log probabilities. The engine release before training has no timer. The engine resume after the weight update is in `perf/finalize_and_resume_engines_time`.
 
 ## Compare one change at a time, on the same steps
 
@@ -42,7 +42,7 @@ caption: Each pair of bars is one step of the same-day pair, with nearly the sam
 
 The earlier lead does not hold. Our first runs showed 52.0 s against 59.1 s with the engine kept loaded. Those runs also used different memory fractions, and their clean steps were different steps.
 
-Step 10 was clean in both runs. The engine kept loaded took 46.7 s with answers of 599 tokens. The default took 56.3 s with answers of 695 tokens. The shorter answers explain that gap.
+In the earlier pair, step 10 was clean in both runs. The engine kept loaded took 46.7 s with answers of 599 tokens. The default took 56.3 s with answers of 695 tokens. The shorter answers explain that gap.
 
 One seed is not enough to rank the two settings. A gain of one or two seconds is inside the step-to-step noise of our hot GB10.
 
