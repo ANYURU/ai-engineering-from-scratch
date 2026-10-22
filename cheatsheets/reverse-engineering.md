@@ -52,9 +52,9 @@ from: manuals/reverse-engineering-101/sections/r-1-commands-and-tools.md
 
 | Task | Code |
 |---|---|
-| List the records of a bundle without payloads | `rea inspect-evidence-bundle '{"path":..., "detail": "summary"}'` |
+| List the records of a bundle without payloads | `rea inspect-evidence-bundle '{"path":"<bundle>", "detail": "summary"}'` |
 | Write a canonical copy with sorted keys | `rea evidence-export <bundle> <out>` |
-| Validate every record id and import a bundle | `rea evidence-import <bundle>` |
+| Validate every record id and manifest of a bundle | `rea evidence-import <bundle>` |
 | Compare two bundles by record membership | `rea compare <left> <right>` |
 | Map a virtual address to a file offset | `rea address-to-file-offset <path> <address> --provider ghidra` |
 

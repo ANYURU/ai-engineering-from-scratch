@@ -25,7 +25,7 @@ Abbreviations: M = manuals/reverse-engineering-101, S1 = manuals/reverse-enginee
 ## Work with Evidence bundles (task-table, 5 rows)
 - rea inspect-evidence-bundle, one row per record without payloads: S1/r-1-commands-and-tools.md:22
 - rea evidence-export <bundle> <out>, keys sorted: S1/r-1-commands-and-tools.md:23
-- rea evidence-import <bundle>, validates every record id: S1/r-1-commands-and-tools.md:24
+- rea evidence-import <bundle>, validates every record id and manifest: S1/r-1-commands-and-tools.md:24
 - rea compare <left> <right>, record membership: S1/r-1-commands-and-tools.md:25
 - rea address-to-file-offset <path> <address> --provider ghidra: S1/r-1-commands-and-tools.md:21
 
