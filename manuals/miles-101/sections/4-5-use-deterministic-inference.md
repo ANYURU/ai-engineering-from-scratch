@@ -2,11 +2,11 @@
 
 > Deterministic inference makes the engine repeat itself, and it does not make the engine agree with the trainer.
 
-We turned on deterministic inference to close the gap between the trainer and the engine. The gap did not move. What changed was that two runs with the same seed now gave the same first step.
+We turned on deterministic inference to close the gap between the trainer and the engine. The gap did not move. What changed was that two runs with the same seed now gave the same rollout at step 0.
 
 When you finish this section, you can decide when deterministic inference is worth its cost.
 
-**Our result:** with and without deterministic inference, the median gap stayed between 0.0151 and 0.0153. Two deterministic runs repeated step 0 exactly.
+**Our result:** with and without deterministic inference, the median gap stayed between 0.0151 and 0.0153. Two deterministic runs repeated the rollout of step 0 exactly.
 
 ## Turn it on
 
@@ -61,9 +61,9 @@ caption: The logprob gap per step for four 12-step runs with seed 1.
 
 ## The cost
 
-Deterministic kernels are slower. Over the steps without a heat-guard pause, the median rollout took 59.1 s with the default engine. It took 82.0 s with Triton and 77.3 s with FlashInfer, with answers of the same length.
+Deterministic kernels are slower. Four steps had no heat-guard pause in all four runs: steps 0, 1, 4, and 10. On those steps, the median rollout took 56.5 s with the default engine. It took 79.1 to 82.0 s in the three deterministic runs, with answers of about the same length.
 
-That is 31 to 39 percent more rollout time, from one run each on a hot card. Read it as a lead. Measure the cost on your own GPU before you leave the flag on for a long run.
+That is 40 to 45 percent more rollout time, from one run of each setting on a hot card. Read it as a lead. Measure the cost on your own GPU before you leave the flag on for a long run.
 
 ```takeaways
 - Use deterministic inference to repeat an experiment.
