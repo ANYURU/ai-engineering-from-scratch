@@ -49,6 +49,8 @@ At 0.5 requests per second, the larger budget raised the P99 ITL by 39 percent, 
 
 At 1 and 2 requests per second, the two budgets gave the same numbers within the seed ranges. At those rates, more requests share each step, so a single long prompt fills less of the budget.
 
+Read our result as narrow: two budgets, three low rates, one model, and one machine. A 2026 study, P-PAS, found that no single fixed budget in vLLM was best at every load. A large budget gave lower latency at low pressure. A small budget won when several prefills competed with running streams. We did not measure that crossover ourselves.
+
 The run with no budget flag matched the run with 2,048 at every rate. That agrees with the 2,048 in the startup log. All runs held a median clock of 2,398 to 2,411 MHz.
 
 ## Tune it
@@ -57,6 +59,7 @@ The run with no budget flag matched the run with 2,048 at every rate. That agree
 2. If the P99 ITL is too high and long prompts arrive, lower the budget. Try 2,048 if your default is larger.
 3. If the first token of long prompts is too slow and the P99 ITL has room, raise it.
 4. Measure at your real request rate, because the effect changed with the rate in our runs.
+5. Measure again when your load changes, because the best budget moves with the load.
 
 vLLM also has `--long-prefill-token-threshold`. It caps the tokens that one long prompt gets in a step when other requests wait. It is off by default, and we did not test it.
 
@@ -64,7 +67,7 @@ vLLM also has `--long-prefill-token-threshold`. It caps the tokens that one long
 - At low load, a larger budget can give a faster first token and longer gaps between tokens.
 - On our DGX Spark, 16,384 raised the P99 ITL by 39 percent at low load.
 - Read the budget your server uses, because the default depends on the memory vLLM reads.
-- Measure at your real request rate before you change it.
+- Measure at your real request rate, and again when your load changes.
 ```
 
 Sources: capture/gpu/summary/gb10.json (mixed.vllm, mixed.vllm-mnbt-2048, mixed.vllm-mnbt-16384), capture/gpu/out-gb10/server-load-vllm.log, the vLLM source at v0.31.0 (vllm/engine/arg_utils.py, vllm/config/vllm.py, vllm/config/scheduler.py, vllm/platforms/cuda.py).
