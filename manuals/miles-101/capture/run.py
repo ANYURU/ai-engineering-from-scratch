@@ -110,6 +110,7 @@ def run():
         old_names = set(old["runs"]) | set(old["excluded"])
         new_names = set(new["runs"]) | set(new["excluded"])
         problems += [f"{name}: stored, but missing from the runs folder" for name in sorted(old_names - new_names)]
+        problems += [f"{name}: stored as partial, but not partial in the runs folder" for name in sorted(set(old.get("partial", [])) - set(new.get("partial", [])))]
         if problems:
             for problem in problems:
                 print(f"drift: {problem}")
