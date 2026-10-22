@@ -18,10 +18,10 @@ The value column gives the setting of our lab runs where we set it. A dash means
 
 | Flag | Our value | What it sets |
 |---|---|---|
-| `--num-rollout` | 12, 24, or 48 | the number of steps |
+| `--num-rollout` | 12, 24, or 48, and 4 in the model-size runs | the number of steps |
 | `--rollout-batch-size` | 32 | prompts per step |
 | `--n-samples-per-prompt` | 8 | answers per prompt |
-| `--rollout-max-response-len` | 1024 | the answer limit in tokens |
+| `--rollout-max-response-len` | 1024, and 256 in the model-size runs | the answer limit in tokens |
 | `--rollout-temperature` | 1 | the sampling temperature |
 | `--rollout-top-p`, `--rollout-top-k` | 0.95, 64 in one run | the sampler, and sampling replay when set |
 | `--rollout-num-gpus-per-engine` | 1 | GPUs per engine |
@@ -51,9 +51,9 @@ The value column gives the setting of our lab runs where we set it. A dash means
 | `--colocate` | on | trainer and engine on the same GPU, with offload |
 | `--train-backend` | `fsdp` | the trainer |
 | `--actor-num-nodes`, `--actor-num-gpus-per-node` | 1, 1 | trainer GPUs |
-| `--sglang-mem-fraction-static` | 0.4 | the engine share of GPU memory |
-| `--offload-rollout-level` | the default | what the engine gives back between phases |
-| `--no-offload-rollout`, `--no-offload-train` | in one run each | keep one side loaded |
+| `--sglang-mem-fraction-static` | 0.4, 0.25 in three runs, 0.2 in one 4B run | the engine share of GPU memory |
+| `--offload-rollout-level` | the default, `kv_cache` in one run | what the engine gives back between phases |
+| `--no-offload-rollout`, `--no-offload-train` | in two runs and in one run | keep one side loaded |
 | `--update-weight-buffer-size` | 536870912 | the weight update bucket, in bytes |
 | `--update-weight-transfer-mode` | - | the weight transfer method in a split layout |
 
