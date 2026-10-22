@@ -30,7 +30,7 @@ note: vLLM took the first entry of the list.
 
 Each backend declares what it supports: the data type of the KV cache, the head size, the block size, and the CUDA graph modes. If your settings ask for something the first backend cannot do, vLLM moves to the next one.
 
-The FP8 KV cache is the common case. On an L4, FlashAttention 2 cannot read an FP8 cache. With `--kv-cache-dtype fp8`, vLLM skips it and picks FlashInfer if it is installed, or Triton if it is not. Your FP8 result then measures a new data type and a new kernel at the same time. An open issue reports a worse case. FlashInfer is picked, cannot compile on the machine, and the server crashes instead of moving to Triton.
+The FP8 KV cache is the common case. On an L4, FlashAttention 2 cannot read an FP8 cache. With `--kv-cache-dtype fp8`, vLLM skips it and picks FlashInfer if it is installed, or Triton if it is not. Your FP8 result then measures a new data type and a new kernel at the same time. On our L4 the FlashInfer build failed, as [the FP8 KV cache page](#s-fit-more-users-with-an-fp8-kv-cache) shows.
 
 ## Why the order differs
 
