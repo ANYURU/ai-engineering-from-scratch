@@ -30,7 +30,7 @@ Median TTFT (ms):                        162.98
 Mean TPOT (ms):                          4.38      
 ```
 
-Divide the median TTFT by the 512 prompt tokens, and you get about 0.32 ms per prompt token. This is a rough number, because TTFT also includes the queue and the step that makes the first token. Against 4.38 ms per output token, it is a factor of about 14. A serving engine can share and skip prefill work. It can only batch decode work, so that one read of the weights serves many requests.
+That is at most about 0.32 ms per prompt token against 4.38 ms per output token, a factor of about 14 on this Mac. The 0.32 ms is an upper bound, because the TTFT also holds the queue and the first decode step. On our L4 with Qwen3-8B the factor was about 160: 189 ms for a 512-token prompt, against 60 ms per output token. A serving engine can share and skip prefill work. It mostly batches decode work, so that one read of the weights serves many requests. [Section 4.4](#s-speculative-decoding) shows the other way to cut decode steps.
 
 ```figure
 id: fig-1-1
@@ -105,9 +105,9 @@ To see how the scheduler, the cache, and each forward pass do this work, read Pa
 
 ```takeaways
 - Report TTFT, TPOT, throughput, and goodput together, at a stated concurrency.
-- Expect prefill to cost a fraction of a millisecond per token, and decode several milliseconds.
+- Expect decode to cost tens to hundreds of times more per token than prefill.
 - Check #new-token and #cached-token in the scheduler log for each request you debug.
 - Choose SGLang when your prompts share prefixes, and measure it when they do not.
 ```
 
-Sources: capture/out/bench-random-c1.txt, capture/out/generate.txt, capture/out/server-default.log, capture/gpu/out-l4/server-default.log; python/sglang/benchmark/serving.py and python/sglang/srt/entrypoints/http_server.py at v0.5.22; AIMultiple, "LLM Inference Engines" (https://aimultiple.com/inference-engines, 2026-01-25).
+Sources: capture/out/bench-random-c1.txt, capture/out/generate.txt, capture/out/server-default.log, capture/gpu/out-l4/server-default.log; python/sglang/benchmark/serving.py and python/sglang/srt/entrypoints/http_server.py at v0.5.22; AIMultiple, "LLM Inference Engines" (https://aimultiple.com/inference-engines, 2026-01-25), capture/gpu/summary/l4.json (load.default)
