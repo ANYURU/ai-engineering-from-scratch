@@ -29,37 +29,34 @@ caption: Blue bars are estimates at 16 bytes for each parameter. Rose bars are t
 
 ## What happened with 4B
 
-We ran Qwen3-4B twice with short answers of 256 tokens. The first run used the engine memory fraction of 0.4. Ray stopped the trainer at 115.86 GB of 121.69 GB. The second run lowered the engine fraction to 0.2. Ray stopped it again, at 119.18 GB.
-
-```listing
-title: the second 4B run, stopped by Ray
-source: capture/gpu/out-gb10/ray-oom-4b-lowmem.log
-lang: text
-note: The first three entries of the process list that Ray printed with the kill. The run used --sglang-mem-fraction-static 0.2.
----
-(TrainerController pid=2518) Top 10 memory users: PID	MEM(GB)	COMMAND
-(TrainerController pid=2518) 2523	36.75	ray::FSDPTrainRayActor.train
-(TrainerController pid=2518) 3259	2.67	sglang::scheduler
-(TrainerController pid=2518) 2515	1.32	ray::RolloutExecutor
-```
-
-A smaller engine did not save the run. The trainer process held almost the same memory in both runs, 36.77 and 36.75 GB. The rest of the used memory was not in the process list. Our reading: most of that rest is GPU memory that the trainer allocated. On a GB10 the GPU and the CPU use the same memory. [Section 2.3](#s-stop-ray-killing-the-job) shows why Ray sees it.
-
-Do not raise the Ray threshold to get past this kill. At 95 percent of the node, the machine really is close to full, and a run past that point can stop the whole machine.
+Ray stopped both of our 4B runs in the training phase of the first step, at 115.86 and then 119.18 GB of 121.69 GB. The second run lowered the engine memory fraction from 0.4 to 0.2, and the kill came anyway. [Section 2.3](#s-stop-ray-killing-the-job) shows the kill message, why it happens on a GB10, and what to change.
 
 ## Choose the size
 
 1. Start with the smallest model that can answer your task.
 2. Multiply the parameter count by 16 bytes. On our 128 GB GB10, the limit fell between 27 GB and 64 GB of this estimate. Use half of your GPU memory as a first guess.
-3. Run 4 steps at your real answer length, and read the node memory in the Ray log or in `nvidia-smi`.
+3. Run 4 steps at your real answer length. Read the node memory with `free -g` on the host, or in the Ray kill line. On a GB10, `nvidia-smi` reports no memory size.
 4. Move up one size only when the short run leaves room.
 
-To train a model of 4B or more, you need more GPUs ([Part 6](#s-split-rollout-and-training)) or a recipe that keeps less optimizer state. We did not test either on our GB10.
+To train a model of 4B or more, you need more GPUs ([Part 6](#s-split-rollout-and-training)) or a recipe that keeps less optimizer state.
+
+## Train a larger model with LoRA
+
+**LoRA:** low-rank adaptation. The trainer keeps the model weights frozen and trains two small matrices next to some of the layers. Only those small matrices get gradients and optimizer state.
+
+LoRA is the usual way to train a model whose full trainer state does not fit. In the Miles version we ran, only the Megatron trainer supports it. The FSDP trainer of this manual refuses LoRA at start. To try it:
+
+1. Switch to the Megatron trainer, as [section 6.1](#s-split-rollout-and-training-choose-the-trainer) shows.
+2. Add `--lora-rank 16`, or another rank above 0. The default rank of 0 turns LoRA off.
+3. Keep one adapter. Under `--colocate`, Miles trains one adapter, and several adapters need a split layout.
+
+The engine serves the same adapter that the trainer updates. We have not run LoRA or the Megatron trainer on our GB10. So we do not know if a 4B model fits this way on 128 GB.
 
 ```takeaways
 - Estimate the trainer state at 16 bytes for each parameter before you start.
 - On one 128 GB GB10, plan for 1.7B at most, and test it at your answer length.
-- Do not raise the Ray threshold to pass a memory kill. Make the run smaller.
+- After a Ray memory kill, make the run smaller, as section 2.3 shows.
+- Try LoRA on the Megatron trainer before you rent more GPUs for a larger model.
 ```
 
-Sources: capture/gpu/out-gb10/ray-oom-4b.log; capture/gpu/out-gb10/ray-oom-4b-lowmem.log; capture/gpu/summary/miles-gb10-lab.json (runs.e4-0.6b, runs.e4-1.7b, excluded.e4-4b, excluded.e4-4b-lowmem).
+Sources: capture/gpu/out-gb10/ray-oom-4b.log; capture/gpu/out-gb10/ray-oom-4b-lowmem.log; capture/gpu/out-gb10/gpu-check.txt; Miles LoRA arguments and LoRA documentation at main 08752a12; capture/gpu/summary/miles-gb10-lab.json (runs.e4-0.6b, runs.e4-1.7b, excluded.e4-4b, excluded.e4-4b-lowmem).
