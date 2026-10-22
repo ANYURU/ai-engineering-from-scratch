@@ -29,7 +29,7 @@ After the manual, you can:
 Every result in this manual comes from runs on one machine, so each page says how far the result goes. Five results change what you do:
 
 - A run whose engine dies keeps going and never fails. On our machine it logged 200,533 errors in 63 minutes. Start every run with a watchdog ([section 1.2](#s-add-a-watchdog)).
-- On one 128 GB machine, a 1.7B model trains with the default recipe, and a 4B model does not ([section 2.1](#s-pick-a-model-size)).
+- On one 128 GB machine, a 1.7B model fits for short steps of 256 tokens, and a 4B model does not ([section 2.1](#s-pick-a-model-size)).
 - The weight update between the trainer and the engine takes under one percent of a step. Tune training and rollout first ([section 2.4](#s-size-the-weight-update)).
 - Deterministic inference makes the engine repeat itself. It does not lower the gap between the trainer and the engine ([section 4.5](#s-use-deterministic-inference)).
 - A machine that pauses for heat adds time that is not work. Compare runs on the same clean steps ([section 5.3](#s-repeat-a-run)).
