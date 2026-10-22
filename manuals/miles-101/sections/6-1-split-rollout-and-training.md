@@ -36,8 +36,6 @@ In a split layout, the weights leave the trainer GPUs after every update. `--upd
 
 Under `--colocate`, Miles uses a copy inside the GPU instead, and the transfer mode does not apply.
 
-The `p2p` method is also the one that rollout fault tolerance needs. [Section 6.3](#s-survive-failures) explains that.
-
 ## What to measure after the split
 
 - `perf/update_weights_time` against `perf/step_time`. On many machines the transfer is no longer a copy inside one GPU.
