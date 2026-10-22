@@ -100,7 +100,7 @@ The common advice is to make the chunk smaller, so that decode steps run more of
 
 **We measured** no gain from a smaller chunk on either machine. On the GB10 we ran the default, an explicit 8,192, and 1,024. At 1 and 2 requests per second, all three were inside the seed spread of each other. At 0.5 per second, the 1,024 chunk was worse. Its P99 ITL was 1,977 against 929 ms, and the seed ranges did not overlap.
 
-A study of chunked prefill on MoE models gives a likely reason for that loss. Each chunk of a prompt loads the expert weights again, and in that study the extra loads raised memory traffic by up to 39 percent. Qwen3-30B-A3B is an MoE model. With a chunk of 1,024, a prompt of up to 4,096 tokens runs as up to four chunks. Each chunk reads the experts again. We did not measure the expert traffic, so this is a reading, not a result.
+A 2025 study of chunked prefill on MoE models gives a likely reason for that loss. Each chunk of a prompt loads the expert weights again, and in that study the extra loads raised memory traffic by up to 39 percent. Qwen3-30B-A3B is an MoE model. With a chunk of 1,024, a prompt of up to 4,096 tokens runs as up to four chunks. Each chunk reads the experts again. We did not measure the expert traffic, so this is a reading, not a result.
 
 The rates of 1 and 2 per second need a second caution. In each seed, the sweep sent the same 48 prompts at every rate to one server, and it did not flush the cache. The rate of 0.5 ran first. The GB10 pool could hold those prompts, so the later runs could find many of them in the cache. That can explain why the first token at 1 and 2 per second was faster than at 0.5. [Section 5.1](#s-sglang-benchmark-serving) gives the protocol that prevents this.
 
