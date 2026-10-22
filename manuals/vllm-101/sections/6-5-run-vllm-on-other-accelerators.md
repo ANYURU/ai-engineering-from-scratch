@@ -14,7 +14,7 @@ The plugin design came from an RFC in December 2024. Since then, several backend
 
 | Hardware | Plugin | How it follows vLLM |
 |---|---|---|
-| Google TPU | `tpu-inference`, now renamed vLLM JAX | a release for each vLLM release, with its own image |
+| Google TPU | `tpu-inference`, which is moving to the name `vllm-jax` | a release for each vLLM release, with its own image |
 | Huawei Ascend NPU | `vllm-ascend` | release candidates for recent vLLM versions, and final releases about every three months |
 | Intel Gaudi | `vllm-gaudi` | releases based on a named vLLM version |
 | AWS Trainium and Inferentia | `vllm-neuron` | releases that name the vLLM version they build on |
