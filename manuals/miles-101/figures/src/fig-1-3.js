@@ -6,7 +6,7 @@ const { chart, legend, load } = require('../../../_shared/chart.js');
 
 const runs = load(path.join(__dirname, '../../capture/gpu/summary/miles-gb10-lab.json')).runs;
 const seeds = [
-  { key: 'plain-48', name: 'seed 1', hue: 'green', dash: 'solid' },
+  { key: 'plain-48', name: 'seed 1234', hue: 'green', dash: 'solid' },
   { key: 'plain-48-s2', name: 'seed 2', hue: 'teal', dash: 'dashed' },
   { key: 'plain-48-s3', name: 'seed 3', hue: 'olive', dash: 'dotted' },
 ];

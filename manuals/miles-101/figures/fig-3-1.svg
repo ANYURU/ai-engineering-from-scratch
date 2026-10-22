@@ -13,7 +13,7 @@
   <text x="116" y="267" font-size="11" text-anchor="middle" fill="var(--m-ink-soft, #4a4a4a)">4, one seed</text>
   <rect x="198" y="162.84" width="60" height="87.16" fill="var(--m-green-fill, #e5f0e4)" stroke="var(--m-green-ink, #336b40)"/>
   <text x="228" y="156.84" font-size="11" text-anchor="middle" fill="var(--m-green-ink, #336b40)">+0.050</text>
-  <text x="228" y="267" font-size="11" text-anchor="middle" fill="var(--m-ink-soft, #4a4a4a)">8, seed 1</text>
+  <text x="228" y="267" font-size="11" text-anchor="middle" fill="var(--m-ink-soft, #4a4a4a)">8, seed 1234</text>
   <rect x="310" y="184.2" width="60" height="65.8" fill="var(--m-green-fill, #e5f0e4)" stroke="var(--m-green-ink, #336b40)"/>
   <text x="340" y="178.2" font-size="11" text-anchor="middle" fill="var(--m-green-ink, #336b40)">+0.038</text>
   <text x="340" y="267" font-size="11" text-anchor="middle" fill="var(--m-ink-soft, #4a4a4a)">8, seed 2</text>

@@ -8,7 +8,7 @@ const runs = load(path.join(__dirname, '../../capture/gpu/summary/miles-gb10-lab
 const gain = key => { const r = runs[key].per_step.slice(0, 24); const m = rows => rows.reduce((a, x) => a + x.reward, 0) / rows.length; return m(r.slice(16, 24)) - m(r.slice(0, 8)); };
 const items = [
   { name: '4, one seed', key: 'e2-n4', hue: 'olive' },
-  { name: '8, seed 1', key: 'plain-48', hue: 'green' },
+  { name: '8, seed 1234', key: 'plain-48', hue: 'green' },
   { name: '8, seed 2', key: 'plain-48-s2', hue: 'green' },
   { name: '8, seed 3', key: 'plain-48-s3', hue: 'green' },
   { name: '16, one seed', key: 'e2-n16', hue: 'teal' },
