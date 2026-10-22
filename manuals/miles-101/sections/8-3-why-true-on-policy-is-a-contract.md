@@ -20,6 +20,14 @@ Deterministic inference makes the engine give the same result for a request, wha
 
 Our runs show this directly. With deterministic inference on, two runs repeated their first step to six decimal places, and the gap stayed at 0.015. [Section 4.5](#s-use-deterministic-inference) has the numbers.
 
+```figure
+id: fig-8-3
+kind: comparison
+title: Two fixes for two different halves
+claim: Deterministic inference fixes the engine half, and only the true on-policy contract makes both halves the same.
+caption: The trainer is on the left and the engine on the right.
+```
+
 ## What the contract pins
 
 To get a gap of exactly 0, both sides must run the same arithmetic in the same order. The contract in Miles pins that down for one family of models:
