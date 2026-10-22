@@ -10,13 +10,13 @@ When you finish this section, you can turn on the zero-variance filter and check
 
 ## Turn it on
 
-Add two flags to the launcher from [section 1.1](#s-run-grpo-on-one-gpu):
+Add two flags to the run of [section 1.1](#s-run-grpo-on-one-gpu) with `MILES_EXTRA_ARGS`:
 
 ```bash
---dynamic-sampling-filter-path miles.rollout.filter_hub.dynamic_sampling_filters.check_reward_nonzero_std --over-sampling-batch-size 48
+-e MILES_EXTRA_ARGS="--dynamic-sampling-filter-path miles.rollout.filter_hub.common_filters.apply_reward_nonzero_std_filter --over-sampling-batch-size 48"
 ```
 
-Miles marks this filter path as deprecated and names a replacement in its common filters module. We ran the older path shown here.
+Our lab runs used an older path for the same filter, which Miles marks as deprecated. At the version we ran, the older path calls the filter shown here, so the results are the same.
 
 **Over-sampling batch:** the number of prompts that the rollout sends to the engine at a time. It must be at least `--rollout-batch-size`.
 
@@ -45,7 +45,7 @@ Without the filter, half of the groups that the trainer used taught nothing. Wit
 
 ## Measure the over-sampling cost
 
-Every rollout of the filter run overlapped a heat-guard pause, so this run has no clean step. To compare the rollout times, we took the pause time out of each rollout. On the run without the filter, this gave a median of 58.0 s, close to the 59.1 s of its 6 clean steps.
+Every rollout of the filter run overlapped a heat-guard pause, so this run has no clean step. To compare the rollout times, we took the pause time out of each rollout. The run without the filter is our 12-step run with seed 1. With the pause time taken out, it gave a median of 58.0 s, close to the 59.1 s of its 6 clean steps.
 
 ```figure
 id: fig-3-2
@@ -57,7 +57,7 @@ caption: Rollout seconds per step with the pause time taken out, 12 steps with s
 
 Three steps dropped 16 groups or fewer, so one batch of 48 prompts was enough. Their rollouts took a median of 88.7 s, 1.5 times the 58.0 s without the filter. The other nine steps needed a second batch and took a median of 164.4 s, 2.8 times as long.
 
-Our reading: one batch of 48 prompts is 1.5 times the work of 32 prompts. A second batch adds more, and the step must wait for the slowest groups that it keeps. The whole run took 113 minutes of step time against 60 minutes without the filter, with the heat pauses in both.
+One batch of 48 prompts is 1.5 times the work of 32 prompts, which matches the first ratio. A second batch adds more, and the step must wait for the slowest groups that it keeps. The sum of the 12 step times was 113 minutes with the filter and 60 minutes without it, with the heat pauses in both.
 
 ## Compare the reward
 
@@ -73,9 +73,9 @@ caption: Mean reward per step over every finished answer, 12 steps with seed 1.
 
 The mean over 12 steps was 0.686 with the filter and 0.657 without it. Our five baseline runs gave 12-step means of 0.638 to 0.660, so 0.686 is above all of them. The mean of the first four steps was also higher, 0.672 against 0.625, before the filter could have changed the model much.
 
-Our reading: the reward before the filter counts only the groups that finished before the rollout stopped. The stopped requests are the slowest, with the longest answers. An answer cut at the length limit usually scores 0, as [section 4.2](#s-handle-long-responses) shows. So this number can lean high, and we read the higher mean as that bias, not as a learning effect.
+We think the reason is in what the number counts. The reward before the filter counts only the groups that finished before the rollout stopped. The stopped requests are the slowest, with the longest answers. An answer cut at the length limit usually scores 0, as [section 4.2](#s-handle-long-responses) shows. So this number can lean high, and we read the higher mean as that bias, not as a learning effect.
 
-This is one seed of 12 steps. The filter run finished all 12 steps, and its time limit ended the container during shutdown. To see a reward effect, run more steps and a second seed, and compare against the spread of your baseline seeds.
+This is one seed of 12 steps. The filter run finished all 12 steps. Then the time limit of our run queue stopped the container while it shut down. To see a reward effect, run more steps and a second seed, and compare against the spread of your baseline seeds.
 
 ## Decide
 
@@ -88,4 +88,4 @@ Use the filter when many groups score the same for every answer, and when you ca
 - Compare the reward before the filter, and run a second seed before you report a gain.
 ```
 
-Sources: capture/gpu/summary/miles-gb10-lab.json (runs.e2b-dapo-filter, runs.e6a-base, runs.plain, runs.plain-48, runs.plain-48-s2, runs.plain-48-s3); capture/gpu/summarize_miles.py; Miles rollout loop and filter metrics at main 08752a12.
+Sources: Miles filter hub, common_filters and dynamic_sampling_filters, at main 08752a12; capture/gpu/summary/miles-gb10-lab.json (runs.e2b-dapo-filter, runs.e6a-base, runs.plain, runs.plain-48, runs.plain-48-s2, runs.plain-48-s3); capture/gpu/summarize_miles.py; Miles rollout loop and filter metrics at main 08752a12.
