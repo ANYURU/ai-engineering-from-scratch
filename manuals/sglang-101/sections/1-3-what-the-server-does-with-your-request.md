@@ -10,7 +10,9 @@ When you finish this section, you can name the two phases of a request and the f
 
 **Prefill:** the forward pass over the whole prompt. It computes the keys and values of every prompt token in one batch and produces the first output token. **Decode:** the loop that produces each next token, one forward pass per token per request.
 
-The two phases use the GPU in different ways. Prefill has many tokens in each pass, so it keeps the arithmetic units busy. Decode has one new token per request in each pass. Each decode step reads all the weights and the cached keys and values to do little arithmetic. Memory bandwidth sets the speed of decode, and compute sets the speed of prefill.
+The two phases use the GPU in different ways. Prefill has many tokens in each pass, so it keeps the arithmetic units busy. Decode has one new token per request in each pass.
+
+Each decode step reads the weights that the step needs, and the cached keys and values, to do little arithmetic. For a dense model, that is every weight. For a mixture-of-experts model, it is the shared weights and the experts that the router chose. Memory bandwidth sets the speed of decode, and compute sets the speed of prefill.
 
 We measured the difference on a Mac with a 0.6B model. A 512-token prompt reached its first token in a median of 163 ms. After that, each new token took 4.38 ms on average.
 
@@ -28,13 +30,13 @@ Median TTFT (ms):                        162.98
 Mean TPOT (ms):                          4.38      
 ```
 
-That is about 0.32 ms per prompt token against 4.38 ms per output token, a factor of about 14. A serving engine can share and skip prefill work. It can only batch decode work, so that one read of the weights serves many requests.
+Divide the median TTFT by the 512 prompt tokens, and you get about 0.32 ms per prompt token. This is a rough number, because TTFT also includes the queue and the step that makes the first token. Against 4.38 ms per output token, it is a factor of about 14. A serving engine can share and skip prefill work. It can only batch decode work, so that one read of the weights serves many requests.
 
 ```figure
 id: fig-1-1
 kind: comparison
 title: prefill against decode on the capture Mac
-claim: One prompt token costs about 0.32 ms in prefill, and one output token costs 4.38 ms in decode.
+claim: The median TTFT divided by the prompt length is about 0.32 ms per prompt token, and one output token costs 4.38 ms in decode.
 caption: Read left to right. Both columns come from one benchmark run with one request at a time. From capture/out/bench-random-c1.txt.
 ```
 
@@ -90,7 +92,7 @@ id: fig-1-3
 kind: sequence
 title: one /generate request through the three processes
 claim: The tokenizer manager, the scheduler, and the detokenizer each touched the request once, and the prefill computed 3 of 5 tokens.
-caption: Read top to bottom. Numbers are from one request. From capture/out/generate.txt and capture/out/server-default.log.
+caption: Read top to bottom. Numbers are from our L4 request in section 1.1. From capture/gpu/out-l4/generate.txt and capture/gpu/out-l4/server-default.log.
 ```
 
 ## Our position
