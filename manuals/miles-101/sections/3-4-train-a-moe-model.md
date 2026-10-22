@@ -16,10 +16,10 @@ So a MoE run can show a larger gap than a dense model, even when the dense parts
 
 ## Turn on routing replay
 
-The flag works only for MoE models. With our launcher, set `MILES_MODEL` to a Qwen MoE model and add the flag with `MILES_EXTRA_ARGS`, as in [section 1.1](#s-run-grpo-on-one-gpu-add-flags-to-a-run). The Qwen MoE models are too large for full training on one 128 GB machine, as [section 2.1](#s-pick-a-model-size) shows, so this needs more GPUs:
+The flag works only for MoE models. Add it with `MILES_EXTRA_ARGS`, as in [section 1.1](#s-run-grpo-on-one-gpu-add-flags-to-a-run). The Qwen MoE models are too large for full training on one 128 GB machine, as [section 2.1](#s-pick-a-model-size) shows. Our launcher starts one GPU, so use a launcher sized for your GPUs, and pass the same flag:
 
 ```bash
--e MILES_MODEL=Qwen3-30B-A3B -e MILES_EXTRA_ARGS="--use-rollout-routing-replay"
+-e MILES_EXTRA_ARGS="--use-rollout-routing-replay"
 ```
 
 **Routing replay:** the engine records the experts it chose for each token during rollout, and the trainer uses those same experts in its forward pass. The flag works only for MoE models.
