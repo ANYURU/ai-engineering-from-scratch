@@ -57,7 +57,7 @@ The kit starts four servers. They are the default configuration, one without the
 
 ## The GPU kit
 
-The GPU kit in `capture/gpu/` runs the same idea on an NVIDIA GPU. `capture/gpu/run.py` starts eight server configurations and writes `capture/gpu/out-gb10/`. `capture/gpu/sweep.py` repeats each benchmark point with three seeds and records the GPU clock and temperature of every run. `capture/gpu/summarize.py` writes one summary for each machine profile to `capture/gpu/summary/`. The charts read those summaries: `gb10.json`, `l4.json`, `l4-throttled.json`, and `miles-gb10.json`.
+The GPU kit in `capture/gpu/` runs the same idea on an NVIDIA GPU. `capture/gpu/run.py` starts eight server configurations and writes `capture/gpu/out-gb10/`. `capture/gpu/sweep.py` repeats each benchmark point with three seeds and records the GPU clock and temperature of every run. `capture/gpu/summarize.py` writes one summary for each machine profile to `capture/gpu/summary/`: `gb10.json`, `l4.json`, and `l4-throttled.json`. `capture/gpu/summarize_miles.py` writes `miles-gb10.json` from the Miles runs. The charts read those four files.
 
 Each row below is one sweep of the GPU kit. The link opens its summary file, and each section gives the date and the clocks of the runs that it uses.
 
