@@ -4,7 +4,7 @@
 
 Your Qwen3 server returns a long block of thinking where you expected a short answer. When you finish this section, you can separate the thinking from the answer, turn the thinking off, and limit its length.
 
-We did not measure reasoning models for this manual. This page comes from the vLLM documentation and the source at 0.31.0.
+We did not measure the speed of reasoning models for this manual. We checked the fields and switches on this page on an L4 with Qwen3-8B-FP8. That covers the `reasoning` field, `enable_thinking` per request and per server, the thinking budget, and the stream order. The rest comes from the vLLM documentation and the source at 0.31.0.
 
 ## Know what the model writes
 
@@ -64,4 +64,4 @@ The first reply has text in both `reasoning` and `content`. Add `"chat_template_
 - Turn the thinking off with enable_thinking, or limit it with thinking_token_budget.
 ```
 
-Sources: vLLM documentation at v0.31.0 (docs/features/reasoning_outputs.md, docs/features/structured_outputs.md), the vLLM source at v0.31.0 (vllm/reasoning/, vllm/config/structured_outputs.py, vllm/config/reasoning.py, vllm/entrypoints/launchers/cli_args.py, vllm/entrypoints/openai/chat_completion/protocol.py, vllm/sampling_params.py).
+Sources: vLLM documentation at v0.31.0 (docs/features/reasoning_outputs.md, docs/features/structured_outputs.md), the vLLM source at v0.31.0 (vllm/reasoning/, vllm/config/structured_outputs.py, vllm/config/reasoning.py, vllm/entrypoints/launchers/cli_args.py, vllm/entrypoints/openai/chat_completion/protocol.py, vllm/sampling_params.py), capture/gpu/out-l4/livecheck-2026-10-22.txt.
