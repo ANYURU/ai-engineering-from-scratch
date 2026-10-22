@@ -6,6 +6,19 @@ Use this page to look up a flag that a section names.
 
 Defaults are for `vllm serve` at 0.31.0 on a CUDA GPU, read from the configuration classes in the source.
 
+## Server
+
+| Flag | Default | What it sets | Page |
+|---|---|---|---|
+| `--host` | not set, so every network interface | the address the server listens on | [server options](#s-set-the-server-options-every-deployment-needs) |
+| `--port` | 8000 | the HTTP port | [server options](#s-set-the-server-options-every-deployment-needs) |
+| `--served-model-name` | the model name | the name that clients send in `model` | [server options](#s-set-the-server-options-every-deployment-needs) |
+| `--api-key` | not set | the key that the `/v1` routes require | [server options](#s-set-the-server-options-every-deployment-needs) |
+| `--chat-template` | the template of the model | the chat template, as a file or as text | [server options](#s-set-the-server-options-every-deployment-needs) |
+| `--default-chat-template-kwargs` | not set | template values for every request | [reasoning models](#s-serve-reasoning-models) |
+| `--reasoning-parser` | not set | the parser that moves thinking out of the answer | [reasoning models](#s-serve-reasoning-models) |
+| `--enable-log-requests` | off | one log line for each request | [server options](#s-set-the-server-options-every-deployment-needs) |
+
 ## Memory and length
 
 | Flag | Default | What it sets | Page |
@@ -62,5 +75,9 @@ Defaults are for `vllm serve` at 0.31.0 on a CUDA GPU, read from the configurati
 |---|---|---|
 | `VLLM_ENABLE_V1_MULTIPROCESSING` | `1` | the engine core in its own process |
 | `VLLM_USE_V2_MODEL_RUNNER` | not set | a pinned choice of model runner |
+| `VLLM_BATCH_INVARIANT` | `0` | the batch-invariant mode, when set to `1` |
+| `VLLM_API_KEY` | not set | the API key, as `--api-key` sets it |
+| `VLLM_LOGGING_LEVEL` | `INFO` | the vLLM log level |
+| `VLLM_NO_USAGE_STATS` | `0` | no usage statistics, when set to `1` |
 
-Sources: the vLLM source at v0.31.0 (vllm/config/cache.py, vllm/config/scheduler.py, vllm/config/compilation.py, vllm/config/model.py, vllm/config/parallel.py, vllm/engine/arg_utils.py, vllm/envs.py).
+Sources: the vLLM source at v0.31.0 (vllm/config/cache.py, vllm/config/scheduler.py, vllm/config/compilation.py, vllm/config/model.py, vllm/config/parallel.py, vllm/engine/arg_utils.py, vllm/envs.py, vllm/entrypoints/launchers/cli_args.py, vllm/config/structured_outputs.py).
