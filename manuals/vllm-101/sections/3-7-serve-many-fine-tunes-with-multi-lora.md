@@ -15,6 +15,8 @@ vllm serve Qwen/Qwen3-8B \
   --max-loras 4 --max-lora-rank 64
 ```
 
+Each path is a folder in the PEFT format that most training libraries write. It holds `adapter_config.json` and the weights in `adapter_model.safetensors`. vLLM also reads `adapter_model.bin`. A path can also be a Hugging Face repository name.
+
 A request picks an adapter by its name in the `model` field:
 
 ```bash
@@ -38,7 +40,7 @@ Set `--max-lora-rank` to the largest rank of your adapters, not higher. The vLLM
 
 ## Load adapters while the server runs
 
-To add an adapter without a restart, start the server with `VLLM_ALLOW_RUNTIME_LORA_UPDATING=True`. Then post to `/v1/load_lora_adapter` with the name and the path, and to `/v1/unload_lora_adapter` to remove it. Turn this on only on a server that you trust its callers with, because the route loads files from a path the caller gives.
+To add an adapter without a restart, start the server with `VLLM_ALLOW_RUNTIME_LORA_UPDATING=True`. Then post to `/v1/load_lora_adapter` with the name and the path, and to `/v1/unload_lora_adapter` to remove it. Turn this on only when you trust every caller of the server, because the route loads files from a path that the caller gives.
 
 ## Know what LoRA changes elsewhere
 
@@ -54,4 +56,4 @@ Not measured on our hardware. We have not measured the cost of the adapter count
 - Two adapters never share prefix-cache blocks.
 ```
 
-Sources: the vLLM source at v0.31.0 (vllm/config/lora.py, vllm/lora/, vllm/v1/core/kv_cache_utils.py), vLLM documentation at v0.31.0 (docs/features/lora.md), the release notes for v0.31.0.
+Sources: the vLLM source at v0.31.0 (vllm/config/lora.py, vllm/lora/, vllm/lora/lora_model.py, vllm/lora/peft_helper.py, vllm/v1/core/kv_cache_utils.py), vLLM documentation at v0.31.0 (docs/features/lora.md), the release notes for v0.31.0.
