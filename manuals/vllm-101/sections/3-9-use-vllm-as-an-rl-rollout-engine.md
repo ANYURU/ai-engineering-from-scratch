@@ -12,6 +12,8 @@ On one set of GPUs, the two halves take turns on the same memory. The generator 
 
 ## The pieces
 
+The routes below exist only when you start the server with `VLLM_SERVER_DEV_MODE=1`. They free memory, replace weights, and run methods on every worker. Never expose a server in this mode outside the network of the trainer.
+
 **Sleep mode.** Start the server with `--enable-sleep-mode`. A call to `/sleep` frees GPU memory, and `/wake_up` takes it back. At the deeper of its two levels, sleep drops the weights too, which suits a step where the trainer sends new weights anyway. `--sleep-preserve-parameter-names` keeps frozen weights on the GPU, so they do not move each step.
 
 **Pause and resume.** `/pause` stops new generation, and `/resume` starts it again. A pause can abort the running requests, wait for them, or keep them.
