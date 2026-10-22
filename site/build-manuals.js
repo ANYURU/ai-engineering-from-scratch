@@ -798,7 +798,7 @@ function indexPage(listed) {
     canonical: `${SITE_ORIGIN}/manuals.html`,
     noindex: !listed.some(manual => manual.status === 'ready'),
     card: 'page/manuals',
-    main: `<main id="main" class="m-web"><div class="manual m-index"><section class="m-index-hero">${ditherHtml('manuals', 'Manuals', false)}<div class="m-kicker m-cover-kicker">AI Engineering from Scratch</div><h1 class="m-index-title">Manuals</h1><p class="m-index-lede">${INDEX_LEDE}</p><ul class="m-index-gives">${gives}</ul></section>${body}</div></main>`,
+    main: `<main id="main" class="m-web"><div class="manual m-index"><section class="m-index-hero">${ditherHtml('manuals', 'Manuals', true)}<div class="m-index-intro"><div class="m-kicker m-cover-kicker">AI Engineering from Scratch</div><h1 class="m-index-title">Manuals</h1><p class="m-index-lede">${INDEX_LEDE}</p></div><ul class="m-index-gives">${gives}</ul></section>${body}</div></main>`,
   });
 }
 
