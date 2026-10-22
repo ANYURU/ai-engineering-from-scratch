@@ -21,7 +21,7 @@ id: fig-extended-card
 kind: sequence
 title: earning the extended card
 claim: The same `GetExtendedAgentCard` call fails with HTTP 401 before any A2A method runs, then returns a card with a second skill once a token is attached.
-caption: Time runs down. Steps 1 and 2 come from capture/out/01-agent-cards.http. Steps 3 and 4 are exchange 1 of capture/out/18-extended-card.http, and steps 6 and 7 are exchange 2. The token comes from the platform team, outside A2A.
+caption: Time runs down. Steps 1 and 2 come from the captured agent cards. Steps 3 and 4 are exchange 1 of the extended-card capture, and steps 6 and 7 are exchange 2. The token comes from the platform team, outside A2A.
 ```
 
 ```listing
@@ -107,14 +107,14 @@ Verification has six MUST steps {{spec §8.4.3}}. They take a signature, fetch t
 
 Apply rule 1 when you rebuild. The signing and verifying steps both say to remove properties that have default values {{spec §8.4.2}} {{spec §8.4.3}} ([conflict D21](#s-ref-sources), open as [issue #2249](https://github.com/a2aproject/A2A/issues/2249)).
 
-The kit's check passes on the published card and fails on a copy whose description names production (`capture/run.py`), because the canonical bytes change. [Figure](#fig-card-signature) shows both checks.
+The kit's check passes on the published card and fails on a copy whose description names production, because the canonical bytes change. [Figure](#fig-card-signature) shows both checks.
 
 ```figure
 id: fig-card-signature
 kind: flow
 title: signing and verifying the deployer card
 claim: The signature covers the RFC 8785 bytes of the card without `signatures`, so an edit to the description changes those bytes and verification fails.
-caption: Read the top half left to right and down, then the bottom half left to right. Steps 5 and 6 are the last two lines of capture/out/17-signed-card.txt. Values are shortened to 8 characters.
+caption: Read the top half left to right and down, then the bottom half left to right. Steps 5 and 6 are the last two lines of the signed-card capture. Values are shortened to 8 characters.
 ```
 
 A client should verify at least one signature before it trusts an Agent Card {{spec §8.4.3}}, and never with an expired or revoked key. Give your verifier an explicit list of allowed algorithms, as the reference SDK does, to prevent algorithm confusion attacks {{sdk src/a2a/utils/signing.py}}. [Security requirements](#s-security-requirements) covers card spoofing.

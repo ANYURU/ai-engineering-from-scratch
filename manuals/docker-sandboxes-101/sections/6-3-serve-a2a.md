@@ -10,7 +10,7 @@ When you finish this section, you can serve an agent over A2A, call it with 1.0 
 
 **serve a2a:** starts an A2A server that serves the agent over the Agent-to-Agent protocol {{help-agent docker-agent serve a2a}}. It listens on `127.0.0.1:8082`, and `-a` defaults to the first agent of the team {{help-agent docker-agent serve a2a}}, where the legacy plugin named `root` ([conflict C64](#s-ref-sources-and-the-conflicts-register)). `--auth-token` covers the card and every invocation, and a listener off loopback needs it or `--insecure-no-auth` {{docs-agent A2A Protocol}}. Sessions default to the `restricted` safety policy {{docs-agent A2A Protocol}}.
 
-The Docker Agent docs name neither the card path nor the protocol version ([conflict C71](#s-ref-sources-and-the-conflicts-register)). The capture found the card at `/.well-known/agent-card.json`. `/.well-known/agent.json` answered 404, and so did a POST to `/` (capture/README.md).
+The Docker Agent docs name neither the card path nor the protocol version ([conflict C71](#s-ref-sources-and-the-conflicts-register)). The capture found the card at `/.well-known/agent-card.json`. `/.well-known/agent.json` answered 404, and so did a POST to `/` ([the capture](manuals/docker-sandboxes-101/capture/README.md)).
 
 ```listing
 title: the agent card that serve a2a published for pong.yaml
@@ -101,7 +101,7 @@ A2A-Version: 1.0
   }
 ```
 
-The send returned a `task` already in `TASK_STATE_COMPLETED`, and `GetTask` returned the same task with its `history` (capture/out/23-a2a.http). The answer `pong` sits in the second artifact, and `history` keeps only the user message. The server made one live call to `ai/qwen3:4b`, because `serve a2a` has no `--fake`. The card sets `streaming: true`, so `SendStreamingMessage` is on offer, but the capture did not call it. [Figure](#fig-6-3) draws the exchange.
+The send returned a `task` already in `TASK_STATE_COMPLETED`, and `GetTask` returned the same task with its `history` ([the capture](manuals/docker-sandboxes-101/capture/out/23-a2a.http)). The answer `pong` sits in the second artifact, and `history` keeps only the user message. The server made one live call to `ai/qwen3:4b`, because `serve a2a` has no `--fake`. The card sets `streaming: true`, so `SendStreamingMessage` is on offer, but the capture did not call it. [Figure](#fig-6-3) draws the exchange.
 
 Sessions persist in the session database since v1.59.0, and a client resumes one through `/invoke` with its A2A context {{rel-agent v1.59.0}}. A context id that collides with another session is rejected, and that session stays unchanged {{docs-agent A2A Protocol}}. Sessions that older binaries stored are labelled `run` and cannot be resumed over A2A {{docs-agent A2A Protocol}}.
 

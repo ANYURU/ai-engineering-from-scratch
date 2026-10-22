@@ -40,14 +40,14 @@ id: fig-artifact-chunks
 kind: structure
 title: five chunks become one stored artifact
 claim: The five chunks of `test-log.txt` become five parts of one stored artifact in frame order, and `lastChunk` ends that artifact while the stream continues.
-caption: Top, the nine frames of capture/out/05-streaming.events.json on the kit clock. Frames 1, 2, and 9 sit at their timestamps, and frames 3 to 8 are spaced evenly between. Middle, what frames 3 to 8 carry and what each does to the stored task. Bottom, the stored test-log.txt as GetTask returns it in 04-polling.http. Parts 1 and 2 are the progress lines of the two test files, given in full in the capture.
+caption: Top, the nine frames of the streaming capture on the kit clock. Frames 1, 2, and 9 sit at their timestamps, and frames 3 to 8 are spaced evenly between. Middle, what frames 3 to 8 carry and what each does to the stored task. Bottom, the stored test-log.txt as GetTask returns it in the polling capture. Parts 1 and 2 are the progress lines of the two test files, given in full in the capture.
 ```
 
 A `lastChunk` closes one artifact and nothing more: two frames follow it on this stream. An artifact event has no timestamp field, so the only order among chunks is the stream's order, which every binding must keep {{spec §3.5.2}}.
 
 ## Joining the chunks
 
-The kit and the reference SDK rebuild an artifact the same way. They find the stored artifact with the same `artifactId` and, if `append` is true, add the new parts to its `parts`. If `append` is absent, they replace the whole artifact, or add it when the id is new ([capture/a2a_ref.py](manuals/a2a-101/capture/a2a_ref.py), {{sdk src/a2a/server/tasks/task_manager.py}}). The five log lines stay five `text` parts, so join their text in order to get the file.
+The kit and the reference SDK rebuild an artifact the same way. They find the stored artifact with the same `artifactId` and, if `append` is true, add the new parts to its `parts`. If `append` is absent, they replace the whole artifact, or add it when the id is new ([the kit's server code](manuals/a2a-101/capture/a2a_ref.py) {{sdk src/a2a/server/tasks/task_manager.py}}). The five log lines stay five `text` parts, so join their text in order to get the file.
 
 The specification does not say what `append` means for an id the server has never seen, and the implementations disagree:
 
@@ -59,7 +59,7 @@ The specification does not say what `append` means for an id the server has neve
 | a2a-js | stores the chunk as a new artifact {{sdk-js src/server/result_manager.ts at v1.3.0}} | no |
 | a2a-dotnet | stores the chunk as a new artifact {{sdk-dotnet src/A2A/Server/TaskProjection.cs at v1.0.0-preview2}} | no |
 | a2a-rs | returns `InvalidAgentResponseError`, and the task keeps its last state {{sdk-rust a2a-server/src/handler.rs at a2a-server-lf-v0.5.1}} | no |
-| the kit | starts a new artifact ([capture/README.md](manuals/a2a-101/capture/README.md)) | no |
+| the kit | starts a new artifact ([kit notes](manuals/a2a-101/capture/README.md)) | no |
 
 So the same chunk can fail the task, vanish, or become a new artifact. Send the first chunk of every artifact without `append`. The specification is also silent on whether later metadata merges or replaces.
 

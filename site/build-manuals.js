@@ -103,7 +103,7 @@ function fenceBlock(info, body, label) {
     ensure(items.length >= 2, `${label}: takeaways need at least two items`);
     return { type: 'takeaways', items };
   }
-  if (['palette', 'parts', 'figure-index', 'contents'].includes(info)) {
+  if (['palette', 'parts', 'figure-index', 'contents', 'lab-runs'].includes(info)) {
     ensure(!body.some(line => line.trim()), `${label}: a ${info} block must be empty`);
     return { type: info };
   }
@@ -231,6 +231,80 @@ function newInline() {
   return { refs: [], repoLinks: [] };
 }
 
+function evidenceUrl(file, where) {
+  const rel = path.relative(ROOT, file);
+  if (rel.startsWith('..') || path.isAbsolute(rel)) return null;
+  ensure(fs.existsSync(file), `${where}: evidence path ${rel} does not exist`);
+  const kind = fs.statSync(file).isDirectory() ? 'tree' : 'blob';
+  return githubSourceUrl(rel.split(path.sep).join('/'), kind);
+}
+
+function evidenceLink(url, label) {
+  return url ? `<a class="m-evidence" href="${url}" target="_blank" rel="noopener">${label}</a>` : '';
+}
+
+function measuredEvidence(doc, manual) {
+  const last = doc.blocks[doc.blocks.length - 1];
+  const sources = last && last.type === 'paragraph' && /^Sources:\s/.test(last.text) ? last.text : '';
+  const paths = new Set((sources.match(/capture\/[A-Za-z0-9_./-]*[A-Za-z0-9_-]/g) || []));
+  const has = rel => paths.has(rel);
+  const folder = prefix => [...paths].some(rel => rel.startsWith(prefix));
+  let heading = '';
+  for (const block of doc.blocks) {
+    if (block.type === 'heading') heading = block.text;
+    if (block.type !== 'paragraph' || !/^\*\*We measured\*\*/.test(block.text)) continue;
+    const context = `${heading} ${block.text}`;
+    const l4 = /\bL4\b/.test(context);
+    const gb10 = /GB10|DGX Spark/.test(context);
+    const mac = /\bMac\b|Apple silicon/.test(context);
+    let rel = null;
+    if (/\breward\b/.test(block.text) && has('capture/gpu/summary/miles-gb10.json')) rel = 'capture/gpu/summary/miles-gb10.json';
+    else if (l4 && !gb10 && !mac && /\bhot\b|throttl/i.test(context) && has('capture/gpu/summary/l4-throttled.json')) rel = 'capture/gpu/summary/l4-throttled.json';
+    else if (l4 && !gb10 && !mac) rel = has('capture/gpu/summary/l4.json') ? 'capture/gpu/summary/l4.json' : null;
+    else if (gb10 && !l4 && !mac) {
+      if (/Miles/.test(context) && has('capture/gpu/summary/miles-gb10.json')) rel = 'capture/gpu/summary/miles-gb10.json';
+      else if (has('capture/gpu/summary/gb10.json')) rel = 'capture/gpu/summary/gb10.json';
+    } else if (mac && !l4 && !gb10) rel = folder('capture/out/') ? 'capture/out' : null;
+    if (!rel && (l4 || gb10) && folder('capture/gpu/')) rel = 'capture/gpu';
+    if (!rel && !l4 && !gb10 && !mac) rel = folder('capture/gpu/') ? 'capture/gpu' : folder('capture/out/') ? 'capture/out' : null;
+    block.evidence = rel ? evidenceUrl(path.join(manual.dir, rel), docLine(doc, block.line)) : null;
+  }
+}
+
+function labRunsHtml(manual, where) {
+  const dir = path.join(manual.dir, 'capture', 'gpu', 'summary');
+  if (!fs.existsSync(dir)) return '';
+  const rows = [];
+  for (const name of fs.readdirSync(dir).filter(file => file.endsWith('.json')).sort()) {
+    const file = path.join(dir, name);
+    const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const link = evidenceLink(evidenceUrl(file, where), 'Raw runs');
+    if (data.profile && data.environment) {
+      for (const [sweep, configs] of Object.entries(data)) {
+        if (['profile', 'slo', 'environment', 'quantiles'].includes(sweep) || !configs || typeof configs !== 'object') continue;
+        const counts = Object.values(configs).flatMap(config => (config.points || []).map(point => (point.output_throughput && point.output_throughput.n) || 0)).filter(Boolean);
+        const low = counts.length ? Math.min(...counts) : 0;
+        const high = counts.length ? Math.max(...counts) : 0;
+        const seeds = !high ? 'see the section' : low === high ? String(high) : `${low} to ${high}`;
+        rows.push({ cells: [escapeHtml(sweep), escapeHtml(`${data.environment.gpu}${name.includes('throttled') ? ', throttled' : ''}`), String(Object.keys(configs).length), seeds, link] });
+      }
+    } else {
+      for (const run of Object.keys(data)) rows.push({ cells: [escapeHtml(run), 'see the section', '1', '1', link] });
+    }
+  }
+  return tableHtml(['Experiment', 'Hardware', 'Configurations', 'Seeds per point', 'Data'], rows);
+}
+
+function readerCaption(caption) {
+  const text = String(caption).trim();
+  const index = text.search(/(?:^|\s)From (?!step\b)\S[^]*$/);
+  if (index < 0) return text;
+  const tail = text.slice(index).trim();
+  if (/\.\s+[A-Z]/.test(tail.replace(/\.$/, ''))) return text;
+  if (!/\/|\.(?:txt|json|jsonl|log|md|py|ts|proto|http|yaml)\b|\bsource\b|\bcapture|\bcode\b|\bdocs?\b|\breports?\b|\bissues?\b|\bfiles?\b|\bv\d|\btag\b|\brunner\b/i.test(tail)) return text;
+  return text.slice(0, index).trim();
+}
+
 function inlineHtml(source, where, acc) {
   const codes = [];
   let html = String(source).replace(/`([^`]+)`/g, (match, code) => { codes.push(code); return `\u0000${codes.length - 1}\u0000`; });
@@ -251,7 +325,9 @@ function linkHtml(label, href, where, acc) {
   ensure(!/^[a-z][a-z0-9+.-]*:/i.test(href) && !href.startsWith('/'), `${where}: unsupported link target "${href}"`);
   const [target, fragment] = href.split('#');
   acc.repoLinks.push({ path: target, where });
-  return `<a href="${escapeHtml(githubSourceUrl(target) + (fragment ? `#${fragment}` : ''))}" rel="noopener">${label}</a>`;
+  const full = path.join(ROOT, target);
+  const view = fs.existsSync(full) && fs.statSync(full).isFile() ? 'blob' : 'tree';
+  return `<a href="${escapeHtml(githubSourceUrl(target, view) + (fragment ? `#${fragment}` : ''))}" rel="noopener">${label}</a>`;
 }
 
 function highlightJson(line) {
@@ -466,7 +542,9 @@ function figureHtml(block) {
 }
 
 function tableHtml(head, rows) {
-  return `<div class="m-table-wrap"><table class="m-table"><thead><tr>${head.map(cell => `<th>${cell}</th>`).join('')}</tr></thead><tbody>${rows.map(row => `<tr${row.accent ? ` data-accent="${row.accent}"` : ''}>${row.cells.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  const keep = head.map((cell, index) => rows.length === 0 || rows.some(row => String(row.cells[index] ?? '').trim() !== ''));
+  const pick = cells => cells.filter((cell, index) => keep[index]);
+  return `<div class="m-table-wrap"><table class="m-table"><thead><tr>${pick(head).map(cell => `<th>${cell}</th>`).join('')}</tr></thead><tbody>${rows.map(row => `<tr${row.accent ? ` data-accent="${row.accent}"` : ''}>${pick(row.cells).map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 }
 
 function blockHtml(block, doc, manual, acc) {
@@ -479,7 +557,7 @@ function blockHtml(block, doc, manual, acc) {
         inline(block.text.replace(/^Sources:\s*/, ''));
         return '';
       }
-      return `<p${/^\*\*[^*]+:\*\*\s/.test(block.text) ? ' class="m-def"' : ''}>${inline(block.text)}</p>`;
+      return `<p${/^\*\*[^*]+:\*\*\s/.test(block.text) ? ' class="m-def"' : ''}>${inline(block.text)}${block.evidence ? ` ${evidenceLink(block.evidence, 'Raw runs')}` : ''}</p>`;
     }
     case 'list': {
       const tag = block.ordered ? 'ol' : 'ul';
@@ -496,7 +574,8 @@ function blockHtml(block, doc, manual, acc) {
     }
     case 'figure-index': return tableHtml(['Fig.', 'The claim it makes'], [...manual.figures.values()].map(figure => ({ accent: figure.accent, cells: [`<a class="m-xref" href="#${figure.id}">${figure.number}</a>`, figure.claimHtml] })));
     case 'contents': return tocHtml(manual, 'web');
-    case 'listing': return `<figure class="m-listing"><div class="m-listing-head"><span class="m-listing-title">${inline(block.title)}</span><span>${escapeHtml(block.lang)}</span></div><pre><code>${highlight(block.code, block.lang)}</code></pre>${block.note ? `<figcaption class="m-listing-note">${inline(block.note)}</figcaption>` : ''}</figure>`;
+    case 'lab-runs': return labRunsHtml(manual, where);
+    case 'listing': return `<figure class="m-listing"><div class="m-listing-head"><span class="m-listing-title">${inline(block.title)}</span><span>${escapeHtml(block.lang)}</span>${block.sourceFile ? evidenceLink(evidenceUrl(block.sourceFile, where), 'Full log') : ''}</div><pre><code>${highlight(block.code, block.lang)}</code></pre>${block.note ? `<figcaption class="m-listing-note">${inline(block.note)}</figcaption>` : ''}</figure>`;
     case 'takeaways': return `<aside class="m-takeaways"><div class="m-box-label">${TAKEAWAYS_LABEL}</div><ul>${block.items.map(item => `<li>${inline(item)}</li>`).join('')}</ul></aside>`;
     case 'rule': return `<aside class="m-rule"><div class="m-box-label">${escapeHtml(block.label)}</div><p>${inline(block.quote)}</p></aside>`;
     default: throw new Error(`${where}: unknown block ${block.type}`);
@@ -512,13 +591,14 @@ function renderAll(manual, acc) {
   manual.paletteHtml = manual.palette.map(entry => ({ hue: entry.hue, html: inlineHtml(entry.meaning, `${label} palette`, acc) }));
   for (const part of manual.parts) part.summaryHtml = inlineHtml(part.summary || part.thesis, `${label} part ${part.number}`, acc);
   if (manual.reference) manual.reference.summaryHtml = inlineHtml(manual.reference.summary || manual.reference.thesis || 'Lookup tables for every name in the manual.', `${label} reference`, acc);
-  if (manual.plate) manual.plate.captionHtml = inlineHtml(manual.plate.caption, `${label} plate caption`, acc);
+  if (manual.plate) manual.plate.captionHtml = inlineHtml(readerCaption(manual.plate.caption), `${label} plate caption`, acc);
   for (const doc of manual.documents) {
     for (const block of doc.blocks.filter(item => item.type === 'figure')) {
       block.claimHtml = inlineHtml(block.claim, docLine(doc, block.line), acc);
-      block.captionHtml = inlineHtml(block.caption, docLine(doc, block.line), acc);
+      block.captionHtml = inlineHtml(readerCaption(block.caption), docLine(doc, block.line), acc);
     }
   }
+  for (const doc of manual.documents) measuredEvidence(doc, manual);
   for (const doc of manual.documents) {
     doc.thesisHtml = doc.thesis ? inlineHtml(doc.thesis, docLine(doc, doc.thesisLine), acc) : '';
     doc.html = numberFigureLinks(doc.blocks.map(block => blockHtml(block, doc, manual, acc)).join('\n'), manual);
@@ -578,7 +658,7 @@ function editionHtml(manual) {
 function colophonHtml(manual) {
   const page = `${SITE_ORIGIN}/${pageName(manual.id)}`;
   const pin = manual.pin;
-  return `<section class="m-colophon" id="colophon"><div class="m-kicker">About this edition</div><p>${escapeHtml(manual.title)}, edition ${escapeHtml(manual.edition)}, by ${AUTHOR}. It is part of AI Engineering from Scratch, an open source course at <a href="${SITE_ORIGIN}">aiengineeringfromscratch.com</a>. The newest edition is always at <a href="${page}">${page.replace('https://', '')}</a>.</p><p>${escapeHtml(pin.subject)} ${escapeHtml(pin.version)} is the subject, at commit ${escapeHtml(pin.commit)} of ${escapeHtml(pin.date)}, checked on ${escapeHtml(pin.verified)}. Every listing comes from a recorded run of the capture kit in the manual's source directory, and every quoted rule is checked word for word against the vendored sources.</p><p>${copyLine(manual)}. You can copy and share this manual. Keep this page and the copyright line with it. Report an error at <a href="${ISSUES_URL}">${ISSUES_URL.replace('https://', '')}</a>.</p></section>`;
+  return `<section class="m-colophon" id="colophon"><div class="m-kicker">About this edition</div><p>${escapeHtml(manual.title)}, edition ${escapeHtml(manual.edition)}, by ${AUTHOR}. It is part of AI Engineering from Scratch, an open source course at <a href="${SITE_ORIGIN}">aiengineeringfromscratch.com</a>. The newest edition is always at <a href="${page}">${page.replace('https://', '')}</a>.</p><p>${escapeHtml(pin.subject)} ${escapeHtml(pin.version)} is the subject, at commit ${escapeHtml(pin.commit)} of ${escapeHtml(pin.date)}, checked on ${escapeHtml(pin.verified)}. Every listing comes from a recorded run of the capture kit in the manual's source directory, and every rule is written in our own words from a declared source.</p><p>${copyLine(manual)}. You can copy and share this manual. Keep this page and the copyright line with it. Report an error at <a href="${ISSUES_URL}">${ISSUES_URL.replace('https://', '')}</a>.</p></section>`;
 }
 
 function coverHtml(manual, mode) {
@@ -800,7 +880,10 @@ module.exports = {
   OUTCOME_PHRASE,
   SCHEMA,
   LISTING_LANGS,
+  evidenceUrl,
   inlineHtml,
+  readerCaption,
+  tableHtml,
   loadAll,
   loadManual,
   newInline,

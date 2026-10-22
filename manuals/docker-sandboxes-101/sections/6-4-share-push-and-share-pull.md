@@ -21,7 +21,7 @@ Successfully pushed artifact to localhost:15000/m101/agent:v1
 [exit 0]
 ```
 
-The registry speaks plain HTTP, and the push needed no insecure-registry setting (capture/README.md). Its catalog then listed `m101/agent` with the tag `v1`, served as `application/vnd.oci.image.manifest.v1+json` (capture/out/24-registry.txt).
+The registry speaks plain HTTP, and the push needed no insecure-registry setting ([the capture](manuals/docker-sandboxes-101/capture/README.md)). Its catalog then listed `m101/agent` with the tag `v1`, served as `application/vnd.oci.image.manifest.v1+json` ([the capture](manuals/docker-sandboxes-101/capture/out/24-registry.txt)).
 
 ## The manifest
 
@@ -88,7 +88,7 @@ Agent saved to localhost:15000_m101_agent:v1.yaml
 [exit 0]
 ```
 
-`share pull` names the file after the reference, with `/` replaced by `_`, and `--force` overwrites an earlier copy. The pulled YAML is byte for byte the pushed `files.yaml` (capture/out/24-share-pull-agent.yaml). `run` takes the reference in place of a path, and the replayed run answered from the registry copy:
+`share pull` names the file after the reference, with `/` replaced by `_`, and `--force` overwrites an earlier copy. The pulled YAML is byte for byte the pushed `files.yaml` ([the capture](manuals/docker-sandboxes-101/capture/out/24-share-pull-agent.yaml)). `run` takes the reference in place of a path, and the replayed run answered from the registry copy:
 
 ```listing
 title: run straight from the reference

@@ -14,7 +14,7 @@ A registry reference behaves like a file. `24-run-ref.txt` runs `localhost:15000
 
 ## --exec, --json, and --last
 
-**Headless run:** `run --exec`, which writes to stdout and opens no TUI. `--json` writes one JSON event per line, and `--last` prints only the final answer {{help-agent docker-agent run}}. The capture runs `capture/fixtures/agents/files.yaml` with the same two messages in each form.
+**Headless run:** `run --exec`, which writes to stdout and opens no TUI. `--json` writes one JSON event per line, and `--last` prints only the final answer {{help-agent docker-agent run}}. The capture runs [the files agent](manuals/docker-sandboxes-101/capture/fixtures/agents/files.yaml) with the same two messages in each form.
 
 ```listing
 title: run --exec --last with two messages
@@ -38,7 +38,7 @@ note: Lines 5, 13, and 24 of the file. The tool_call event is cut after the call
 {"agent_name": "root", "content": "The working directory contains 1 file: README.md (1 line).", "message_id": "<uuid>", "session_id": "<uuid>", "timestamp": "<ts>", "type": "agent_choice"}
 ```
 
-The other event types of the file include `team_info`, `toolset_info`, `tool_call_response`, `token_usage`, and `stream_stopped`. The second turn shows the limit of a headless run. The model asked for `shell` with `wc -l README.md`, and the runtime raised `tool_call_confirmation`. With no terminal to answer it, the tool result was "The user rejected the tool call." The model then used `read_file` (`18-transcript.txt`). [Permissions, --safety, and hooks](#s-permissions-safety-and-hooks) explains why that call asked.
+The other event types of the file include `team_info`, `toolset_info`, `tool_call_response`, `token_usage`, and `stream_stopped`. The second turn shows the limit of a headless run. The model asked for `shell` with `wc -l README.md`, and the runtime raised `tool_call_confirmation`. With no terminal to answer it, the tool result was "The user rejected the tool call." The model then used `read_file` ([the transcript](manuals/docker-sandboxes-101/capture/out/18-transcript.txt)). [Permissions, --safety, and hooks](#s-permissions-safety-and-hooks) explains why that call asked.
 
 ## The model in every recording
 

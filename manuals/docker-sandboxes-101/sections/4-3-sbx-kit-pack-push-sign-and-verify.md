@@ -30,7 +30,7 @@ permissions:
       - example.com
 ```
 
-`files/workspace/HELLO.md` holds one line, and `sbx kit inspect` reports it as a workspace file with mode 420 (`capture/out/12-inspect.json`). The v2 grammar is the one the built-in agents use, and its normative text lives in `SPEC-v2.md` of `docker/sbx-kits-contrib` {{docs-sbx Top-level fields}}.
+`files/workspace/HELLO.md` holds one line, and `sbx kit inspect` reports it as a workspace file with mode 420 ([the capture](manuals/docker-sandboxes-101/capture/out/12-inspect.json)). The v2 grammar is the one the built-in agents use, and its normative text lives in `SPEC-v2.md` of `docker/sbx-kits-contrib` {{docs-sbx Top-level fields}}.
 
 ## validate and pack
 
@@ -65,14 +65,14 @@ $ zip listing of work/hello-mixin.zip (size, name)
      297  spec.yaml
 ```
 
-For `pack`, the directory must hold a valid `spec.yaml` and can hold a `files/` directory {{help-sbx sbx kit pack}}. The same ZIP validates with `kind: "zip"` (`capture/out/12-validate-zip.json`). A v3 directory fails both commands, as [the descriptor section](#s-syntax-docker-sandbox-kit-3-and-kit-yaml) showed. [Figure](#fig-4-3) draws the whole path, with the steps the capture kit did not run in dashed boxes.
+For `pack`, the directory must hold a valid `spec.yaml` and can hold a `files/` directory {{help-sbx sbx kit pack}}. The same ZIP validates with `kind: "zip"` ([the capture](manuals/docker-sandboxes-101/capture/out/12-validate-zip.json)). A v3 directory fails both commands, as [the descriptor section](#s-syntax-docker-sandbox-kit-3-and-kit-yaml) showed. [Figure](#fig-4-3) draws the whole path, with the steps the capture kit did not run in dashed boxes.
 
 ```figure
 id: fig-4-3
 kind: flow
 title: from spec.yaml to a signed artifact and into a sandbox
 claim: A v2 kit is validated and packed on the host, signed and pushed with two referrers, verified from the registry, and consumed by create or kit add.
-caption: Read row by row. Solid boxes are captured in capture/out/12-validate.txt, 12-pack.txt, 12-run-kit.txt, 12-kit-add.txt, and 12-kit-add-files.txt. Dashed boxes follow the help text of sbx kit sign, push, verify, and provenance, which were not run.
+caption: Read row by row. Solid boxes come from the validate, pack, run, and kit-add captures. Dashed boxes follow the help text of sbx kit sign, push, verify, and provenance, which were not run.
 ```
 
 ## sign, push --sign, and pull
@@ -135,7 +135,7 @@ error: kit "hello-mixin" declares files, which the kit-add recreate flow does no
 [exit 1]
 ```
 
-Sandboxes created before the recreate-aware label are refused with an error {{help-sbx sbx kit add}}, and `long-running@1` cannot be added this way {{rel-sbx v0.47.0}}. `sbx create shell --kit ./fixtures/kits/hello-mixin` applied the same mixin in full: one install command, one workspace file, and one allow rule (`capture/out/12-run-kit.txt`, `12-policy-kit.txt`).
+Sandboxes created before the recreate-aware label are refused with an error {{help-sbx sbx kit add}}, and `long-running@1` cannot be added this way {{rel-sbx v0.47.0}}. `sbx create shell --kit ./fixtures/kits/hello-mixin` applied the same mixin in full: one install command, one workspace file, and one allow rule ([the captures](manuals/docker-sandboxes-101/capture/out)).
 
 Source-form builds of v3 kits run in a shared builder sandbox named `sbx-kit-builder`, which `sbx` creates on first use {{help-sbx sbx kit builder}}. `sbx kit builder status` reports it, and `history` passes through to `docker buildx history`:
 

@@ -2,7 +2,7 @@
 
 > A working client is a loop that reads cards, picks an agent for each skill, and has a branch for every state a task can reach.
 
-The planner has one job: deliver a change to `payments-api`. It must run the tests on commit `a41d7c3`, get the diff reviewed, and deploy build `2026.10.06-1` to staging. It starts with three port numbers, a token for the deployer, and the name of the base branch. The file `capture/planner.py` does the whole job in 86 lines, and `19-planner.log` records each decision.
+The planner has one job: deliver a change to `payments-api`. It must run the tests on commit `a41d7c3`, get the diff reviewed, and deploy build `2026.10.06-1` to staging. It starts with three port numbers, a token for the deployer, and the name of the base branch. [The planner](manuals/a2a-101/capture/planner.py) does the whole job in 86 lines, and [its log](manuals/a2a-101/capture/out/19-planner.log) records each decision.
 
 When you finish this section, you can write a client that delegates by skill and handles every state a task reaches.
 
@@ -92,7 +92,7 @@ Each decision reads a data part, never free text: `passed` and `failed` from `su
 Against agents it does not control, a planner needs more than the kit's loop.
 
 - **Safe retries.** Resend a failed message with the same `messageId` {{spec §3.3.1}}. Keep the first reply, because a resend without `taskId` creates a second task in the reference SDK {{sdk src/a2a/server/agent_execution/active_task.py}}.
-- **Timeouts.** The kit's client gives each request 15 seconds, in `capture/wire.py`, and the specification sets none. For long work, set `returnImmediately` and follow the task.
+- **Timeouts.** The kit's client gives each request 15 seconds, in [its network code](manuals/a2a-101/capture/wire.py), and the specification sets none. For long work, set `returnImmediately` and follow the task.
 - **Card checks.** Cache cards with standard HTTP caching {{spec §8.6}}, and verify the deployer's `signatures` as [extended and signed cards](#s-extended-cards-and-signatures) shows.
 - **Capability checks.** The planner records `streaming` and never reads it. Against an agent without streaming, its `SubscribeToTask` gets `UnsupportedOperationError` {{spec §3.3.4}}.
 - **A branch for every state.** The loop has no branch for `TASK_STATE_SUBMITTED` or `TASK_STATE_WORKING`. A server that answers a blocking send at once ([conflict D2](#s-ref-sources)) would leave it looping on the same reply.

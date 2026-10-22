@@ -17,7 +17,7 @@ id: fig-message-fields
 kind: structure
 title: who sets each field of a message
 claim: A message carries an id its sender mints, while its `contextId` and `taskId` come from the server and the client echoes them to continue.
-caption: Columns are three messages from capture/out/06-input-required.http, in the order they were sent. The right column names who sets each field. Ids shortened to 8 characters.
+caption: Columns are three messages from the input-required capture, in the order they were sent. The right column names who sets each field. Ids shortened to 8 characters.
 ```
 
 The sender of the message creates `messageId` {{proto Message}}. The kit refuses a message without one, as [Errors](#s-errors) shows. Spec samples in §11.2 and §6.3 leave `messageId` out {{spec §11.2}} {{spec §6.3}}, so never copy a sample as it stands ([conflict D23](#s-ref-sources)).

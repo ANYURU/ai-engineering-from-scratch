@@ -141,7 +141,7 @@ id: fig-4-1
 kind: sequence
 title: one open and three questions over MCP
 claim: The open call returns after the readiness checks with no import, the first question waits seconds for the headless import, and the next takes under 100 ms.
-caption: Time runs down. Solid arrows are calls, dashed arrows are replies. The violet lanes are rea's Ghidra client and the Java bridge inside analyzeHeadless. The times are the ranges in capture/README.md. From capture/out/10-mcp-server.log and 10-mcp-session.txt.
+caption: Time runs down. Solid arrows are calls, dashed arrows are replies. The violet lanes are rea's Ghidra client and the Java bridge inside analyzeHeadless. The times are the ranges that the kit notes record. From capture/out/10-mcp-server.log and 10-mcp-session.txt.
 ```
 
 ## The bridge on the Java side

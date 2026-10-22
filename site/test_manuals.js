@@ -161,6 +161,38 @@ test('citation markers render nothing and leave the punctuation in place', () =>
   assert.equal(html, 'Stop the server.');
 });
 
+test('a table column whose cells are only citation markers is dropped', () => {
+  const inline = cell => manuals.inlineHtml(cell, 'doc.md:6', manuals.newInline());
+  const html = manuals.tableHtml(['Key', 'Value', 'Source'].map(inline), [['`a`', 'one', '{{docs A}}'], ['`b`', 'two', '{{docs B}}']].map(row => ({ cells: row.map(inline) })));
+  assert.doesNotMatch(html, /Source/);
+  assert.match(html, /<th>Key<\/th><th>Value<\/th><\/tr>/);
+  assert.match(html, /<td><code>a<\/code><\/td><td>one<\/td><\/tr>/);
+});
+
+test('figure captions drop the closing source sentence in the reader view', () => {
+  assert.equal(manuals.readerCaption('Read top to bottom. Grey layers are outside SGLang. From the v0.5.22 source and capture/out/server-default.log.'), 'Read top to bottom. Grey layers are outside SGLang.');
+  assert.equal(manuals.readerCaption('From step 2 on, the left box is the request. From capture/out/a.txt.'), 'From step 2 on, the left box is the request.');
+  assert.equal(manuals.readerCaption('Read left to right.'), 'Read left to right.');
+  assert.equal(manuals.readerCaption('Read it. From the second request onward, the cache serves the prefix.'), 'Read it. From the second request onward, the cache serves the prefix.');
+});
+
+test('evidence is linked to the repository, never printed', () => {
+  const manual = manuals.loadManual(path.join(__dirname, '..', 'manuals', 'sglang-101'));
+  const html = manuals.printPage(manual);
+  const listing = html.match(/<figure class="m-listing">[\s\S]*?<\/figure>/)[0];
+  assert.match(listing, /<a class="m-evidence" href="https:\/\/github\.com\/rohitg00\/ai-engineering-from-scratch\/blob\/main\/manuals\/sglang-101\/capture\/[^"]+" target="_blank" rel="noopener">Full log<\/a>/);
+  assert.doesNotMatch(listing.replace(/href="[^"]*"/g, ''), /capture\//);
+  assert.match(html, /<a class="m-evidence" href="[^"]+\/summary\/l4\.json"[^>]*>Raw runs<\/a>/);
+  assert.match(html, /<a class="m-evidence" href="[^"]+\/summary\/l4-throttled\.json"[^>]*>Raw runs<\/a>/);
+  assert.match(html, /<td>plain-48-s2<\/td>/);
+  for (const [, kind, rel] of html.matchAll(/github\.com\/rohitg00\/ai-engineering-from-scratch\/(blob|tree)\/main\/([^"]+)"/g)) {
+    const full = path.join(__dirname, '..', rel);
+    assert.ok(fs.existsSync(full), rel);
+    assert.equal(fs.statSync(full).isDirectory(), kind === 'tree', rel);
+  }
+  assert.throws(() => manuals.evidenceUrl(path.join(__dirname, '..', 'manuals', 'sglang-101', 'capture', 'missing.log'), 'doc.md:1'), /evidence path manuals\/sglang-101\/capture\/missing\.log does not exist/);
+});
+
 test('numbers figures per part and renders the print edition', () => {
   const { dir } = fixture();
   const manual = manuals.loadManual(dir);

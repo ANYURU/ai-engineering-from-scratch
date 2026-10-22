@@ -120,7 +120,7 @@ caption: Read left to right, then down, and the two boxes at the bottom are the 
 
 The report has two verdicts. `healthy` is the verdict for the selected scope, here `explicit` with `providers: ["ghidra"]`, and `scope_checks` lists only the checks in that scope. `environment_healthy` is the verdict for the audit-wide set. It is true only when every check outside the providers passes, every configured provider passes, and at least one provider is available.
 
-On the capture Mac `healthy` is true and `environment_healthy` is false. Hopper, IDA, and Kuna are not configured there, so the formula ignores them, and Ghidra is configured and passes. The false verdict therefore comes from a check outside the Ghidra scope. That check is in the set the capture's `--filter-output` left out, which names this user's skill install and agent registrations (capture/README.md). The exit status follows the scope. `rea doctor` returned 0 (capture/out/00-commands.txt), because a missing optional provider only produces a note for tasks that do not use it {{cli Output and exit status}}.
+On the capture Mac `healthy` is true and `environment_healthy` is false. Hopper, IDA, and Kuna are not configured there, so the formula ignores them, and Ghidra is configured and passes. The false verdict therefore comes from a check outside the Ghidra scope. That check is in the set the capture's `--filter-output` left out, which names this user's skill install and agent registrations ([the capture](manuals/reverse-engineering-101/capture/README.md)). The exit status follows the scope. `rea doctor` returned 0 ([the capture](manuals/reverse-engineering-101/capture/out/00-commands.txt)), because a missing optional provider only produces a note for tasks that do not use it {{cli Output and exit status}}.
 
 ## When a check fails
 
@@ -128,7 +128,7 @@ The capture kit did not record a failing doctor, because Ghidra was installed. T
 
 A `rea function --provider ghidra` on such a machine fails selection with the code `provider_unavailable`, the category `unavailable`, and `retryable: true`. The message is `The selected analysis provider is unavailable. Review the reported local diagnostics or run rea doctor, then retry.`. Its `details.rejections[].diagnostics.checks[]` holds the same eight checks as the doctor. [Section 2.3](#s-rea-capabilities) shows those diagnostics inside `rea capabilities`, and [the errors reference](#s-ref-errors) lists the codes.
 
-One check has no fix in rea. Every Ghidra record on macOS carries the limitation that "macOS sessions require a matching executable Ghidra native decompiler; REA checks for it but does not build native components or change Gatekeeper quarantine state." (capture/out/06-function-percent-change.json). If the Homebrew build of `decompile` is missing or quarantined, you repair Ghidra, not rea.
+One check has no fix in rea. Every Ghidra record on macOS carries the limitation that "macOS sessions require a matching executable Ghidra native decompiler; REA checks for it but does not build native components or change Gatekeeper quarantine state." ([the capture](manuals/reverse-engineering-101/capture/out/06-function-percent-change.json)). If the Homebrew build of `decompile` is missing or quarantined, you repair Ghidra, not rea.
 
 ```takeaways
 - Export `GHIDRA_INSTALL_DIR` and `JAVA_HOME` as absolute paths before the first rea command.

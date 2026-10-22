@@ -28,7 +28,7 @@ Facts come from seven sources, ranked by authority. When two of them disagree, t
 |---|---|---|---|
 | 1 | the rea source at the tag, `27dc42d` | every claim about how rea works | the source files of each section, in the manual source |
 | 2 | the rea documentation at the tag | documented behaviour, limits, and the use rule | `readme`, `cli`, `mcp`, `ghidra`, `native`, `install`, `readiness`, `ledgers`, `jsgraph`, or `design` and a heading |
-| 3 | the captured runs in `capture/out/` | every listing and every number in a figure | the capture file name |
+| 3 | [the captured runs](manuals/reverse-engineering-101/capture/out) | every listing and every number in a figure | the capture file name |
 | 4 | the ELF, Mach-O, x86-64, and AArch64 specifications | formats, encodings, and calling conventions | `spec` and a section |
 | 5 | papers on program analysis | disassembly, structuring, type recovery, and decompiler evaluation | `paper` and a title |
 | 6 | statutes and court decisions | the law of analysis and interoperability | `law` and a citation |
@@ -38,9 +38,9 @@ Quotes from the rea README, `DISCLAIMER.md`, and documentation were checked agai
 
 ## The capture kit
 
-The capture kit in `capture/` drives the real `rea` command line and its MCP server with the Ghidra provider. It writes what they return to `capture/out/`, and it uses the Python standard library only. `python3 capture/run.py` records everything, and `python3 capture/run.py --check` records again into a temporary directory and compares with `capture/out/` after masking the values that change on every run.
+[The capture kit](manuals/reverse-engineering-101/capture) drives the real `rea` command line and its MCP server with the Ghidra provider. It writes what they return to [its output folder](manuals/reverse-engineering-101/capture/out), and it uses the Python standard library only. `python3 capture/run.py` records everything. `python3 capture/run.py --check` records again into a temporary directory and compares with the recorded set after masking the values that change on every run.
 
-The subject needs Ghidra, a JDK, and Node, so the kit cannot run in the repository CI. Where rea 6.7.0, Ghidra 12.1.4, or JDK 21 is absent, `--check` prints `skipped` with the reason and exits 0. Every file in `capture/out/` was recorded on one machine:
+The subject needs Ghidra, a JDK, and Node, so the kit cannot run in the repository CI. Where rea 6.7.0, Ghidra 12.1.4, or JDK 21 is absent, `--check` prints `skipped` with the reason and exits 0. Every captured file was recorded on one machine:
 
 | Item | Value |
 |---|---|
@@ -51,7 +51,7 @@ The subject needs Ghidra, a JDK, and Node, so the kit cannot run in the reposito
 | clang | Apple clang 17.0.0, target `arm64-apple-darwin25.2.0` |
 | Recorded on | 2026-10-18 |
 
-The kit records every one-shot command in `00-commands.txt`, each with its exit status and time. It records one MCP session of 25 exchanges in `10-mcp-*.json`, and two Evidence bundles. A full run takes about 125 s, and each one-shot command that needs Ghidra takes 7 to 9 s. Two runs on the recording host produced identical records (capture/README.md). Every fixture is a program written for this manual, and `00-fixtures.txt` lists their hashes.
+The kit records every one-shot command in `00-commands.txt`, each with its exit status and time. It records one MCP session of 25 exchanges in `10-mcp-*.json`, and two Evidence bundles. A full run takes about 125 s, and each one-shot command that needs Ghidra takes 7 to 9 s. Two runs on the recording host produced identical records ([the capture](manuals/reverse-engineering-101/capture/README.md)). Every fixture is a program written for this manual, and `00-fixtures.txt` lists their hashes.
 
 ## Conventions
 
@@ -138,7 +138,7 @@ id: fig-0-1
 kind: sequence
 title: reading a sequence figure in this manual
 claim: Each of the eight arrow styles marks one kind of exchange, and every label except the model call is a real name or message from the recorded session.
-caption: Read each numbered row from the tail of the arrow to its head, and the note under each label names the style. Rows 1 to 8 come from capture/out/10-mcp-03-open-binary-O1.json, 10-mcp-09-analyze-function-percent-change-O1.json, 10-mcp-13-analyze-function-missing.json, 10-mcp-14-export-evidence-bundle-O1.json, and 10-mcp-server.log. Row 9 is the model call the kit does not record.
+caption: Read each numbered row from the tail of the arrow to its head, and the note under each label names the style. Rows 1 to 8 come from the MCP session captures and the server log. Row 9 is the model call the kit does not record.
 ```
 
 The model call in row 9 belongs to the agent, which [Part 8](#p-8) draws with its own lifeline.

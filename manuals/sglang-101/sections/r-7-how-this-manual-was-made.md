@@ -13,7 +13,7 @@ Facts come from seven sources, ranked by authority. When two of them disagree, t
 | Rank | Source | What the manual takes from it | Cited as |
 |---|---|---|---|
 | 1 | the SGLang source at the tag, `baa9befa` | every default and every mechanism | the file list in the Sources line of each section |
-| 2 | the captured runs in `capture/out/` and `capture/gpu/` | every listing and every number marked as measured | the capture file name |
+| 2 | the captured runs [on the Mac](manuals/sglang-101/capture/out) and [on the GPUs](manuals/sglang-101/capture/gpu) | every listing and every number marked as measured | the capture file name |
 | 3 | SGLang issues and pull requests | incidents and the design history of each feature | `issue` and its number |
 | 4 | papers | the original design of RadixAttention and the methods SGLang implements | `paper` and a title |
 | 5 | the SGLang documentation at the tag | documented behaviour, checked against the code | `docs` and a heading |
@@ -26,7 +26,7 @@ The documentation ranks below the code on purpose. At 0.5.22 the documentation s
 
 Every number in this manual carries one of four labels in the text.
 
-**We measured:** the number comes from `capture/out/` or `capture/gpu/`, recorded on the machines in the tables below. You can run the kit and get the same facts.
+**We measured:** the number comes from our runs [on the Mac](manuals/sglang-101/capture/out) or [on the GPUs](manuals/sglang-101/capture/gpu), recorded on the machines in the tables below. You can run the kit and get the same facts.
 
 **The code:** the default or the mechanism comes from the SGLang source at the tag. The Sources line names the files.
 
@@ -38,11 +38,11 @@ DeepEP and prefill-decode disaggregation across many GPUs need hardware that we 
 
 ## The capture kit
 
-The capture kit in `capture/` starts the real SGLang server on Apple silicon through its MLX backend. It sends requests, runs the official benchmark, and writes what it sees to `capture/out/`. `python3 capture/run.py` records everything. `python3 capture/run.py --check` records again into a temporary directory and compares the facts that must not change. Those facts are the generated text at temperature 0, the token and cached-token counts, and the request counts. The KV bytes per token and the metric names are facts too.
+[The capture kit](manuals/sglang-101/capture) starts the real SGLang server on Apple silicon through its MLX backend. It sends requests, runs the official benchmark, and writes what it sees to [its output folder](manuals/sglang-101/capture/out). `python3 capture/run.py` records everything. `python3 capture/run.py --check` records again into a temporary directory and compares the facts that must not change. Those facts are the generated text at temperature 0, the token and cached-token counts, and the request counts. The KV bytes per token and the metric names are facts too.
 
 Timings change on every run, so the check does not compare them.
 
-The kit needs SGLang 0.5.22 with its MLX extra on Apple silicon, so it cannot run in the repository CI. Without that setup, `--check` prints `skipped` with the reason and exits 0. Every file in `capture/out/` was recorded on one machine:
+The kit needs SGLang 0.5.22 with its MLX extra on Apple silicon, so it cannot run in the repository CI. Without that setup, `--check` prints `skipped` with the reason and exits 0. Every file of the Mac runs was recorded on one machine:
 
 | Item | Value |
 |---|---|
@@ -57,9 +57,14 @@ The kit starts four servers. They are the default configuration, one without the
 
 ## The GPU kit
 
-The GPU kit in `capture/gpu/` runs the same idea on an NVIDIA GPU. `capture/gpu/run.py` starts eight server configurations and writes `capture/gpu/out-gb10/`. `capture/gpu/sweep.py` repeats each benchmark point with three seeds and records the GPU clock and temperature of every run. `capture/gpu/summarize.py` writes one summary for each machine profile to `capture/gpu/summary/`. The charts read those summaries: `gb10.json`, `l4.json`, `l4-throttled.json`, and `miles-gb10.json`.
+[The GPU kit](manuals/sglang-101/capture/gpu) runs the same idea on an NVIDIA GPU. [Its run script](manuals/sglang-101/capture/gpu/run.py) starts eight server configurations and writes [the GB10 run logs](manuals/sglang-101/capture/gpu/out-gb10). [The sweep script](manuals/sglang-101/capture/gpu/sweep.py) repeats each benchmark point with three seeds and records the GPU clock and temperature of every run. [The summary script](manuals/sglang-101/capture/gpu/summarize.py) writes one summary for each machine: [the GB10 summary data](manuals/sglang-101/capture/gpu/summary/gb10.json), [the L4 summary data](manuals/sglang-101/capture/gpu/summary/l4.json), and [the throttled L4 summary data](manuals/sglang-101/capture/gpu/summary/l4-throttled.json). [The Miles summary script](manuals/sglang-101/capture/gpu/summarize_miles.py) writes [the Miles summary data](manuals/sglang-101/capture/gpu/summary/miles-gb10.json). The charts read those four files.
 
-Every file in `capture/gpu/out-gb10/` and `capture/gpu/summary/gb10.json` was recorded on one machine:
+Each row below is one sweep of the GPU kit. The link opens its summary file, and each section gives the date and the clocks of the runs that it uses.
+
+```lab-runs
+```
+
+Every GB10 run log and the GB10 summary data were recorded on one machine:
 
 | Item | Value |
 |---|---|
@@ -71,7 +76,7 @@ Every file in `capture/gpu/out-gb10/` and `capture/gpu/summary/gb10.json` was re
 | Server flags | `--enable-cache-report`, `--enable-metrics`, `--mem-fraction-static 0.7` |
 | Recorded on | 2026-10-16 |
 
-The kit also has an `l4` profile for Qwen3-8B on an NVIDIA L4, which wrote `capture/gpu/out-l4/` and `capture/gpu/summary/l4.json`. Part 1 uses that L4 server for its listings. Our first L4 sweep ran hot and throttled, and [section 5.1](#s-sglang-benchmark-serving) tells it as an incident. We then ran the L4 again with a cool-down to 72°C before each run. [Section 4.3](#s-quantization), [section 4.4](#s-speculative-decoding), and section 5.1 use those runs, and section 5.1 shows that the cooled card still lowered its clock under long load.
+The kit also has an `l4` profile for Qwen3-8B on an NVIDIA L4, which wrote [the L4 run logs](manuals/sglang-101/capture/gpu/out-l4) and [the L4 summary data](manuals/sglang-101/capture/gpu/summary/l4.json). Part 1 uses that L4 server for its listings. Our first L4 sweep ran hot and throttled, and [section 5.1](#s-sglang-benchmark-serving) tells it as an incident. We then ran the L4 again with a cool-down to 72°C before each run. [Section 4.3](#s-quantization), [section 4.4](#s-speculative-decoding), and section 5.1 use those runs, and section 5.1 shows that the cooled card still lowered its clock under long load.
 
 ## Conventions
 
@@ -81,4 +86,4 @@ Citations name a place. `{{issue #35129}}` names an issue in the SGLang reposito
 
 Figures animate on the web, where a Replay button runs the steps again. Print and reduced motion show the final frame.
 
-Sources: manual.json; capture/README.md; capture/run.py; capture/gpu/run.py, capture/gpu/sweep.py, capture/gpu/summarize.py, capture/gpu/out-gb10/environment.json, capture/gpu/out-l4/environment.json; capture/out/environment.json, server-no-overlap.log.
+Sources: manual.json; capture/README.md; capture/run.py; capture/gpu/run.py, capture/gpu/sweep.py, capture/gpu/summarize.py, capture/gpu/summarize_miles.py, capture/gpu/out-gb10/environment.json, capture/gpu/out-l4/environment.json; capture/out/environment.json, server-no-overlap.log.

@@ -2,7 +2,7 @@
 
 > Every successful rea observation is one strict record of sixteen fields, and its id is a SHA-256 over the semantic content with the file path left outside.
 
-An agent tells you that `_percent_change` returns 0 when `before` is 0. You want to know what rea observed, which engine said it, and whether the same claim from another machine would carry the same id. The capture holds the answer in `capture/out/10-mcp-09-analyze-function-percent-change-O1.json`: one Evidence record. When you finish this section, you can read all sixteen fields of an Evidence record and say which three carry the trust decision. You can also recompute an `ev_` id from a captured record.
+An agent tells you that `_percent_change` returns 0 when `before` is 0. You want to know what rea observed, which engine said it, and whether the same claim from another machine would carry the same id. The capture holds the answer in [one Evidence record](manuals/reverse-engineering-101/capture/out/10-mcp-09-analyze-function-percent-change-O1.json). When you finish this section, you can read all sixteen fields of an Evidence record and say which three carry the trust decision. You can also recompute an `ev_` id from a captured record.
 
 ## One record for every successful observation
 
@@ -176,7 +176,7 @@ id: fig-5-1
 kind: structure
 title: the sixteen fields of one Evidence record
 claim: The id hashes every field of the record except subject.name and subject.local_path, so the same observation of the same bytes gets the same id anywhere.
-caption: Read top to bottom. Solid rows enter the hash and dashed rows are display fields. Values are from capture/out/10-mcp-09-analyze-function-percent-change-O1.json, digests shown by their first hex digits.
+caption: Read top to bottom. Solid rows enter the hash and dashed rows are display fields. Values are from the function capture, digests shown by their first hex digits.
 ```
 
 The [Inside a Decompiler](https://aiengineeringfromscratch.com/inside-a-decompiler?symbols=off) machine files each stage of one decompilation in an evidence ledger. The ledger uses the same three confidence words and adds a tray for unknowns. This link opens the run with the symbol table switched off, so you can watch which facts move from observed to unknown.

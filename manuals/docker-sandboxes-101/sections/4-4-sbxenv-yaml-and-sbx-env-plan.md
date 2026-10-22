@@ -103,7 +103,7 @@ id: fig-4-4
 kind: flow
 title: an environment file becomes a plan, an approval, and a state record
 claim: sbx env plan turns the file into margin-marked rows, approval on create records them, and a later plan prints only the rows that moved.
-caption: Read top down. The plan rows are capture/out/14-env-plan.txt, and the right branch is 14-env-plan-arg.txt with the greeting argument changed. The left branch after approval follows the help text of sbx env, because the kit never applied the plan.
+caption: Read top down. The plan rows are the env plan capture, and the right branch is the second plan capture, with the greeting argument changed. The left branch after approval follows the help text of sbx env, because the kit never applied the plan.
 ```
 
 ## Host commands and approval

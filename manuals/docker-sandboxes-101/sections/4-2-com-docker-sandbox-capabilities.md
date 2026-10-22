@@ -83,7 +83,7 @@ note: The rules array has one element, cut to the fields named in the text.
         "created_via": "provisioned",
 ```
 
-`sbx policy check network example.com --sandbox m101-kit --json` then answers `"allowed": true` (`capture/out/12-check-kit.json`). The rule carries `created_via: provisioned` and answers to `--source kit`, which is how [the policy section](#s-sbx-policy-init-allow-deny-and-check-network) tells a kit rule from one you added.
+`sbx policy check network example.com --sandbox m101-kit --json` then answers `"allowed": true` ([the capture](manuals/docker-sandboxes-101/capture/out/12-check-kit.json)). The rule carries `created_via: provisioned` and answers to `--source kit`, which is how [the policy section](#s-sbx-policy-init-allow-deny-and-check-network) tells a kit rule from one you added.
 
 ## Updates and the lock
 
