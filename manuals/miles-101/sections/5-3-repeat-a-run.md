@@ -40,7 +40,7 @@ Our GB10 runs hot. A heat guard pauses the container when the GPU reaches 84 C, 
 
 So we report times from steps whose rollout overlapped no pause. Our summary script finds those steps from the pause log and the step timestamps. [The lab notes](#s-ref-lab-notes) give the rule.
 
-Clean steps are not enough on their own. The same setting gave a 47.5 s rollout on one day and 59.1 s on another, both from steps without pauses. Our reading is that a hot card runs at a lower clock, and our summary does not record the clock yet. Compare times only between runs from the same session, and repeat them with a second seed.
+Clean steps are not enough on their own. The same setting gave a median rollout of 47.5 s in our 48-step run. A 12-step run on another day gave 59.1 s over its 6 clean steps. On the same 6 step numbers, the 48-step run took 60.9 s. The rollout time follows the answer length, and the 48-step median includes the late steps with short answers. So compare times on the same step numbers, and repeat them with a second seed.
 ```figure
 id: fig-5-3
 kind: chart
@@ -53,7 +53,7 @@ caption: Rollout seconds per step for one 12-step run.
 ```takeaways
 - Run at least two seeds for every change you want to report.
 - Report a change only when it falls outside the spread of your baseline seeds.
-- Time only steps without a pause, and compare times only within one session.
+- Time only steps without a pause, and compare the same step numbers.
 ```
 
 Sources: capture/gpu/summary/miles-gb10-lab.json (runs.plain-48, runs.plain-48-s2, runs.plain-48-s3, runs.e6a-base, median_unpaused); capture/gpu/summarize_miles.py; capture/gpu/out-gb10/thermostat.log; capture/gpu/out-gb10/unpaused-timing.txt.
