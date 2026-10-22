@@ -1144,6 +1144,35 @@ function checkTopic(topic, root = REPO_ROOT, cache = new Map()) {
   return problems;
 }
 
+const MAINTAINER_ONLY = /capture\/(?:gpu\/)?run\.py|\brun\.py --(?:check|build-fixtures|only)\b|--build-fixtures|build-manuals\.js|build-cheatsheets\.js|build-projects\.js|audit_manuals|audit_lessons|\bmanual\.json\b|site\/data\.js|\.github\/workflows|\bnode (?:site|scripts)\/|\bcapture kit\b|\btimeoutSeconds\b|SGLANG_KIT_PROFILE|\bREA_COMMAND\b/i;
+const BLANK_CELL = /^(?:|-|tbd|todo|\.\.\.|…)$/i;
+
+function blockTexts(block) {
+  const texts = [block.title];
+  if (block.header) texts.push(block.header.join(' '));
+  if (block.rows) for (const row of block.rows) texts.push(row.join(' '));
+  if (block.items) for (const item of block.items) texts.push(`${item.lead} ${item.text}`);
+  if (block.code) texts.push(...block.code);
+  if (block.nodes) for (const node of block.nodes) texts.push(`${node.label} ${node.sub || ''}`);
+  if (block.edges) for (const edge of block.edges) texts.push(edge.label);
+  return texts.map(plain);
+}
+
+function maintainerContent(topic) {
+  return topic.blocks.filter(block => blockTexts(block).some(text => MAINTAINER_ONLY.test(text))).map(block => block.title);
+}
+
+function incompleteRows(topic) {
+  const found = [];
+  for (const block of topic.blocks) {
+    if (!block.rows || block.type === 'comparison') continue;
+    for (const row of block.rows) {
+      if (row.some(cell => BLANK_CELL.test(plain(cell).trim()))) found.push(`${block.title}: ${plain(row[0])}`);
+    }
+  }
+  return found;
+}
+
 const EMPTY_VALUES = /^(?:|-|n\/a|tbd|todo|not given|not covered|not listed|not stated|none stated|no number given|unknown)$/i;
 const QUALITY_RULES = {
   concept: { doRows: 4, troubleRows: 3 },
@@ -1191,6 +1220,12 @@ function qualityReport(topic) {
     }
   }
   add('duplicates', !duplicates.length, duplicates.length ? `duplicate rows: ${duplicates.slice(0, 3).join(' | ')}` : 'no duplicate row');
+  const maintainer = maintainerContent(topic);
+  add('reader', !maintainer.length, maintainer.length ? `maintainer-only content in: ${maintainer.join(', ')}` : 'learner content only');
+  const incomplete = incompleteRows(topic);
+  add('complete', !incomplete.length, incomplete.length ? `rows with an empty cell: ${incomplete.slice(0, 3).join(' | ')}` : 'every row is complete');
+  const overlaps = topic.blocks.filter(block => block.type === 'architecture').flatMap(block => [false, true].flatMap(narrow => architectureOverlaps(block, narrow).map(problem => `${block.title}${narrow ? ' (narrow)' : ''}: ${problem}`)));
+  add('overlap', !overlaps.length, overlaps.length ? `diagram overlaps: ${overlaps.slice(0, 3).join(' | ')}` : 'no diagram overlap');
   const { pages } = layout(topic);
   add('fit', pages <= MAX_PAGES, `${pages} pages, ${MAX_PAGES} at most`);
   const passed = checks.filter(check => check.pass).length;
@@ -1398,4 +1433,4 @@ function main(argv) {
 
 if (require.main === module) process.exitCode = main(process.argv.slice(2));
 
-module.exports = { qualityReport, QUALITY_RULES, trackOf, parseTopic, loadTopics, buildCheatsheets, writeCheatsheets, writePrint, printHtml, prerenderMath, checkTopic, checkLinks, coverage, layout, factTokens, blockFacts, architectureSvg, flowSvg, TYPES };
+module.exports = { qualityReport, QUALITY_RULES, MAINTAINER_ONLY, maintainerContent, incompleteRows, trackOf, parseTopic, loadTopics, buildCheatsheets, writeCheatsheets, writePrint, printHtml, prerenderMath, checkTopic, checkLinks, coverage, layout, factTokens, blockFacts, architectureSvg, architectureLayout, architectureOverlaps, flowSvg, TYPES };
