@@ -6,6 +6,8 @@ We turned on deterministic inference to close the gap between the trainer and th
 
 When you finish this section, you can decide when deterministic inference is worth its cost.
 
+**Our result:** with and without deterministic inference, the median gap stayed between 0.0151 and 0.0153. Two deterministic runs repeated step 0 exactly.
+
 ## Turn it on
 
 Pass the engine flag and an attention backend that supports it:
@@ -48,6 +50,14 @@ The two Triton runs gave the same gap at step 0, to six decimal places: 0.015404
 Our reading: the engine repeated itself, and the trainer did not. These runs did not set the trainer's deterministic mode, so the weights after the first update can differ between the runs. We have not tested that with the trainer flags on.
 
 So use deterministic inference when you need to repeat an experiment, for example to test a reward function on the same samples. Do not use it to lower the gap.
+
+```figure
+id: fig-4-5
+kind: chart
+title: Deterministic inference repeats, and the gap stays
+claim: The two deterministic Triton runs gave the same gap at step 0, and all four runs kept a gap near 0.015.
+caption: The logprob gap per step for four 12-step runs with seed 1.
+```
 
 ## The cost
 
