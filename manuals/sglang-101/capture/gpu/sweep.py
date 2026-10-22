@@ -61,6 +61,8 @@ def configs(profile):
         "vllm-lock-eagle3-k1": (p["model"], ["--speculative-config", json.dumps({"method": "eagle3", "model": p["draft"], "num_speculative_tokens": 1})]),
         "vllm-lock-eagle3-k3": (p["model"], ["--speculative-config", json.dumps({"method": "eagle3", "model": p["draft"], "num_speculative_tokens": 3})]),
         "vllm-lock-eagle3-k5": (p["model"], ["--speculative-config", json.dumps({"method": "eagle3", "model": p["draft"], "num_speculative_tokens": 5})]),
+        "vllm-lock-fp8": (p["fp8"], []),
+        "vllm-lock-small-pool": (p["model"], ["--num-gpu-blocks-override", "410", "--max-model-len", "4096"]),
         "vllm-eager": (p["model"], ["--enforce-eager"]),
         "vllm-mnbt-2048": (p["model"], ["--max-num-batched-tokens", "2048"]),
         "vllm-mnbt-16384": (p["model"], ["--max-num-batched-tokens", "16384"]),
