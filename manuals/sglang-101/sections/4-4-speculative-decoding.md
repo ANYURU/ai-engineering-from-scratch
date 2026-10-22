@@ -174,15 +174,15 @@ Other teams found that tests like ours can overstate the gain. We did not measur
 - A 2026 benchmark study by NVIDIA researchers, SPEED-Bench, found that synthetic prompts overstated speculative throughput by 23 percent on average. It also found that the best draft length fell to 1 as the batch grew.
 - The same study found that random token ids left 20 to 30 percent of the experts idle in some layers of an MoE target.
 - A 2026 study of EAGLE-3 and other drafts, Test-Time Speculation, found that the acceptance length falls as the answer grows. Within a few thousand output tokens it came close to 1, which means no gain.
-- A 2025 study of serving benchmarks found that speculation lowered the median TPOT by 1.3 times and raised the P99 TPOT by 1.16 times. TTFT also rose, because the draft runs its own prefill.
+- A 2025 study of serving benchmarks compared speculation with the baseline. The median TPOT was 1.3 times lower, and the P99 TPOT was 1.16 times higher. TTFT also rose, because the draft runs its own prefill.
 
-So our gains hold for answers of 128 tokens on our test prompts. They do not predict the gain on long chat answers or on reasoning traces. Our reading of the GB10 result also depends on how real tokens choose their experts, and we did not measure the routing.
+So our gains hold for 128 generated tokens with the end token ignored, on our test prompts. They do not predict the gain on long chat answers or on reasoning traces. Our reading of the GB10 result also depends on how real tokens choose their experts, and we did not measure the routing.
 
 ## Our position
 
 Treat speculative decoding as a latency tool for low and middle concurrency. Turn it on for interactive traffic with a few users per replica. Leave it off for batch jobs and high concurrency on a card where the KV pool is the limit, as on our L4. On the GB10, where the pool had room, speculation still gave 1.17 times the throughput at 64 users.
 
-Measure the cross point on your model before you accept that rule. On the mixture-of-experts model above, speculation still won at concurrency 32 on the GB10. On the dense model on the L4, it stopped winning at 32, because the draft took nearly 60 percent of the pool. Measure it with your own prompts and output lengths, with the list in the section on what to measure.
+Measure the cross point on your model before you accept that rule. On the mixture-of-experts model above, speculation still won at concurrency 32 on the GB10. On the dense model on the L4, it gave no more throughput at 32, because the draft took nearly 60 percent of the pool. Measure it with your own prompts and output lengths, with the list in the section on what to measure.
 
 Always set `--max-running-requests` yourself when speculation is on. Choose it from the concurrency where your sweep shows speculation still wins.
 
