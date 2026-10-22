@@ -44,7 +44,7 @@ A continued answer starts under one set of weights and ends under a later one. S
 
 ## Speculative decoding, a lever we have not measured
 
-Speculative decoding is another way to shorten rollout. A cheap draft guesses the next few tokens, and the engine checks all of them in one forward pass. Miles passes the SGLang speculative flags through with the `--sglang-` prefix:
+Speculative decoding is another way to shorten rollout. A cheap draft guesses the next few tokens, and the engine checks all of them in one forward pass. Miles passes the SGLang speculative flags through with the `--sglang-` prefix. For a model with its own MTP layers, such as GLM-4.7 or DeepSeek-V3, the Miles documentation gives these flags:
 
 ```bash
 --sglang-speculative-algorithm EAGLE --sglang-speculative-num-steps 3 --sglang-speculative-eagle-topk 1 --sglang-speculative-num-draft-tokens 4
@@ -52,7 +52,7 @@ Speculative decoding is another way to shorten rollout. A cheap draft guesses th
 
 There are two kinds of draft to start from:
 
-- **An MTP draft.** A model with its own MTP layers uses them as the draft. As training changes the policy, the draft falls behind, and fewer of its tokens pass the check. Miles can train the MTP layers with the policy: `--mtp-num-layers 1 --enable-mtp-training`, on the Megatron trainer only.
+- **An MTP draft.** The flags above use the MTP layers of the model as the draft. A model without them needs a separate draft, set with `--sglang-speculative-draft-model-path`. As training changes the policy, the draft falls behind, and fewer of its tokens pass the check. Miles can train the MTP layers with the policy: `--mtp-num-layers 1 --enable-mtp-training`, on the Megatron trainer only.
 - **An n-gram draft.** `--sglang-speculative-algorithm NGRAM` needs no draft model. It guesses from tokens that the engine already generated. SGLang supports it on CUDA only, and it turns off the overlap scheduler.
 
 The Miles documentation advises against speculative decoding on dense models below about 13B parameters when rollout is the bottleneck. There, the check can cost more than the draft saves. Our Qwen3-0.6B is in that range, and we have not measured it. If you try it, compare the rollout time and the gap over the same steps and seed.
