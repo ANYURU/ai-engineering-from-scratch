@@ -180,7 +180,7 @@ test('evidence is linked to the repository, never printed', () => {
   const manual = manuals.loadManual(path.join(__dirname, '..', 'manuals', 'sglang-101'));
   const html = manuals.printPage(manual);
   const listing = html.match(/<figure class="m-listing">[\s\S]*?<\/figure>/)[0];
-  assert.match(listing, /<a class="m-evidence" href="https:\/\/github\.com\/rohitg00\/ai-engineering-from-scratch\/blob\/main\/manuals\/sglang-101\/capture\/[^"]+" target="_blank" rel="noopener">Full log<\/a>/);
+  assert.match(listing, /<a class="m-evidence" href="https:\/\/github\.com\/rohitg00\/ai-engineering-from-scratch\/blob\/[0-9a-f]{40}\/manuals\/sglang-101\/capture\/[^"]+" target="_blank" rel="noopener">Full log<\/a>/);
   assert.doesNotMatch(listing.replace(/href="[^"]*"/g, ''), /capture\//);
   assert.match(html, /<a class="m-evidence" href="[^"]+\/summary\/l4\.json"[^>]*>Raw runs<\/a>/);
   assert.match(html, /<a class="m-evidence" href="[^"]+\/summary\/l4-throttled\.json"[^>]*>Raw runs<\/a>/);
@@ -192,6 +192,9 @@ test('evidence is linked to the repository, never printed', () => {
     assert.equal(fs.statSync(full).isDirectory(), kind === 'tree', rel);
   }
   assert.throws(() => manuals.evidenceUrl(path.join(__dirname, '..', 'manuals', 'sglang-101', 'capture', 'missing.log'), 'doc.md:1'), /evidence path manuals\/sglang-101\/capture\/missing\.log does not exist/);
+  assert.equal(manuals.evidenceRevision({ VERCEL_GIT_COMMIT_SHA: 'ABC1234def' }), 'ABC1234def');
+  assert.match(manuals.evidenceRevision({}), /^(?:[0-9a-f]{40}|main)$/);
+  assert.match(manuals.evidenceUrl(path.join(__dirname, '..', 'manuals', 'sglang-101', 'capture', 'gpu'), 'doc.md:1'), /\/tree\/(?:[0-9a-f]{40}|main)\/manuals\/sglang-101\/capture\/gpu$/);
 });
 
 test('numbers figures per part and renders the print edition', () => {
