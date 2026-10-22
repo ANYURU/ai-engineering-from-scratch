@@ -54,7 +54,7 @@ caption: Each row is one entry below, in the same order. Read the symptom, the f
 
 ### A DGX Spark runs out of memory although the fraction leaves room
 
-- **Cause:** on unified memory, `--gpu-memory-utilization` does not always limit what vLLM takes. Issue 46307 reports about 112 GiB in use at a fraction of 0.70, and it was closed after 0.31.0. Issue 44740 reports a KV cache that was too large with MTP speculation on the GB10, and it is open.
+- **Cause:** on unified memory, `--gpu-memory-utilization` does not always limit what vLLM takes. Issue 46307 reports about 112 GiB in use at a fraction of 0.70, and it was closed as stale with no fix. Issue 44740 reports a KV cache that was too large with MTP speculation on the GB10, and it is open.
 - **Check:** compare the `Available KV cache memory` line with the share you expect, and watch `free -g` during the start.
 - **Fix:** set the cache size in bytes with `--kv-cache-memory-bytes`. [The DGX Spark page](#s-size-memory-on-a-dgx-spark) has the details.
 
