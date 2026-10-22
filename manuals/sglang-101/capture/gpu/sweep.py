@@ -24,7 +24,7 @@ RATES = [0.5, 1, 2, 4, 8, 16]
 PREFIXES = [0, 256, 1024, 2048, 4096]
 GROUPS = [4, 16, 32, 64]
 MIXED_RATES = [0.5, 1, 2]
-SEEDS = [1, 2, 3]
+SEEDS = [int(x) for x in os.environ.get("SWEEP_SEEDS", "1,2,3").split(",")]
 RANDOM = ["--dataset-name", "random", "--random-input-len", "512", "--random-output-len", "128", "--random-range-ratio", "1.0"]
 
 
