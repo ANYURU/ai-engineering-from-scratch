@@ -18,11 +18,33 @@ Our reading: a batch of many tokens uses many different experts, so a decode ste
 
 ## Add expert parallelism for large models
 
-For a model that does not fit one machine, such as the large DeepSeek models, spread the experts across GPUs:
+On one machine with eight GPUs, spread the experts across all of them:
 
 ```bash
 vllm serve <model> --data-parallel-size 8 --enable-expert-parallel
 ```
+
+For a model that does not fit one machine, such as the large DeepSeek models, run one command on each machine. This example uses two machines with eight GPUs each. The first machine takes the requests:
+
+```bash
+vllm serve <model> --enable-expert-parallel \
+  --all2all-backend deepep_low_latency \
+  --data-parallel-size 16 --data-parallel-size-local 8 \
+  --data-parallel-address 192.168.1.100 --data-parallel-rpc-port 13345
+```
+
+The second machine runs headless, with no API server. Its start rank is the count of ranks on the machines before it:
+
+```bash
+vllm serve <model> --enable-expert-parallel \
+  --all2all-backend deepep_low_latency \
+  --data-parallel-size 16 --data-parallel-size-local 8 \
+  --data-parallel-start-rank 8 \
+  --data-parallel-address 192.168.1.100 --data-parallel-rpc-port 13345 \
+  --headless
+```
+
+Set the address to the IP of the first machine, and use the same RPC port on both. Across machines, the vLLM documentation uses the DeepEP kernels for the exchange of tokens.
 
 With expert parallelism, each GPU holds some of the experts, and tokens travel to the GPU that holds their expert and back. The attention layers run in data parallel on each GPU. The all-to-all exchange of tokens needs fast links between the GPUs.
 

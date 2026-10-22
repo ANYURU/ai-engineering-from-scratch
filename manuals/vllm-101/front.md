@@ -6,9 +6,11 @@ The vLLM documentation tells you what each flag does. This manual tells you whic
 
 ## Start here
 
-Three commands give you a server:
+These commands give you a server:
 
 ```bash
+uv venv --python 3.12 --seed
+source .venv/bin/activate
 uv pip install vllm==0.31.0 --torch-backend=auto
 vllm serve Qwen/Qwen3-0.6B
 curl http://localhost:8000/v1/models

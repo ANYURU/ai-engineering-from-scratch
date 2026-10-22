@@ -43,7 +43,7 @@ The first start still failed, because we also set the maximum length to 2,928 to
 title: the maximum length error on the shared L4 GPU
 source: capture/gpu/incidents/l4-gpu1-vllm-maxlen-oom.txt
 lang: text
-note: The first line gives the settings. The second line gives the error and the length that fits.
+note: The first line gives the settings. The second line gives the error and the length that fits. Our capture cut the second line at 420 characters. In vLLM 0.31.0, the rest of the message tells you to raise the memory fraction or to lower the maximum length.
 ---
 (APIServer pid=3681321) INFO 10-22 00:35:04 [api_utils.py:286] non-default args: {'model_tag': 'Qwen/Qwen3-8B', 'host': '127.0.0.1', 'port': 30100, 'model': 'Qwen/Qwen3-8B', 'max_model_len': 2928, 'gpu_memory_utilization': 0.83, 'num_gpu_blocks_override': 183}
 (EngineCore pid=3682071) ERROR 10-22 00:36:18 [core.py:1433] ValueError: To serve at least one request with the model's max seq len (2928), (0.4 GiB KV cache is needed, which is larger than the available KV cache memory (0.4 GiB). Based on the available memory, the estimated maximum model length is 2912. Try increasing `gpu_memory_utilization` (which also controls CPU memory on the CPU backend) or decreasing `max_mod

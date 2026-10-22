@@ -52,10 +52,10 @@ RuntimeError: Engine core initialization failed. See root cause above. Failed co
 
 The FlashInfer sampler fails to build in the same way on this node. So our sweep tool starts vLLM with `VLLM_USE_FLASHINFER_SAMPLER=0`.
 
-Pick the Triton backend. It reads an FP8 KV cache and does not use the FlashInfer build:
+Pick the Triton backend. It reads an FP8 KV cache and does not use the FlashInfer build. Also turn off the FlashInfer sampler, as our sweep tool does:
 
 ```bash
-vllm serve Qwen/Qwen3-8B --kv-cache-dtype fp8 --attention-backend TRITON_ATTN
+VLLM_USE_FLASHINFER_SAMPLER=0 vllm serve Qwen/Qwen3-8B --kv-cache-dtype fp8 --attention-backend TRITON_ATTN
 ```
 
 [The attention backend page](#s-change-the-attention-backend-only-for-a-reason) explains how vLLM picks a backend.

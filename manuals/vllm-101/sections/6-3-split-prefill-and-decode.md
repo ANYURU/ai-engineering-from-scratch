@@ -18,14 +18,21 @@ Pick it when the 99th percentile of the inter-token latency matters and long pro
 
 ## Set it up
 
-Each server gets a KV connector and a role in `--kv-transfer-config`. The NIXL connector is the common choice:
+Each server gets a KV connector and a role in `--kv-transfer-config`. The NIXL connector is the common choice. The prefill server produces the cache, and the decode server consumes it. On one host with two GPUs, give each server its own GPU, its own port, and its own NIXL side channel port:
 
 ```bash
+CUDA_VISIBLE_DEVICES=0 VLLM_NIXL_SIDE_CHANNEL_PORT=5600 \
 vllm serve Qwen/Qwen3-8B --port 8100 \
-  --kv-transfer-config '{"kv_connector": "NixlConnector", "kv_role": "kv_both"}'
+  --kv-transfer-config '{"kv_connector": "NixlConnector", "kv_role": "kv_producer"}'
 ```
 
-Start one server for prefill and one for decode, each with the connector, and put a router in front that sends each request to both. The vLLM repository has example scripts and a proxy for this setup. Its own CI tests it on pairs of L4 GPUs.
+```bash
+CUDA_VISIBLE_DEVICES=1 VLLM_NIXL_SIDE_CHANNEL_PORT=5601 \
+vllm serve Qwen/Qwen3-8B --port 8200 \
+  --kv-transfer-config '{"kv_connector": "NixlConnector", "kv_role": "kv_consumer"}'
+```
+
+Then put a router in front that sends each request to both. The vLLM repository has example scripts and a proxy for this setup. Its own CI tests it on pairs of L4 GPUs.
 
 If a cache transfer fails, the default policy fails the request. The `kv_load_failure_policy` field set to `recompute` computes the prompt again on the decode server instead.
 

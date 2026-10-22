@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 296" role="img" aria-labelledby="fig-6-1-title fig-6-1-desc" font-family="JetBrains Mono, ui-monospace, monospace">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" role="img" aria-labelledby="fig-6-1-title fig-6-1-desc" font-family="JetBrains Mono, ui-monospace, monospace">
   <title id="fig-6-1-title">Two questions pick the parallel layout</title>
-  <desc id="fig-6-1-desc">First ask whether the model and the KV cache you need fit on one GPU. If yes, add copies with data parallelism. If no, ask whether the split model fits inside one machine. If yes, use tensor parallelism inside it. If no, add pipeline parallelism across machines with tensor parallelism inside each.</desc>
+  <desc id="fig-6-1-desc">First ask whether the model and the KV cache you need fit on one GPU. If yes, add copies with data parallelism. If no, ask whether the split model fits inside one machine. If yes, keep the split inside it: tensor parallelism with NVLink, or pipeline parallelism without NVLink or with an uneven split. If no, add pipeline parallelism across machines with tensor parallelism inside each.</desc>
   <defs><marker id="fig-6-1-head-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 1 L10 5 L0 9 z" fill="var(--m-ink, #1a1a1a)"/></marker></defs>
   <rect x="170" y="20" width="300" height="48" fill="var(--m-amber-fill, #f5ecd9)" stroke="var(--m-amber-ink, #85590c)"/>
   <text x="320" y="47.75" font-size="12.5" text-anchor="middle" font-weight="700">Fits one GPU with its cache?</text>
@@ -29,4 +29,6 @@
   <text x="548" y="192" font-size="11.5" font-weight="700" fill="var(--m-rose-ink, #b0344d)">no</text>
   <text x="20" y="214" font-size="11.5" class="m-serif" fill="var(--m-ink-soft, #4a4a4a)">More output from a</text>
   <text x="20" y="230" font-size="11.5" class="m-serif" fill="var(--m-ink-soft, #4a4a4a)">model that fits.</text>
+  <text x="250" y="304" font-size="11.5" class="m-serif" fill="var(--m-ink-soft, #4a4a4a)">No NVLink, or an uneven split:</text>
+  <text x="250" y="320" font-size="11.5" class="m-serif" fill="var(--m-ink-soft, #4a4a4a)">use pipeline inside the machine.</text>
 </svg>

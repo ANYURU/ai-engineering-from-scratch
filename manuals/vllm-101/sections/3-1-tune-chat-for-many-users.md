@@ -67,7 +67,7 @@ The small-pool run fell to about 250 MHz, below the lock. A clock 3.6 times lowe
 
 1. Set your targets for the first token and the time per token.
 2. Run your own load at more and more users, and find the last count that meets both.
-3. If the KV cache usage is near 100 percent and requests wait, the pool is too small. Add room with [an FP8 KV cache](#s-fit-more-users-with-an-fp8-kv-cache), [FP8 weights](#s-fit-a-bigger-model-with-fp8-weights), or a shorter maximum length.
+3. If the KV cache usage is near 100 percent and requests wait, the pool is too small. Add room with [an FP8 KV cache](#s-fit-more-users-with-an-fp8-kv-cache), or [FP8 weights](#s-fit-a-bigger-model-with-fp8-weights). A shorter maximum length does not help here, because the pool stays the same size.
 4. If the pool has room but the P99 ITL is too high, the GPU is full. Add a GPU or a replica. A cap on sequences moves the wait to the first token.
 
 On our DGX Spark, vLLM and SGLang gave the same output at 32 and 64 users. But the P99 ITL of vLLM was about twice as high, 478 against 220 ms at 32 users. So also compare the P99 ITL when you choose an engine for chat.

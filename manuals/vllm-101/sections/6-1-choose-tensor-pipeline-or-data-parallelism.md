@@ -8,14 +8,14 @@ One GPU is not enough. When you finish this section, you can pick the parallel l
 
 | Question | If yes | If no |
 |---|---|---|
-| Does the model fit on one GPU, with room for the KV cache you need? | Use data parallelism: one full copy for each GPU, `--data-parallel-size N`. The output grows with the copy count. | Split the model with tensor parallelism inside one machine: `--tensor-parallel-size N`. |
-| Does the split model fit inside one machine? | Keep tensor parallelism inside the machine. | Add pipeline parallelism across machines, `--pipeline-parallel-size M`, with tensor parallelism inside each machine. |
+| Does the model fit on one GPU, with room for the KV cache you need? | Use data parallelism: one full copy for each GPU, `--data-parallel-size N`. The output grows with the copy count. | Split the model inside one machine, with tensor parallelism, `--tensor-parallel-size N`, or pipeline parallelism. The next question decides. |
+| Does the split model fit inside one machine? | Keep the split inside the machine. Use tensor parallelism if the GPUs have NVLink. Use pipeline parallelism, `--pipeline-parallel-size N`, if they do not, or if the GPU count does not divide the model evenly. | Add pipeline parallelism across machines, `--pipeline-parallel-size M`, with tensor parallelism inside each machine. |
 
 ```figure
 id: fig-6-1
 kind: decision
 title: two questions
-claim: Two questions pick the layout: does the model fit one GPU with its cache, and does the split model fit one machine.
+claim: Two questions pick the layout, and inside one machine the link between GPUs picks tensor or pipeline parallelism.
 caption: Start at the top and follow the answer. From the vLLM documentation at v0.31.0.
 ```
 
@@ -24,7 +24,7 @@ caption: Start at the top and follow the answer. From the vLLM documentation at 
 | Layout | What it splits | Communication | Best for |
 |---|---|---|---|
 | Tensor | each layer across GPUs | after every layer, so it needs a fast link such as NVLink | a model too big for one GPU, inside one machine |
-| Pipeline | the layers into stages on different GPUs | once for each stage boundary | a model too big for one machine |
+| Pipeline | the layers into stages on different GPUs | once for each stage boundary | a model too big for one machine, or GPUs in one machine without NVLink |
 | Data | nothing, each GPU holds a full copy | none between copies | more output from a model that fits |
 | Expert | the experts of a mixture-of-experts model | before and after the expert layers | large MoE models, covered on [the MoE page](#s-serve-moe-models-with-expert-parallelism) |
 
@@ -32,7 +32,7 @@ Tensor parallelism also splits the weights and the KV cache, so each GPU has mor
 
 ## Check the link between GPUs
 
-Tensor parallelism sends data after every layer. On GPUs joined only by PCIe, such as two L4s in one host, that traffic can cost more than the split saves. Measure tensor parallelism against data parallelism on such a machine before you pick.
+Tensor parallelism sends data after every layer. On GPUs joined only by PCIe, such as two L4s in one host, that traffic can cost more than the split saves. The vLLM documentation suggests pipeline parallelism on such a machine, because it sends data only at stage boundaries. Pipeline parallelism also accepts a GPU count that does not divide the model evenly. Measure the layouts against each other on such a machine before you pick.
 
 Not measured on our hardware. We have not run vLLM on two L4s with tensor parallelism or data parallelism.
 
@@ -46,7 +46,8 @@ For prompts of hundreds of thousands of tokens, vLLM can split one sequence acro
 
 ```takeaways
 - Use data parallelism when the model fits, and tensor parallelism when it does not.
-- Add pipeline parallelism only to go past one machine.
+- Add pipeline parallelism to go past one machine.
+- Inside one machine, use pipeline parallelism when the GPUs lack NVLink.
 - On GPUs without a fast link, measure tensor parallelism against data parallelism.
 ```
 
