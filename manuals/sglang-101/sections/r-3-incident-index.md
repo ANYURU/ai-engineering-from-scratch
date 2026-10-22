@@ -23,7 +23,7 @@ The sections use real incidents as evidence. Each one comes from an SGLang or Mi
 
 | Incident | Symptom | Cause | Fix or status | Section |
 |---|---|---|---|---|
-| LinkedIn field report, 2026-02 | P99 latency of seconds on small ranking models | Tokenization, ZMQ messages, garbage collection, the GIL, and the scheduler | Batch tokenization, a scoring path, and `gc.freeze` after warm-up (pull request 9241) | [1.2](#s-one-request-end-to-end), [2.1](#s-sglang-serve-and-the-three-processes) |
+| LinkedIn field report, 2026-02 | P99 latency of seconds on small ranking models | Tokenization, ZMQ messages, garbage collection, the GIL, and the scheduler | Batch tokenization, a scoring path, and `gc.freeze` after warm-up (pull request 9241) | [1.2](#s-check-that-the-server-is-healthy), [2.1](#s-sglang-serve-and-the-three-processes) |
 | [#36889](https://github.com/sgl-project/sglang/issues/36889) | `--max-running-requests 8` accepted, but throughput flat at 2 streams | The Mamba state cache capped running requests to 2 | Only an info line reports the cap | [2.2](#s-the-scheduler-loop-and-schedule-policy) |
 | [#8463](https://github.com/sgl-project/sglang/issues/8463) | `KV cache pool is full. Retract requests.` again and again, then failed health checks | Retraction could not free enough memory and repeated | Closed without a fix. At 0.5.22 the scheduler aborts the last request | [2.3](#s-admission-and-retraction) |
 | [#26248](https://github.com/sgl-project/sglang/issues/26248) | Decode fell from about 429 to 20 to 38 tokens per second after a retraction | Not recorded | Closed for inactivity | [2.3](#s-admission-and-retraction) |
@@ -75,7 +75,7 @@ The sections use real incidents as evidence. Each one comes from an SGLang or Mi
 | `sglang:utilization` | The gauge reads 0 on a busy server | A regression that the code comment links to #22713 | Use the queue and latency series | [5.2](#s-the-metrics-endpoint) |
 | [#35884](https://github.com/sgl-project/sglang/issues/35884) | Failed health probes added load | A timed-out `/health` call did not cancel its request | Treat a failing probe as one symptom | [5.2](#s-the-metrics-endpoint), [7.1](#s-operating-sglang) |
 | [#22511](https://github.com/sgl-project/sglang/issues/22511) | "health check failed" under high load on GLM-5 | No output reached the detokenizer for 20 s under load | Use `/ready` for readiness | [5.2](#s-the-metrics-endpoint), [7.1](#s-operating-sglang) |
-| AIMultiple, 2026-01 | "SGLang 29% faster" repeated by at least five posts | One offline test that lists SGLang v0.2.3 | Ignore results without a version | [1.1](#s-what-a-serving-engine-owns), [5.3](#s-reading-other-peoples-benchmarks) |
+| AIMultiple, 2026-01 | "SGLang 29% faster" repeated by at least five posts | One offline test that lists SGLang v0.2.3 | Ignore results without a version | [1.3](#s-what-the-server-does-with-your-request), [5.3](#s-reading-other-peoples-benchmarks) |
 | [vLLM discussion #17221](https://github.com/vllm-project/vllm/discussions/17221) | SGLang appeared to use 7 GB against 21 GB | The wrong flag: `--context-length` matches `--max-model-len` | Compare engines with matching flags | [5.3](#s-reading-other-peoples-benchmarks) |
 
 ## Part 6 and Part 7: fleets and operations
