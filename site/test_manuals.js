@@ -426,3 +426,12 @@ test('print and web editions carry the author, license, and colophon', () => {
   assert.match(page, /id="colophon"/);
   assert.match(page, /<footer class="site-footer">/);
 });
+
+test('capture links in prose are pinned evidence links and reference tables print no capture file names', () => {
+  const acc = manuals.newInline();
+  const html = manuals.inlineHtml('See [output](manuals/reverse-engineering-101/capture/out/01-doctor-ghidra.json).', 'doc.md:1', acc);
+  assert.match(html, /href="https:\/\/github\.com\/[^/]+\/[^/]+\/blob\/(?:[0-9a-f]{40}|main)\/manuals\/reverse-engineering-101\/capture\/out\/01-doctor-ghidra\.json" target="_blank" rel="noopener">output<\/a>/);
+  const table = fs.readFileSync(path.join(__dirname, '..', 'manuals', 'reverse-engineering-101', 'sections', 'r-1-commands-and-tools.md'), 'utf8');
+  assert.doesNotMatch(table, /Capture file/);
+  assert.doesNotMatch(table, /\|\s*`\d\d-[^`]*\.json`\s*\|/);
+});

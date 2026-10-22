@@ -346,6 +346,9 @@ function linkHtml(label, href, where, acc) {
   const [target, fragment] = href.split('#');
   acc.repoLinks.push({ path: target, where });
   const full = path.join(ROOT, target);
+  if (/^manuals\/[^/]+\/capture(?:\/|$)/.test(target)) {
+    return `<a href="${escapeHtml(evidenceUrl(full, where) + (fragment ? `#${fragment}` : ''))}" target="_blank" rel="noopener">${label}</a>`;
+  }
   const view = fs.existsSync(full) && fs.statSync(full).isFile() ? 'blob' : 'tree';
   return `<a href="${escapeHtml(githubSourceUrl(target, view) + (fragment ? `#${fragment}` : ''))}" rel="noopener">${label}</a>`;
 }
