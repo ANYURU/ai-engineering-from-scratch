@@ -44,15 +44,17 @@ Every run used these settings unless its name says otherwise:
 | e11-topp-topk | 12 | 1 | top-p 0.95 and top-k 64 |
 | e3b, e3c, e3d | 12 | 1 | offload only the KV cache, keep the engine loaded at memory fraction 0.25, keep the trainer loaded |
 | e4-0.6b, e4-1.7b | 4 | 1 | answers cut at 256 tokens, model size |
-| e2-n4 | 24 | 1 | 4 answers per prompt |
+| e2-n4, e2-n16 | 24 | 1 | 4 and 16 answers per prompt |
+| e3e, e3f | 12 | 1 | a same-day pair at memory fraction 0.25, default offload and the engine kept loaded |
+| e2b-dapo-filter | 12 | 1 | the DAPO zero-variance filter, with batches of 48 prompts |
 
-Three runs failed and are left out of every table: two true on-policy runs that stopped at start, and a Qwen3-4B run that Ray stopped.
+Four runs failed and are left out of every table: two true on-policy runs that stopped at start, and two Qwen3-4B runs that Ray stopped. The e2-n16 and e2b-dapo-filter runs finished all their steps, and their time limit ended the container during shutdown. The summary marks them as partial.
 
 ## The heat guard
 
 The GB10 runs hot under sustained load, so a script pauses the Miles container when the GPU reaches 84 C. It resumes the container when the GPU is at 74 C or below after at least 45 seconds, or after 120 seconds at most. On its first day the limits were 80 C and 68 C, and they changed to 84 C and 74 C that morning.
 
-The pause log holds 712 pauses up to 2026-10-22.
+The pause log holds 1,005 pauses, each with its resume, up to 2026-10-22.
 
 ## The timing rule
 
@@ -63,19 +65,20 @@ A pause adds wall-clock time to the phase it falls in. So every time in this man
 
 The summary file stores both medians, all steps and clean steps, with the number of clean steps next to each. Under the heat guard, few whole steps escape a pause. So whole-step times in this manual come from `plain` and `plain-48`, which no pause touched.
 
-A step without a pause can still be slower on a hot card. The default setting gave a 47.5 s rollout in `plain-48` and 59.1 s in the clean steps of `e6a-base`. So compare times only within one session.
+A median over clean steps can still mislead. The default setting gave a 47.5 s rollout in `plain-48` and 59.1 s in the 6 clean steps of `e6a-base`. On the same 6 step numbers, `plain-48` took 60.9 s. The rollout time follows the answer length, so compare times on the same step numbers.
 
 ## Results that are leads
 
 These numbers rest on one run and are labelled as leads where they appear:
 
-- The rollout time with the engine kept loaded, in section 2.2. Three queued runs decide it.
+- The rollout time with the engine kept loaded, in section 2.2. A same-day pair gave 1 to 3 percent on one seed.
 - The cost of deterministic inference, in section 4.5.
-- If Qwen3-4B fits with the engine memory fraction at 0.2, in sections 2.1 and 2.3. One queued run decides it.
+- The group sizes of 4 and 16 answers, in section 3.1.
+- The reward and the rollout cost of the DAPO filter, in section 3.2. Its rollout times take the pause time out, because no step was clean.
 
 ```takeaways
 - Every time in this manual comes from steps that no heat-guard pause touched.
-- Compare times only within one session, because a hot card can run slower without a pause.
+- Compare times on the same step numbers, because the rollout time follows the answer length.
 - Treat the results listed as leads as directions, not sizes.
 ```
 
