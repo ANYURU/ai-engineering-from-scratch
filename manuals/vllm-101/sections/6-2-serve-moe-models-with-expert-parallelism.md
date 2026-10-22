@@ -4,6 +4,8 @@
 
 You serve a mixture-of-experts model. When you finish this section, you can decide when expert parallelism helps.
 
+**Our result:** one DGX Spark served Qwen3-30B-A3B without expert parallelism, at 239 tokens per second for 64 users.
+
 ## Know what changes with a MoE model
 
 A mixture-of-experts layer has many experts, and each token uses only a few of them. `Qwen/Qwen3-30B-A3B-Instruct-2507` has 30 billion parameters, and about 3 billion are active for each token. So the model needs memory for all its weights, but each token costs compute for only a small part.
