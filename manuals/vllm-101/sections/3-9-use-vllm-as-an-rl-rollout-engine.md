@@ -24,6 +24,25 @@ The routes below exist only when you start the server with `VLLM_SERVER_DEV_MODE
 
 **External launch.** With `--distributed-executor-backend external_launcher`, a launcher such as `torchrun` starts the vLLM workers inside the trainer's processes. Some colocated frameworks use this path.
 
+## Try sleep and wake by hand
+
+Start a server in development mode with sleep mode on, on a machine that no one else can reach:
+
+```bash
+VLLM_SERVER_DEV_MODE=1 vllm serve Qwen/Qwen3-8B --enable-sleep-mode 2>&1 | tee server.log
+```
+
+In a second terminal, put the server to sleep, check it, and wake it:
+
+```bash
+curl -X POST 'http://localhost:8000/sleep?level=1'
+curl http://localhost:8000/is_sleeping
+curl -X POST 'http://localhost:8000/wake_up'
+curl http://localhost:8000/is_sleeping
+```
+
+The two POST routes return HTTP 200 with an empty body. The first `/is_sleeping` call returns `{"is_sleeping":true}`, and the second returns `{"is_sleeping":false}`. Run `nvidia-smi` between the calls to see the GPU memory fall during the sleep and rise after the wake. We did not run these calls ourselves.
+
 ## Know the sleep mode problems at 0.31.0
 
 Three problems with sleep mode are known at 0.31.0. We did not reproduce them ourselves:
@@ -47,4 +66,4 @@ Not measured on our hardware. We have not timed sleep, wake, or a weight update 
 - At 0.31.0, read the draft acceptance after a level 2 wake, and wake before a weight update.
 ```
 
-Sources: the vLLM source at v0.31.0 (vllm/config/model.py, vllm/config/parallel.py, vllm/entrypoints/ api routers for sleep, rlhf, and rpc, vllm/distributed/weight_transfer/), vLLM documentation at v0.31.0 (docs/training/rlhf.md, docs/training/async_rl.md, docs/features/sleep_mode.md, docs/training/weight_transfer/), the release notes for v0.31.0 and v0.32.0, vLLM issues 52479 and 57853, the release notes for v0.32.0 (level 2 sleep and calibrated KV scales).
+Sources: the vLLM source at v0.31.0 (vllm/config/model.py, vllm/config/parallel.py, vllm/entrypoints/serve/dev/sleep/api_router.py and the api routers for rlhf and rpc, vllm/distributed/weight_transfer/), vLLM documentation at v0.31.0 (docs/training/rlhf.md, docs/training/async_rl.md, docs/features/sleep_mode.md, docs/training/weight_transfer/), the release notes for v0.31.0 and v0.32.0, vLLM issues 52479 and 57853, the release notes for v0.32.0 (level 2 sleep and calibrated KV scales).
