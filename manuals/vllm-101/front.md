@@ -43,6 +43,6 @@ We tested on vLLM 0.31.0 with an NVIDIA L4 and a DGX Spark. The L4 served Qwen3-
 
 ## Draft edition
 
-This edition is a draft. Part 1 is written. The other pages state their plan and the evidence they will use, and the measurements for them are in progress.
+This edition is a draft. Every page is written. Each measured page gives its date, clock, and seed count, and other pages say what we did not measure.
 
 Sources: vLLM documentation at v0.31.0 (docs/getting_started/quickstart.md), capture/gpu/summary/l4.json, capture/gpu/summary/gb10.json.
