@@ -1,18 +1,45 @@
 # Keep runs comparable
 
-> A run that you cannot compare with another run teaches you nothing.
+> A run that you cannot compare with another run teaches you nothing, so record what each run used before you start it.
 
-Draft: not written yet. This page is a how-to page.
+Two weeks into a project, you will want to know why last Tuesday's run learned faster than today's. You can only answer that if both runs recorded the same facts.
 
-When you finish this section, you can record each run so that you can compare it later.
+When you finish this section, you can record each run so that you can compare it later. You can also replay a step to debug it.
 
-## What we know now
+## Record these facts for every run
 
-- Each of our runs records the image digest, the Miles commit, the full command, the GPU temperature, and the engine log.
+| Fact | How we record it |
+|---|---|
+| The image digest | `docker image inspect`, as in [section 6.4](#s-pick-an-image) |
+| The Miles commit and the SGLang version | read from inside the image |
+| The full command | the launcher prints it, and we keep the script |
+| The seed | `--seed` and `--rollout-seed` |
+| The trainer log and the engine log | one log file per run, not mixed with other runs |
+| The GPU temperature and pauses | the heat-guard log, as in [the lab notes](#s-ref-lab-notes) |
+| The exit code | one status line per run |
+
+Keep the engine log next to the trainer log. Of the three failures we met, one began in the engine and two began in the trainer, so you need both.
+
+## Change one thing per run
+
+Compare two runs only when one setting differs. Our first offload run changed the offload setting and the engine memory fraction together. We could not tell which change moved the rollout time, so the result stays a lead until a run separates the two.
+
+Keep a baseline from the same session. A baseline from another day can differ in time, and on our GB10 heat is the likely cause, as [section 5.3](#s-repeat-a-run) shows.
+
+## Save what you need to replay a step
+
+Miles can save the data of a run so that you can replay one part without the other:
+
+- `--save-debug-event-data` writes the events of each step. Our runs kept these for every run.
+- `--save-debug-rollout-data` writes the rollout samples. Load them with `--load-debug-rollout-data` and `--debug-train-only` to train on the same samples again, with no engine.
+- `--debug-rollout-only` runs the engine side alone.
+
+Replay is the fastest way to test a loss or a reward change. Every replay sees the same samples, so a difference comes from your change and not from the sampler.
 
 ```takeaways
-- Record the image digest and the command for every run.
-- Keep the engine log next to the trainer log.
+- Record the image digest, the commit, the command, the seed, and both logs for every run.
+- Change one setting per run, and keep a baseline from the same session.
+- Save rollout data when you plan to test a training change, and replay it with --debug-train-only.
 ```
 
-Sources: capture/gpu/out-gb10/image-identity.txt; capture/gpu/miles_grpo.py.
+Sources: capture/gpu/out-gb10/image-identity.txt; capture/gpu/miles_grpo.py; capture/gpu/heat-guard.sh; Miles debug arguments at main 08752a12.

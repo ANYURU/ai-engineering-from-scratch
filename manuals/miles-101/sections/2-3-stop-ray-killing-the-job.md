@@ -1,14 +1,14 @@
 # Stop Ray from killing the job on unified memory
 
-> On a GB10, the GPU allocations count in the memory that Ray watches, so Ray can stop the trainer before the GPU runs out.
+> On a GB10, the GPU allocations and the host share one memory, so a Ray memory kill there means the machine really was close to full.
 
-Our Qwen3-4B run finished its first rollout, then stopped in the training phase of that step, 15 minutes after start. The log holds no CUDA out-of-memory error. Ray had stopped the trainer because the node looked full.
+Our Qwen3-4B run finished its first rollout, then stopped in the training phase of that step, 15 minutes after start. The log holds no CUDA out-of-memory error. Ray had stopped the trainer because the node was nearly full.
 
-When you finish this section, you can recognize a Ray memory kill and decide what to change.
+When you finish this section, you can recognize a Ray memory kill and lower the memory that the run needs.
 
 ## Read the kill message
 
-Search the log for `OutOfMemoryError` before you lower the model size. A Ray memory kill names the node, not a GPU:
+Search the log for `OutOfMemoryError` before you change anything. A Ray memory kill names the node, not a GPU:
 
 ```listing
 title: Ray stops the trainer of a Qwen3-4B run
@@ -30,25 +30,24 @@ The node held 115.86 GB of 121.69 GB, which is 95.2 percent. The trainer process
 
 On a GB10, the CPU and the GPU use one pool of memory. Ray reads the memory of the whole node. So the model weights, the optimizer state, and the KV cache all count in the number that Ray watches.
 
-On a machine with a separate GPU, those bytes live in GPU memory. Ray does not see them, and the same job leaves more host memory free.
+That number is real. When it reaches 100 percent, the machine has no memory left for anyone. So a Ray kill at 95 percent is a warning that the run does not fit, and not a false alarm.
 
-Ray stops a worker when the node passes its kill threshold. The kill came at 95.2 percent, so the threshold was at or below that share.
+## Lower the memory the run needs
 
-## Change the threshold or the model
+Change the run, not the watcher:
 
-You have two choices:
+1. Lower the engine memory. `--sglang-mem-fraction-static` sets the share of GPU memory that the rollout engine takes. Our runs used 0.4.
+2. Lower the work per step. Use fewer prompts per step or fewer answers per prompt.
+3. Use a smaller model, if the first two changes do not fit the model.
 
-1. Raise the threshold. Pass `RAY_memory_usage_threshold` to the container, for example `-e RAY_memory_usage_threshold=0.98`. Ray then stops a worker only when the node is closer to full.
-2. Lower the memory that the run needs. Use a smaller model, a lower `--sglang-mem-fraction-static`, or fewer samples per step.
+The log also names `RAY_memory_usage_threshold`. Do not raise it on unified memory. A higher threshold lets the node get closer to full. If the node does run out, the operating system can stop any process on the machine, and that stop leaves no Ray message to read.
 
-A higher threshold leaves less room before the real limit. If the node does run out, the kernel stops a process with no Ray message at all. So raise the threshold in small steps and watch the node memory.
-
-We have not proven the first choice yet. A rerun of the same Qwen3-4B job with `RAY_memory_usage_threshold=0.98` is in our queue. Until it finishes, the measured facts are the kill and its numbers above.
+We are rerunning the same Qwen3-4B job with `--sglang-mem-fraction-static 0.2` and the default Ray threshold. [Section 2.1](#s-pick-a-model-size) reports if 4B fits with that change.
 
 ```takeaways
-- Read the Ray OutOfMemoryError line before you lower the model size.
-- On unified memory, count the GPU allocations as node memory.
-- Raise RAY_memory_usage_threshold in small steps, and watch the node memory while you do.
+- Read the Ray OutOfMemoryError line before you change anything.
+- On unified memory, treat a Ray memory kill as a real shortage.
+- Lower the engine memory fraction or the work per step, and leave the Ray threshold at its default.
 ```
 
 Sources: capture/gpu/out-gb10/ray-oom-4b.log; capture/gpu/summary/miles-gb10-lab.json (excluded.e4-4b); Ray memory monitor message in the e4-4b run log.

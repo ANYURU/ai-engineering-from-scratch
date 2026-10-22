@@ -71,7 +71,7 @@ These numbers rest on one run and are labelled as leads where they appear:
 
 - The rollout time with the engine kept loaded, in section 2.2. Three queued runs decide it.
 - The cost of deterministic inference, in section 4.5.
-- The effect of a higher Ray memory threshold, in section 2.3. One queued run decides it.
+- If Qwen3-4B fits with the engine memory fraction at 0.2, in sections 2.1 and 2.3. One queued run decides it.
 
 ```takeaways
 - Every time in this manual comes from steps that no heat-guard pause touched.

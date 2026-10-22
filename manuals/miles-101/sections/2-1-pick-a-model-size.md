@@ -9,7 +9,7 @@ When you finish this section, you can choose the largest model that trains and s
 ## What we know now
 
 - Qwen3-0.6B and Qwen3-1.7B trained on our GB10 with the default settings.
-- Ray stopped the Qwen3-4B run before its first step finished. Section 2.3 explains why, and a retry is queued.
+- Ray stopped the Qwen3-4B run in the training phase of its first step. Section 2.3 explains why. A retry with the engine memory fraction at 0.2 and the default Ray threshold is queued.
 - The fit table for 4B and 8B waits for that retry.
 
 ```takeaways

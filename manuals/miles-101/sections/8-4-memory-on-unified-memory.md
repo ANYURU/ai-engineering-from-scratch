@@ -32,9 +32,9 @@ After training, the engine needs the new weights. Under `--colocate`, the traine
 
 The trainer sends the weights in buckets. `--update-weight-buffer-size` sets the bucket size, and our runs used 512 MiB. The update took 0.64 s for Qwen3-0.6B and 0.91 s for Qwen3-1.7B, under one percent of a step. [Section 2.4](#s-size-the-weight-update) has the table.
 
-## One pool confuses one watcher
+## One pool changes what Ray sees
 
-Shared memory also changes what other tools see. Ray reads the memory of the whole node. On a GB10 that number includes the model weights, the optimizer state, and the KV cache. So Ray can stop the trainer when the node looks full, before any GPU allocation fails. [Section 2.3](#s-stop-ray-killing-the-job) shows the kill and the setting that controls it.
+Shared memory also changes what other tools see. Ray reads the memory of the whole node. On a GB10 that number includes the model weights, the optimizer state, and the KV cache. So Ray can stop the trainer before any single GPU allocation fails. On a GB10 that stop is a real warning, because the node is close to full for every process. [Section 2.3](#s-stop-ray-killing-the-job) shows the kill and how to lower the memory the run needs.
 
 ## What we do not know yet
 
@@ -43,7 +43,7 @@ We do not yet know whether keeping the engine loaded between phases saves rollou
 ```takeaways
 - With --colocate, the engine and the trainer take turns, and offload decides what each side gives back.
 - On a GB10, offload frees memory inside one pool, and the weight update copies inside the GPU.
-- Count the GPU allocations as node memory when a tool such as Ray watches the host.
+- Count the GPU allocations as node memory, and treat a Ray memory kill as a real shortage.
 ```
 
 Sources: Miles placement, offload, and weight update code at main 08752a12; capture/gpu/miles_grpo.py; capture/gpu/summary/miles-gb10-lab.json (runs.e4-0.6b, runs.e4-1.7b, runs.plain-48); capture/gpu/out-gb10/ray-oom-4b.log.

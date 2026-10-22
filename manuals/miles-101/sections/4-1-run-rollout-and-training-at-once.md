@@ -2,18 +2,53 @@
 
 > Async training lets rollout run during training, but on one GPU the two phases still wait for each other.
 
-Draft: not written yet. This page is a how-to page.
+In a normal Miles step, rollout runs, then training runs, then rollout runs again. On many GPUs, the rollout GPUs wait while the trainer works, and the trainer waits while the rollout GPUs work. Async training removes part of that wait, and pays for it with samples from older weights.
 
-When you finish this section, you can decide if async training helps your layout.
+When you finish this section, you can decide if async training helps your layout, and which settings control the cost.
 
-## What we know now
+We have not run async training on our GB10. This page comes from the Miles source and documentation.
 
-- We have not run async training on one GPU yet.
-- On one GPU, generation stops for the training window, so we expect more staleness and no speed gain.
+## Two async modes
+
+Both modes start from `train_async.py` instead of `train.py`:
+
+| Mode | How to start it | What overlaps |
+|---|---|---|
+| One step ahead | `train_async.py` | the rollout of the next step runs while the current step trains |
+| Fully async | `train_async.py --fully-async` | a worker keeps generation going, and the trainer takes groups from a buffer |
+
+In the first mode, with the default update interval, every sample is at most one weight version old. In the fully async mode, the age of a sample depends on how fast the trainer drains the buffer.
+
+## What async gives on one GPU
+
+With `--colocate`, the trainer and the engine share the GPU. Miles allows colocation only with `--fully-async`, so the one-step-ahead mode needs separate GPUs. The fully async mode works down to one GPU, but generation stops for the whole training window. The two phases still take turns.
+
+So on one GPU, async training does not save time. It adds the cost of older samples and buys no overlap. Use it on one GPU only to learn its settings before a larger run.
+
+## Control the age of the samples
+
+On a layout with separate rollout GPUs, these settings decide how old a sample can get:
+
+- `--update-weights-interval` sets how many steps run between weight updates to the engine.
+- `--max-weight-staleness` drops samples that are older than this many weight versions. Unset means no limit.
+- `--async-unused-samples-handler` decides what happens to a dropped sample: `drop` or `retry`.
+- `--async-max-concurrent-samples` caps the number of samples that the engines generate at one time.
+- `--pause-generation-mode` decides what happens to running requests during a weight update: `retract` or `in_place`.
+
+`--over-sampling-batch-size` has no effect under `--fully-async`.
+
+## What to watch
+
+- The weight version of each sample. The rollout metrics report how old the samples are.
+- The share of dropped or retried samples. A high share means the engine works for nothing.
+- The gap between the trainer and the engine, as in [section 5.2](#s-check-the-first-step). Older samples add a gap that the kernels did not cause.
+
+On our single GB10, we cannot measure the overlap that async training gives, because there is no second GPU to overlap with.
 
 ```takeaways
 - Use async training only when rollout and training run on different GPUs.
-- Record the weight version of every sample in an async run.
+- Set a limit on sample age, and watch the share of samples that the limit drops.
+- On one GPU, use async mode only to learn its settings.
 ```
 
-Sources: Miles async training code at main 08752a12.
+Sources: Miles fully async documentation, train_async.py, and async rollout arguments at main 08752a12.

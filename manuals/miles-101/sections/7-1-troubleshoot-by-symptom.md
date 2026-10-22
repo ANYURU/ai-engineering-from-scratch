@@ -20,9 +20,9 @@ When you finish this section, you can find the cause of a failed or wrong run fr
 
 ## The job stops with a Ray OutOfMemoryError
 
-- **Cause:** on unified memory, Ray counts the GPU allocations as node memory and stops a worker above its threshold.
+- **Cause:** on unified memory, the GPU allocations count as node memory, and the node is close to full. Ray stops a worker above its threshold.
 - **Check:** the line `Memory on the node ... was 115.86GB / 121.69GB` or similar, and no CUDA out-of-memory error.
-- **Fix:** raise `RAY_memory_usage_threshold` in small steps, or lower the memory the run needs. [Section 2.3](#s-stop-ray-killing-the-job) has the details.
+- **Fix:** lower the engine memory fraction or the work per step, and leave the Ray threshold at its default. [Section 2.3](#s-stop-ray-killing-the-job) has the details.
 
 ## The trainer rejects the attention implementation
 
