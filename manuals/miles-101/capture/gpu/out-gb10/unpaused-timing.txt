@@ -1,0 +1,14 @@
+Rollout time per step, all steps against steps whose rollout window overlaps no heat-guard pause.
+Pauses in the heat-guard log: 712. Source: summary/miles-gb10-lab.json, median_unpaused.
+
+run                      steps  all_median_s  unpaused_median_s  unpaused_steps
+plain                       12          57.2               57.2              12
+plain-48                    48          47.5               47.5              48
+e6a-base                    12          83.9               59.1               6
+e3b-offload-kv              12          97.5               57.8               5
+e3c-no-offload-rollout      12          63.2               52.0               7
+e3d-no-offload-train        12          81.2               59.8               6
+e6b-det-triton              12          84.5               82.0               8
+e6c-det-flashinfer          12          87.3               77.3               7
+e6d-det-triton-repeat       12          94.2               81.9               7
+e11-topp-topk               12          74.5               66.8               7
