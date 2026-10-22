@@ -89,7 +89,9 @@ One likely cause is the union of experts. At concurrency 1, each layer reads the
 
 That is arithmetic, not a measurement, and real routing is less even. The time per token kept rising from 32 to 64 users, where the union grows only about 13 percent. So attention, KV reads, and prefill steps in the sweep grow with the batch too. The name says the model activates about 3B parameters per token. A batch of 64 reads close to all 30B.
 
-Our prompts limit this result too. The `random` dataset sends ShareGPT text, cut or repeated to 512 tokens, and every answer ran to 128 tokens. A 2026 benchmark study by NVIDIA researchers found that random token ids left 20 to 30 percent of the experts idle in some layers of an MoE model. Our prompts are text, not random ids, but they are not your traffic. We did not measure which experts they chose. Run the same sweep with a sample of your own prompts before you plan capacity from it.
+Our prompts limit this result too. The `random` dataset sends ShareGPT text, cut or repeated to 512 tokens, and every answer ran to 128 tokens.
+
+A 2026 benchmark study by NVIDIA researchers, SPEED-Bench, tested an MoE model with random token ids. In some layers, 20 to 30 percent of the experts stayed idle. Our prompts are real text, and they are still different from your traffic. We did not measure which experts they chose. Run the same sweep with a sample of your own prompts before you plan capacity from it.
 
 **Our position:** on one box, plan an MoE model by the bytes a full batch reads, not by its active parameters. Quantize first. The FP8 checkpoint with an FP8 KV cache cut the time per token to between 0.52 and 0.57 of BF16 at every concurrency we measured. It quantized all weights and the KV cache, so we cannot assign the gain to the experts alone.
 
