@@ -159,10 +159,11 @@ The second container prints the error for 60 s and then stays quiet for two minu
 
 Our GB10 reached 84 C again and again under hours of load. The heat guard from [the front matter](#s-front-how-we-tested-it) paused our runs 1,005 times in five days. Run it on a GB10, or on any GPU that gets hot when you leave a run alone for hours. A short run of a few steps does not need it.
 
-Download the script that we ran, and start it in a third terminal on the host, not in the container:
+Download the script that we ran, and start it in a third terminal on the host, not in the container. The `rm` line deletes a stop file that an earlier session can leave behind, because the script exits at once when that file exists:
 
 ```bash
 curl -fsSL -o ~/miles-lab/heat-guard.sh https://raw.githubusercontent.com/rohitg00/ai-engineering-from-scratch/main/manuals/miles-101/capture/gpu/heat-guard.sh
+rm -f ~/miles-lab/queue2.done
 sh ~/miles-lab/heat-guard.sh
 ```
 
