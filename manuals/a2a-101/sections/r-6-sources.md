@@ -18,7 +18,7 @@ The changelog dates the release 2026-05-26, and the spec banner still names 1.0.
 
 ## Vendored files
 
-[The vendored files](manuals/a2a-101/research/sources) are copied from the tag under the Apache License 2.0 in [LICENSE](manuals/a2a-101/research/sources/LICENSE). The audit checks that every source marker names one of the declared files.
+[The vendored files](manuals/a2a-101/research/sources) are copied from the tag under the Apache License 2.0 in [LICENSE](manuals/a2a-101/research/sources/LICENSE). The audit checks that every source marker uses a source key that the manual declares.
 
 | File | Upstream | Source key |
 |---|---|---|
