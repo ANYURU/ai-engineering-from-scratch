@@ -173,6 +173,7 @@ test('figure captions drop the closing source sentence in the reader view', () =
   assert.equal(manuals.readerCaption('Read top to bottom. Grey layers are outside SGLang. From the v0.5.22 source and capture/out/server-default.log.'), 'Read top to bottom. Grey layers are outside SGLang.');
   assert.equal(manuals.readerCaption('From step 2 on, the left box is the request. From capture/out/a.txt.'), 'From step 2 on, the left box is the request.');
   assert.equal(manuals.readerCaption('Read left to right.'), 'Read left to right.');
+  assert.equal(manuals.readerCaption('Read it. From the second request onward, the cache serves the prefix.'), 'Read it. From the second request onward, the cache serves the prefix.');
 });
 
 test('evidence is linked to the repository, never printed', () => {
@@ -182,6 +183,8 @@ test('evidence is linked to the repository, never printed', () => {
   assert.match(listing, /<a class="m-evidence" href="https:\/\/github\.com\/rohitg00\/ai-engineering-from-scratch\/blob\/main\/manuals\/sglang-101\/capture\/[^"]+" target="_blank" rel="noopener">Full log<\/a>/);
   assert.doesNotMatch(listing.replace(/href="[^"]*"/g, ''), /capture\//);
   assert.match(html, /<a class="m-evidence" href="[^"]+\/summary\/l4\.json"[^>]*>Raw runs<\/a>/);
+  assert.match(html, /<a class="m-evidence" href="[^"]+\/summary\/l4-throttled\.json"[^>]*>Raw runs<\/a>/);
+  assert.match(html, /<td>plain-48-s2<\/td>/);
   for (const [, kind, rel] of html.matchAll(/github\.com\/rohitg00\/ai-engineering-from-scratch\/(blob|tree)\/main\/([^"]+)"/g)) {
     const full = path.join(__dirname, '..', rel);
     assert.ok(fs.existsSync(full), rel);

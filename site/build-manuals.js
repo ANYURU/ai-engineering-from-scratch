@@ -231,14 +231,12 @@ function newInline() {
   return { refs: [], repoLinks: [] };
 }
 
-const REPO_URL = 'https://github.com/rohitg00/ai-engineering-from-scratch';
-
 function evidenceUrl(file, where) {
   const rel = path.relative(ROOT, file);
   if (rel.startsWith('..') || path.isAbsolute(rel)) return null;
   ensure(fs.existsSync(file), `${where}: evidence path ${rel} does not exist`);
   const kind = fs.statSync(file).isDirectory() ? 'tree' : 'blob';
-  return `${REPO_URL}/${kind}/main/${rel.split(path.sep).join('/')}`;
+  return githubSourceUrl(rel.split(path.sep).join('/'), kind);
 }
 
 function evidenceLink(url, label) {
@@ -261,6 +259,7 @@ function measuredEvidence(doc, manual) {
     const mac = /\bMac\b|Apple silicon/.test(context);
     let rel = null;
     if (/\breward\b/.test(block.text) && has('capture/gpu/summary/miles-gb10.json')) rel = 'capture/gpu/summary/miles-gb10.json';
+    else if (l4 && !gb10 && !mac && /\bhot\b|throttl/i.test(context) && has('capture/gpu/summary/l4-throttled.json')) rel = 'capture/gpu/summary/l4-throttled.json';
     else if (l4 && !gb10 && !mac) rel = has('capture/gpu/summary/l4.json') ? 'capture/gpu/summary/l4.json' : null;
     else if (gb10 && !l4 && !mac) {
       if (/Miles/.test(context) && has('capture/gpu/summary/miles-gb10.json')) rel = 'capture/gpu/summary/miles-gb10.json';
@@ -283,11 +282,14 @@ function labRunsHtml(manual, where) {
     if (data.profile && data.environment) {
       for (const [sweep, configs] of Object.entries(data)) {
         if (['profile', 'slo', 'environment', 'quantiles'].includes(sweep) || !configs || typeof configs !== 'object') continue;
-        const seeds = Math.max(0, ...Object.values(configs).flatMap(config => (config.points || []).map(point => (point.output_throughput && point.output_throughput.n) || 0)));
-        rows.push({ cells: [escapeHtml(sweep), escapeHtml(`${data.environment.gpu}${data.profile.includes('throttled') ? ', throttled' : ''}`), String(Object.keys(configs).length), seeds ? String(seeds) : 'see the section', link] });
+        const counts = Object.values(configs).flatMap(config => (config.points || []).map(point => (point.output_throughput && point.output_throughput.n) || 0)).filter(Boolean);
+        const low = counts.length ? Math.min(...counts) : 0;
+        const high = counts.length ? Math.max(...counts) : 0;
+        const seeds = !high ? 'see the section' : low === high ? String(high) : `${low} to ${high}`;
+        rows.push({ cells: [escapeHtml(sweep), escapeHtml(`${data.environment.gpu}${name.includes('throttled') ? ', throttled' : ''}`), String(Object.keys(configs).length), seeds, link] });
       }
     } else {
-      rows.push({ cells: [escapeHtml(name.replace(/\.json$/, '')), 'see the section', String(Object.keys(data).length), 'see the section', link] });
+      for (const run of Object.keys(data)) rows.push({ cells: [escapeHtml(run), 'see the section', '1', '1', link] });
     }
   }
   return tableHtml(['Experiment', 'Hardware', 'Configurations', 'Seeds per point', 'Data'], rows);
@@ -299,6 +301,7 @@ function readerCaption(caption) {
   if (index < 0) return text;
   const tail = text.slice(index).trim();
   if (/\.\s+[A-Z]/.test(tail.replace(/\.$/, ''))) return text;
+  if (!/\/|\.(?:txt|json|jsonl|log|md|py|ts|proto|http|yaml)\b|\bsource\b|\bcapture|\bcode\b|\bdocs?\b|\breports?\b|\bissues?\b|\bfiles?\b|\bv\d|\btag\b|\brunner\b/i.test(tail)) return text;
   return text.slice(0, index).trim();
 }
 
