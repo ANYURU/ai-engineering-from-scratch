@@ -15,7 +15,7 @@ const items = [
 
 module.exports = figure('fig-2-1', {
   height: 340,
-  title: '1.7B fits on one GB10, and 4B does not',
+  title: '1.7B fits for short steps, and 4B does not',
   desc: 'Blue bars: the trainer state of full fine-tuning with Adam, estimated at 16 bytes per parameter, before activations and the engine. Rose bars: the node memory that Ray read when it stopped the two 4B runs, 115.86 GB with the engine memory fraction at 0.4 and 119.18 GB at 0.2, out of 121.69 GB. Ray stops a worker above 95 percent of the node, about 115.6 GB.',
 }, f => {
   const c = chart(f, { x: 60, y: 56, w: 560, h: 210, xDomain: [0, 1], yDomain: [0, 130], yTicks: [0, 30, 60, 90, 120], yLabel: 'GB' });
@@ -27,5 +27,5 @@ module.exports = figure('fig-2-1', {
   c.note(0.7, 70, '115.9 GB', { anchor: 'middle', hue: 'rose', serif: false });
   c.note(0.9, 70, '119.2 GB', { anchor: 'middle', hue: 'rose', serif: false });
   legend(f, [{ name: 'trainer state, estimate', hue: 'blue' }, { name: 'node memory at the Ray kill', hue: 'rose' }], 60, 22);
-  f.text(60, 324, 'Lowering the engine memory did not save 4B. The trainer is the large part.', { size: 12, serif: true });
+  f.text(60, 324, 'Lowering the engine memory did not save 4B. All runs used 256-token answers.', { size: 12, serif: true });
 });
