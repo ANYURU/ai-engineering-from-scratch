@@ -23,14 +23,16 @@ id: fig-8-4
 kind: timeline
 title: The engine and the trainer take turns on one memory
 claim: Only one side holds the GPU memory at a time, and the timed hand-offs take about 2 s of each step.
-caption: Phase medians of 48 steps, drawn to scale.
+caption: Phase medians of 48 steps of a run made before we added the heat guard, drawn to scale.
 ```
 
 ## Offload on a normal machine and on a GB10
 
 On a machine with a separate GPU, offload copies bytes from GPU memory to CPU memory over the bus. The copy is the cost.
 
-On a GB10 there is no second memory. GPU memory and CPU memory are the same 128 GB. So offload frees the GPU allocation, and the bytes stay in the same pool. For Qwen3-0.6B, the trainer moved its state to host memory in a median of 1.6 s and back in 0.8 s. That is small next to a step of more than two minutes. The engine release and resume have no timer of their own.
+On a GB10 there is no second memory. GPU memory and CPU memory are the same 128 GB. So offload frees the GPU allocation, and the bytes stay in the same pool. For Qwen3-0.6B, the trainer moved its state to host memory in a median of 0.76 s and back in 0.87 s, over 48 steps. That is small next to a step of more than two minutes.
+
+The engine release before training has no timer. The engine resume after the weight update is in `perf/finalize_and_resume_engines_time`.
 
 Our view: on a GB10, part of the trainer offload and onload time is probably setup work, not copying. We have not measured that split.
 
