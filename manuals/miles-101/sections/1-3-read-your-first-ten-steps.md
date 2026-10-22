@@ -6,6 +6,8 @@ The reward goes up and down in the first steps, and it is easy to read too much 
 
 When you finish this section, you can pull five numbers out of a run log. You can then compare them with our ranges and decide if the run is healthy.
 
+**Our result:** across three seeds, the mean reward was 0.61 to 0.65 in the first 8 steps. In the last 8 it was 0.74 to 0.77.
+
 ## Pull the numbers out of the log
 
 Each step writes its numbers on two lines: a `rollout N` line for the samples and a `step N` line for the training update. Use `grep` to read one number over the steps:
@@ -58,6 +60,22 @@ Over 48 steps, all three seeds moved the same way. The mean over the first eight
 | log probability gap | 0.0136 to 0.0164 over all steps | |
 
 The reward rose, the answers got shorter, and fewer answers hit the length limit. The log probability gap stayed flat.
+
+```figure
+id: fig-1-3
+kind: chart
+title: Reward over 48 steps, three seeds
+claim: The reward of one step jumps around, and the trend over 48 steps goes up for every seed.
+caption: Mean reward per step for three seeds of the same run.
+```
+
+```figure
+id: fig-1-3b
+kind: chart
+title: Answers get shorter as the model learns
+claim: The mean answer length falls from about 720 to about 600 tokens, so fewer answers hit the 1,024-token cap.
+caption: Mean answer length per step for the same three seeds.
+```
 
 ## Know the signs of a broken run
 
