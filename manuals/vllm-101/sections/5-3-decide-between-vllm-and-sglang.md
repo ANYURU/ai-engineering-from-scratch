@@ -21,8 +21,9 @@ Each point is the median of three seeds, from one benchmark client for both engi
 |---|---|---|
 | Many users at once, near the pool limit | Throughput tied within 3 percent up to 32 users on the L4. vLLM gave the first token sooner, SGLang gave a smoother stream. | vLLM for the first token, SGLang for the stream |
 | A fixed request rate past what the GPU can serve | At 4 requests per second, vLLM gave 11 percent more output on the L4 | vLLM |
-| Prompts of mixed length arriving one by one | vLLM had the lower P99 ITL on both machines | vLLM by default |
-| Prompts of the same length arriving together | SGLang had the lower P99 ITL on both machines | SGLang |
+| Prompts of mixed length, 16 users at once | vLLM had the lower P99 ITL on both machines | vLLM by default |
+| Prompts of the same length, 16 users at once | SGLang had the lower P99 ITL on both machines | SGLang |
+| Long prompts of mixed length at a fixed rate, DGX Spark | vLLM had the lower P99 ITL at 0.5 requests per second, SGLang at 2 | measure at your rate |
 | Repeated prefixes that fit the pool | Both caches gave the first token within about 100 ms of each other | either one |
 | A mixture-of-experts model on a DGX Spark, many users | Throughput tied. The vLLM P99 ITL was about twice the SGLang value from 32 users. | SGLang for the stream |
 
