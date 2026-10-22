@@ -22,7 +22,7 @@ The container starts with `--rm`, so a folder inside it goes away with it. Mount
 
 ## Resume from a checkpoint
 
-Start the same command again after a failure. `--load` names the parent folder, never one `iter_` folder inside it. Miles reads its tracker file to find the last saved step. On the first run, the folder is empty, and Miles starts fresh.
+Start the same command again after a failure, with a new log file, such as `> runs/plain-resume.log`. The redirect of [section 1.1](#s-run-grpo-on-one-gpu) empties the old log, and you need it to find the cause of the failure. `--load` names the parent folder, never one `iter_` folder inside it. Miles reads its tracker file to find the last saved step. On the first run, the folder is empty, and Miles starts fresh.
 
 With the FSDP trainer of this manual, a resume restores these parts of the run:
 
