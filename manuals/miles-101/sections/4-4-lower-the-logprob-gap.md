@@ -16,10 +16,10 @@ That difference is not noise. It is different for each token, and it always push
 
 ## Turn it on
 
-Pass the sampler settings to the run:
+Add the sampler settings to the run of [section 1.1](#s-run-grpo-on-one-gpu) with `MILES_EXTRA_ARGS`:
 
 ```bash
---rollout-top-p 0.95 --rollout-top-k 64
+-e MILES_EXTRA_ARGS="--rollout-top-p 0.95 --rollout-top-k 64"
 ```
 
 Miles turns on sampling replay by itself when `--rollout-top-p` is below 1 or `--rollout-top-k` is above 0. The engine then returns the set of tokens that each step could sample from. The trainer scores each token over that set only.
@@ -60,7 +60,7 @@ caption: The logprob gap per step for two 12-step runs with seed 1.
 
 ## What replay does not fix
 
-Replay removes the part of the gap that comes from the sampler. Our reading is that the rest comes from the kernels: the engine and the trainer add the same numbers in a different order. [Section 4.5](#s-use-deterministic-inference) shows that deterministic inference does not remove that part. [Section 8.3](#s-why-true-on-policy-is-a-contract) explains what does.
+Replay removes the part of the gap that comes from the sampler. The rest most likely comes from the kernels, because the engine and the trainer add the same numbers in a different order. [Section 4.5](#s-use-deterministic-inference) shows that deterministic inference does not remove that part. [Section 8.3](#s-why-true-on-policy-is-a-contract) explains what does.
 
 ```takeaways
 - Set top-p and top-k together, and Miles replays the sampled set in the trainer.
