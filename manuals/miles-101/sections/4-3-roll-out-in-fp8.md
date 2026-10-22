@@ -27,6 +27,8 @@ Mode 1 is the easiest start, but it is not safe in every case. We have not teste
 - A post by the Miles team and its partners found that this mismatch grows with MoE model size, from 30B to 1T parameters. Their answer is FP8 on both sides, as in mode 2.
 - Another RL library warns about small models. There, the cost to quantize the weights at each weight update can be larger than the time that FP8 saves.
 
+[The sources](#s-ref-sources) list the study, the post, and the library documentation.
+
 ## Set up mode 1
 
 Give the engine an FP8 checkpoint and give the trainer the BF16 weights:
