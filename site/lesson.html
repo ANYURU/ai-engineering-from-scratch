@@ -3795,20 +3795,28 @@
               showError('Render error', 'Loaded the lesson markdown but failed to render it. Details in the browser console.');
               return;
             }
-            var referencePromise = documentResult.lang === 'en'
-              ? Promise.resolve(null)
-              : Promise.race([
-                fetchRepositoryFile(enPath)
-                  .then(function (res) { return res.text(); })
-                  .then(function (english) { return window.AIFSLessonMarkdown.sectionIds(english); }),
-                new Promise(function (resolve) { setTimeout(function () { resolve(null); }, 4000); })
-              ]).catch(function () { return null; });
+            var englishSections = documentResult.lang === 'en'
+              ? null
+              : fetchRepositoryFile(enPath)
+                .then(function (res) { return res.text(); })
+                .then(function (english) { return window.AIFSLessonMarkdown.sectionIds(english); })
+                .catch(function () { return null; });
+            var referencePromise = englishSections
+              ? Promise.race([englishSections, new Promise(function (resolve) { setTimeout(function () { resolve(null); }, 4000); })])
+              : Promise.resolve(null);
             Promise.all([quizPromiseForRequest, referencePromise])
               .then(function (results) {
                 var data = results[0];
                 if (!data || requestSequence !== lessonFetchSequence) return;
                 try { renderQuiz(data, results[1]); }
                 catch (err) { console.error('renderQuiz failed', err); }
+                if (results[1] || !englishSections) return;
+                englishSections.then(function (lateIds) {
+                  if (!lateIds || requestSequence !== lessonFetchSequence) return;
+                  document.querySelectorAll('.lesson-article .quiz-section').forEach(function (section) { section.remove(); });
+                  try { renderQuiz(data, lateIds); }
+                  catch (err) { console.error('renderQuiz failed', err); }
+                });
               });
           })
           .catch(function () {
