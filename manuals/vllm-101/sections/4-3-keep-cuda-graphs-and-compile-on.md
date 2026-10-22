@@ -4,7 +4,7 @@
 
 Startup takes minutes and you want it faster. When you finish this section, you can decide what each compile level and eager mode cost.
 
-**Our result:** on our L4, eager mode and `-O0` each cost about 2 percent of the time per token. `-O3` matched the default.
+**Our result:** on our L4, eager mode cost about 2 percent of the time per token in a cooled run. In a throttled run, `-O0` cost about 2 percent for one user, and `-O3` matched the default.
 
 ## Know the switches
 

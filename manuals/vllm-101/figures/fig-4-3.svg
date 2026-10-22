@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" role="img" aria-labelledby="fig-4-3-title fig-4-3-desc" font-family="JetBrains Mono, ui-monospace, monospace">
-  <title id="fig-4-3-title">Eager mode cost one to two percent of the time per token on the L4</title>
+  <title id="fig-4-3-title">Eager mode cost 1.2 to 2.3 percent of the time per token on the L4</title>
   <desc id="fig-4-3-desc">Median time per output token against users at the same time on an NVIDIA L4 with Qwen3-8B, three seeds per point, both runs on 2026-10-21. Eager mode is 1.2 to 2.3 percent slower at every concurrency, for example 61.1 against 60.4 ms at one user and 131.4 against 129.2 ms at 64 users.</desc>
   <line x1="66" y1="270" x2="606" y2="270" stroke="var(--m-ink-mute, #6f6f6a)" stroke-width="1" stroke-opacity="0.25"/>
   <text x="60" y="274" font-size="11" text-anchor="end" fill="var(--m-ink-soft, #4a4a4a)">50</text>
