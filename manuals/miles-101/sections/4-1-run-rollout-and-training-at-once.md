@@ -23,7 +23,7 @@ In the first mode, with the default update interval, every sample is at most one
 
 With `--colocate`, the trainer and the engine share the GPU. Miles allows colocation only with `--fully-async`, so the one-step-ahead mode needs separate GPUs. The fully async mode can run on one GPU with `--colocate`, but only with the Megatron trainer, not the FSDP trainer of this manual. Generation also stops for the whole training window, so the two phases still take turns.
 
-So on one GPU, async training does not save time. It adds the cost of older samples and buys no overlap. Use it on one GPU only to learn its settings before a larger run.
+So on one GPU, async training does not save time. It adds the cost of older samples and gives no overlap. Use it on one GPU only to learn its settings before a larger run.
 
 ## Control the age of the samples
 
@@ -39,7 +39,7 @@ On a layout with separate rollout GPUs, these settings decide how old a sample c
 
 ## Lower the learning rate as samples get older
 
-Sample age and learning rate work together. A 2026 study of async GRPO on Llama models of 1B and 3B parameters changed both. The largest stable learning rate fell in proportion to the number of steps between weight updates. Twice the steps allowed about half the learning rate.
+Sample age and learning rate work together. A 2026 study of async GRPO on Llama models of 1B and 3B parameters changed both. [The sources](#s-ref-sources) list it as the study of collapse in asynchronous GRPO. The largest stable learning rate fell in proportion to the number of steps between weight updates. Twice the steps allowed about half the learning rate.
 
 We have not tested this. Use it as a starting rule: when you raise `--update-weights-interval` or the age limit, lower the learning rate by the same factor. Then watch the gap and the reward.
 
