@@ -4,17 +4,83 @@
 
 Your server queues requests because the KV cache is full. When you finish this section, you can double the KV pool and check the cost in speed and accuracy.
 
-## Draft: not written yet
+**Our result:** on our L4, the first FP8 start failed, and the Triton backend fixed it. With the pool held fixed, one user got 2 percent faster.
 
-This page is a plan. The list below says what the page will cover and the evidence it will use.
+## Turn it on
 
-- Mode: how-to.
-- Covers: the KV cache data type flag, the backend vLLM picks after the change, and what to use when it cannot start.
-- Evidence: the L4 run with an FP8 KV cache, compared with the BF16 baseline at the same load.
+The KV cache stores two values for each layer, head, and token. By default, vLLM stores them in the model data type, BF16 for `Qwen/Qwen3-8B`, at 2 bytes per value. FP8 stores each value in 1 byte:
+
+```bash
+vllm serve Qwen/Qwen3-8B --kv-cache-dtype fp8
+```
+
+The weights stay in BF16. Only the KV cache changes.
+
+## Count what it gives you
+
+Use the formula from [the memory page](#s-count-the-memory-before-you-pick-a-gpu) with 1 byte per value. For `Qwen/Qwen3-8B`, a token needs 144 KiB in BF16 and 72 KiB in FP8.
+
+```figure
+id: fig-2-4
+kind: chart
+title: the KV tokens in one GiB
+claim: For Qwen3-8B, one GiB of KV cache holds about 7,300 tokens in BF16 and about 14,600 tokens in FP8.
+caption: The numbers come from the bytes per token, not from a run. From the model config of Qwen/Qwen3-8B.
+```
+
+The same memory holds twice the tokens. So twice the users fit at the same length, or each user can have a context twice as long.
+
+## Fix the start on an L4
+
+On our L4, the first start with `--kv-cache-dtype fp8` failed. The cause is the attention backend:
+
+1. vLLM tries FlashAttention first on the L4.
+2. FlashAttention in vLLM 0.31.0 reads an FP8 KV cache only on Hopper and Blackwell data center GPUs. The L4 is an Ada GPU, SM 8.9.
+3. vLLM moves to FlashInfer, the next backend in its list.
+4. FlashInfer builds its kernels on the first start. On our node, that build failed.
+
+```listing
+title: the FlashInfer build error on our L4
+source: capture/gpu/incidents/l4-vllm-flashinfer-jit.txt
+lang: text
+note: This copy comes from an earlier start that hit the same build error. The CUDA compiler and the CUDA headers that FlashInfer used came from different releases.
+---
+/data/vllm/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include/cuda/std/__cccl/cuda_toolkit.h:41:8: error: #error "CUDA compiler and CUDA toolkit headers are incompatible, please check your include paths"
+RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+```
+
+Pick the Triton backend. It reads an FP8 KV cache and does not use the FlashInfer build:
+
+```bash
+vllm serve Qwen/Qwen3-8B --kv-cache-dtype fp8 --attention-backend TRITON_ATTN
+```
+
+[The attention backend page](#s-change-the-attention-backend-only-for-a-reason) explains how vLLM picks a backend.
+
+## See what our run shows
+
+**We measured** the FP8 KV cache with the Triton backend against the BF16 default on our L4 with `Qwen/Qwen3-8B` on 2026-10-22. Both ran in one session, at 1 and 32 users.
+
+We held the pool at 24,096 tokens in both runs, with `--num-gpu-blocks-override`. So this run does not show the larger pool. It shows only the change in speed.
+
+| Users | Median TPOT, BF16 / FP8 | Output tok/s, BF16 / FP8 | Median SM clock, BF16 / FP8 | Seeds, BF16 / FP8 |
+|---|---|---|---|---|
+| 1 | 104.1 / 101.8 ms | 10.59 / 10.75 | 210 / 210 MHz | 3 / 2 |
+| 32 | 142.7 / 138.0 ms | 186.68 / 192.00 | 450 / 480 MHz | 3 / 2 |
+
+At one user, FP8 was 2.3 percent faster per token, at the same clock, and the seed ranges did not overlap. At 32 users, the seed ranges overlapped, and the FP8 run had a higher clock. So we do not claim a gain at 32 users.
+
+Two things changed together: the KV data type and the backend. The table does not show which one gave the gain. The GPU was throttled for both runs, so read the ratio, not the times.
+
+## Check the accuracy
+
+We did not measure output quality with an FP8 KV cache. With no scale file, vLLM uses a scale of 1.0 for the keys and values. Run your own prompts with and without FP8, and compare the answers before you go to production.
 
 ```takeaways
+- An FP8 KV cache halves the bytes per token, so the same memory holds twice the tokens.
+- On an L4, add --attention-backend TRITON_ATTN if the FlashInfer build fails.
 - Read the attention backend line after you change the KV data type.
 - Check output quality on your own prompts before production.
 ```
 
-Sources: vLLM documentation at v0.31.0 (docs/features/quantization/quantized_kvcache.md), issue 60262, capture/gpu/summary/l4.json.
+Sources: capture/gpu/summary/l4.json (load.vllm-fast-b, load.vllm-kv-fp8-triton), capture/gpu/incidents/l4-vllm-flashinfer-jit.txt, the vLLM source at v0.31.0 (vllm/platforms/cuda.py, vllm/v1/attention/backends/fa_utils.py, vllm/v1/attention/backends/triton_attn.py), vLLM documentation at v0.31.0 (docs/features/quantization/quantized_kvcache.md).
