@@ -76,4 +76,4 @@ A post that says a backend is faster tested a different GPU, model, or load. Mea
 - Override the backend only to fix a startup failure or a measured slowdown.
 ```
 
-Sources: capture/gpu/out-gb10/server-load-vllm.log, capture/gpu/summary/l4.json (load.vllm-fast-b, load.vllm-kv-fp8-triton), the vLLM source at v0.31.0 (vllm/platforms/cuda.py, vllm/v1/attention/backends/fa_utils.py, vllm/v1/attention/backends/flash_attn.py).
+Sources: capture/gpu/out-gb10/server-load-vllm.log, capture/gpu/incidents/l4-vllm-kv-fp8-flashinfer-attention-jit.txt, capture/gpu/summary/l4.json (load.vllm-fast-b, load.vllm-kv-fp8-triton), the vLLM source at v0.31.0 (vllm/platforms/cuda.py, vllm/v1/attention/backends/fa_utils.py, vllm/v1/attention/backends/flash_attn.py).
