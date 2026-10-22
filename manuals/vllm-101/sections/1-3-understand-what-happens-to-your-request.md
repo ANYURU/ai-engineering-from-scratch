@@ -4,7 +4,7 @@
 
 You sent a request and the answer came back, slowly at first and then token by token. When you finish this section, you can name the two phases of a request and the four numbers that every benchmark in this manual reports.
 
-**Our result:** on our DGX Spark, 64 users got eight times the output of one user. Each user waited about seven times longer for every token.
+**Our result:** on our DGX Spark, 64 users got eight times the output of one user. Each user waited about 7.5 times longer for every token.
 
 ## Two phases
 
@@ -48,7 +48,7 @@ Every tuning page in this manual moves one of these four numbers. Each page says
 id: fig-1-3b
 kind: chart
 title: one server, two loads
-claim: On our DGX Spark, 64 users got eight times the total output of one user, and each user waited about seven times longer for every token.
+claim: On our DGX Spark, 64 users got eight times the total output of one user, and each user waited about 7.5 times longer for every token.
 caption: Read the left chart for the server and the right chart for one user. Bands span the lowest and highest of three runs. From capture/gpu/summary/gb10.json.
 ```
 
