@@ -4,6 +4,8 @@
 
 You must process a large set of prompts overnight. When you finish this section, you can get the most tokens per second when latency does not matter.
 
+**Our result:** on our L4 with Qwen3-8B, output stopped growing at 32 users, near 274 tokens per second.
+
 ## Pick the offline class or the server
 
 For a fixed list of prompts, the offline `LLM` class runs the engine in your Python process. It has no HTTP layer and no client to tune:
