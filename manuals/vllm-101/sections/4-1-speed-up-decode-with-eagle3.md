@@ -4,7 +4,7 @@
 
 Your users wait for long answers at low load. When you finish this section, you can choose the draft depth for your concurrency.
 
-**Our result:** on our clock-locked L4, EAGLE3 at depth 3 gave 1.6 times the output of no speculation at 32 users.
+**Our result:** on our clock-locked L4, EAGLE3 at depth 3 gave 1.6 times the baseline output at 32 users, on random prompts with 128-token outputs.
 
 ## Turn it on
 
@@ -27,7 +27,7 @@ A deeper draft can give more tokens for each pass of the target model. But each 
 
 ## See what our runs show
 
-**We measured** EAGLE3 at depths 1, 3, and 5 against no speculation on our L4 with `Qwen/Qwen3-8B` on 2026-10-22. We locked the SM clock at 900 MHz with `nvidia-smi -lgc`, and ran 1 and 32 users with two seeds each.
+**We measured** EAGLE3 at depths 1, 3, and 5 against no speculation on our L4 with `Qwen/Qwen3-8B` on 2026-10-22. We locked the SM clock at 900 MHz with `nvidia-smi -lgc`, and ran 1 and 32 users with two seeds each. The prompts came from the random dataset of the benchmark tool, with 512 tokens in and 128 tokens out.
 
 ```figure
 id: fig-4-1
@@ -55,6 +55,18 @@ The run with no speculation at one user fell to 210 MHz, below the lock. A lock 
 
 We did not collect acceptance data from these runs, so we give no acceptance length here.
 
+The median TPOT fell, but the gaps between the token groups grew. At 32 users, the median ITL rose from 84 ms with no speculation to 133 ms at depth 3. Each step now sends several tokens at once, so the stream arrives in larger and less frequent groups.
+
+## Know the limits of our result
+
+Our gain holds for random prompts and outputs of 128 tokens. Other teams found that real traffic can give less. We did not measure these effects ourselves:
+
+- A 2026 benchmark study by NVIDIA researchers found that synthetic prompts overstate the speculative throughput of real prompts. It also found that the best draft depth changes with the batch size.
+- A 2026 study of EAGLE-3 and other drafts found that the acceptance length falls as the answer grows. Within a few thousand output tokens it came close to 1, which means no gain.
+- A 2025 study of serving benchmarks found that speculation lowered the median TPOT but raised the P99 TPOT and the TTFT.
+
+So a gain on short random answers does not predict a gain on long chat answers or on reasoning traces.
+
 ## Lock the clock before you compare
 
 Our first EAGLE3 runs had no clock lock. At one user, the run with no speculation ran at 210 MHz, and the EAGLE3 run at about 1,400 MHz. A gap that large hides the effect of speculation, so we set those runs aside.
@@ -69,7 +81,14 @@ Before you compare speculative decoding with no speculation, lock the clock or r
 
 ## Check the gain on your prompts
 
-Our prompts came from the random dataset of the benchmark tool. Real prompts give a different acceptance rate. Run your own load with and without the config, and read the two counters from `/metrics`:
+Run a sample of your own traffic with and without the config. Keep your real output lengths, and do not use `--ignore-eos`. Compare these numbers:
+
+1. The acceptance rate, from the two counters below.
+2. The median TPOT and the output throughput.
+3. The P99 ITL and the P99 TTFT, because a gain in the median can hide a loss in the tail.
+4. The acceptance rate of your longest answers alone, if your answers run to thousands of tokens.
+
+Read the two counters from `/metrics`:
 
 ```bash
 curl -s http://localhost:8000/metrics | grep -E "spec_decode_num_(draft|accepted)_tokens"
@@ -79,8 +98,9 @@ Divide the accepted tokens by the draft tokens. vLLM also writes a `SpecDecoding
 
 ```takeaways
 - Use a draft trained for your target model, and set the depth yourself.
-- Start with a depth of 3. On our L4 it gave 1.6 times the output at 32 users.
+- Start with a depth of 3. On our L4 it gave 1.6 times the output at 32 users, on random prompts.
 - A depth of 5 added nothing at one user and lost output at 32 users.
+- Measure the acceptance rate and the P99 latency on your own traffic before you keep it.
 - Lock or record the GPU clock before you compare speculative decoding.
 ```
 
