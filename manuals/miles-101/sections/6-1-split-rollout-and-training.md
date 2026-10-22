@@ -40,10 +40,10 @@ Under `--colocate`, Miles uses a copy inside the GPU instead, and the transfer m
 
 This manual uses the FSDP trainer, because it loads a Hugging Face model folder as it is. Miles has two other trainers, and `--train-backend` picks one:
 
-| Trainer | Model input | Splits one model over GPUs | LoRA |
+| Trainer | Model input | Model parallel | LoRA |
 |---|---|---|---|
 | `megatron`, the default | a Megatron `torch_dist` checkpoint, converted once from the Hugging Face folder | tensor, pipeline, context, and expert parallel | yes |
-| `fsdp` | the Hugging Face folder | no, data parallel only | no |
+| `fsdp` | the Hugging Face folder | no. It shards the weights and the optimizer state over data-parallel GPUs, and each GPU still runs whole layers | no |
 | `torchtitan` | the Hugging Face folder, for the models that torchtitan implements | tensor, pipeline, context, and expert parallel | no |
 
 Some features in this manual work only on Megatron: fully async training with `--colocate`, train fault tolerance, MTP training, and the step-0 checks of `--ci-test`. The Miles documentation recommends Megatron for large models and for jobs on many nodes.
@@ -81,7 +81,7 @@ To use a Ray cluster that you started yourself, set `MILES_SCRIPT_EXTERNAL_RAY=1
 - Start colocated, and split only when rollout takes most of the step.
 - Keep broadcast until the weight transfer is a large share of the step.
 - Measure the update time and the idle time on both sides after a split.
-- Pick the trainer before you size the run, because only Megatron splits one model and trains LoRA.
+- Pick the trainer before you size the run, because only Megatron has model parallel and LoRA.
 ```
 
 Sources: Miles main 08752a12 files docs/user-guide/training-backend.md, docs/user-guide/launch-script.md, miles/utils/external_utils/command_utils/ray_backend/backend.py, miles/utils/lora/arguments.py, tools/convert_hf_to_torch_dist.py, scripts/models/qwen3-4B.py, miles/ray/placement_group.py, miles/utils/arguments.py, miles/backends/training_utils/weight_update/protocol.py, miles/backends/training_utils/weight_update/protocols/broadcast.py, miles/backends/training_utils/weight_update/protocols/delta.py, miles/backends/training_utils/metrics/perf.py, docs/advanced/disaggregated-rollout.md, docs/advanced/p2p-weight-transfer.md.
