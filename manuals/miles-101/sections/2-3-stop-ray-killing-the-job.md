@@ -52,7 +52,7 @@ Change the run, not the watcher:
 
 The log also names `RAY_memory_usage_threshold`. Do not raise it on unified memory. A higher threshold lets the node get closer to full. If the node does run out, the operating system can stop any process on the machine, and that stop leaves no Ray message to read.
 
-We are rerunning the same Qwen3-4B job with `--sglang-mem-fraction-static 0.2` and the default Ray threshold. [Section 2.1](#s-pick-a-model-size) reports if 4B fits with that change.
+We ran the same Qwen3-4B job again with `--sglang-mem-fraction-static 0.2` and the default Ray threshold. Ray stopped it again, at 119.18 GB. [Section 2.1](#s-pick-a-model-size) has that run.
 
 ```takeaways
 - Read the Ray OutOfMemoryError line before you change anything.
