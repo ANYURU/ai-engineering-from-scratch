@@ -42,7 +42,7 @@ We ran the same 48-step job with three seeds. These are the values over the firs
 | answer length | `rollout/response_lengths` | 626 to 787 tokens | how long the model talks |
 | cut share | `rollout/truncated` | 0.19 to 0.43 | the share of answers that hit the 1,024-token limit |
 | log probability gap | `train/train_rollout_logprob_abs_diff` | 0.0141 to 0.0164 | how far the trainer and the engine disagree on the same tokens |
-| KL between trainer and engine | `train/train_rollout_kl` | 0.0006 to 0.0007 | the same disagreement as a distribution distance |
+| KL between trainer and engine | `train/train_rollout_kl` | 0.00063 to 0.00075 | the same disagreement as a distribution distance |
 
 **Log probability gap:** the mean absolute difference between the log probability that the engine gave each sampled token and the one the trainer computes. It is never zero, because the two sides run different kernels.
 
