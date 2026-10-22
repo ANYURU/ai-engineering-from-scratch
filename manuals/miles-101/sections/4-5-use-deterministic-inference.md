@@ -41,7 +41,7 @@ We ran four 12-step runs with seed 1 on Qwen3-0.6B:
 
 **We measured** the same gap with and without deterministic inference. The four medians are within 0.0002 of each other.
 
-The gap comes from the two sides computing with different kernels. Deterministic inference makes the engine give the same result for the same input, whatever the batch around it. It does not make the engine compute like the trainer.
+Our reading: the gap comes from the two sides computing with different kernels. Deterministic inference makes the engine give the same result for the same input, whatever the batch around it. It does not make the engine compute like the trainer.
 
 ## The first step repeats
 
