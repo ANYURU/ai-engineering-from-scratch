@@ -23,7 +23,7 @@ source: capture/gpu/out-gb10/server-load-vllm.log
 lang: text
 note: vLLM took the first entry of the list.
 ---
-Using FLASH_ATTN attention backend out of potential backends: ['FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION']
+(EngineCore pid=143) INFO 10-21 10:53:17 [cuda.py:526] Using FLASH_ATTN attention backend out of potential backends: ['FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION'].
 ```
 
 ## Why a flag changes the backend
