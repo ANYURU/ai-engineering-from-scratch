@@ -8,7 +8,7 @@ When you finish this section, you can explain where a custom function plugs into
 
 ## How a path becomes a function
 
-Each of these flags takes a path like `my_package.my_module.my_function`. Miles looks the path up in its own registry of built-in functions first. If the path is not there, it imports the module and takes the function from it.
+Each of these flags takes a path like `my_package.my_module.my_function`. Miles imports the module and takes the function from it. Miles also checks a small registry first, but only its own tests fill that registry.
 
 So your function lives in your own file, outside the Miles source. Mount the file into the container, or install it as a package, and pass its path.
 
