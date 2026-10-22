@@ -12,10 +12,12 @@ When you finish this section, you can measure the weight update and decide if it
 
 Every step logs `perf/update_weights_time` in seconds. Read it next to `perf/step_time`. We ran 4 short steps for two model sizes, with answers cut at 256 tokens:
 
-| Model | Weight update, 4 steps | Trainer offload, median | Trainer onload, median |
+| Model | Weight update, 4 steps | Trainer offload, steps 2 and 3 | Trainer onload, steps 2 and 3 |
 |---|---|---|---|
-| Qwen3-0.6B | 0.63 to 0.66 s | 1.6 s | 0.8 s |
-| Qwen3-1.7B | 0.89 to 0.95 s | 3.8 s | 1.4 s |
+| Qwen3-0.6B | 0.63 to 0.66 s | 1.08 to 1.20 s | 0.77 to 0.86 s |
+| Qwen3-1.7B | 0.89 to 0.95 s | 2.63 to 3.20 s | 1.42 to 1.45 s |
+
+Steps 0 and 1 are warm-up steps. Their trainer offload took up to 4.1 s for 0.6B and 11.8 s for 1.7B. The table leaves them out.
 
 **Trainer offload:** the time the trainer takes to move its weights and optimizer state to host memory after training, logged as `perf/sleep_time`. **Trainer onload:** the time it takes to move them back before the next log probabilities, logged as `perf/wake_up_time`.
 
@@ -27,8 +29,8 @@ The short answers cut almost every reply, so the reward in these runs stayed nea
 id: fig-2-4
 kind: chart
 title: A larger model costs more to offload than to update
-claim: From 0.6B to 1.7B, the weight update grew 1.4 times, and the trainer offload grew 2.4 times.
-caption: Median seconds over 4 short steps for each model.
+claim: From 0.6B to 1.7B, the weight update grew 1.4 times, and the trainer offload grew 2.6 times.
+caption: Mean seconds of steps 2 and 3, after two warm-up steps, for each model.
 ```
 
 ## Compare it with the step
