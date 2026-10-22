@@ -30,7 +30,7 @@ The native offload needs one flag, the CPU memory to use in GiB:
 vllm serve Qwen/Qwen3-8B --kv-offloading-size 32
 ```
 
-`--kv-offloading-backend` picks the implementation. `native` uses the code in vLLM, and `lmcache` uses the LMCache library. The offload trades CPU memory and PCIe transfer time for compute.
+`--kv-offloading-backend` picks the implementation. `native` is the default and uses the code in vLLM. `lmcache` uses the LMCache library, and it needs a separate LMCache server process. The offload trades CPU memory and PCIe transfer time for compute.
 
 Not measured on our hardware. We have not timed a reload from CPU memory against a prefill on the L4 or the GB10.
 
@@ -38,10 +38,20 @@ Not measured on our hardware. We have not timed a reload from CPU memory against
 
 With several servers behind a router, a user's next turn can go to a server that never saw the earlier turns. Two fixes exist. A router that sends a session to the same server keeps the hit on that server. A shared KV store, through a KV connector such as LMCache or Mooncake, lets any server load the blocks. [The KV connector page](#s-how-kv-connectors-move-the-cache) explains the second.
 
+## Check the session cache
+
+Send turn 1 of a conversation, then turn 2 with turn 1 at its start. Read the prefix cache counters before and after turn 2:
+
+```bash
+curl -s localhost:8000/metrics | grep -E "^vllm:(external_)?prefix_cache_(queries|hits)_total"
+```
+
+During turn 2, `vllm:prefix_cache_hits_total` rises by about the length of turn 1, rounded down to full 16-token blocks. With offload on, the startup log names the connector, `OffloadingConnector` for the native backend. A block that came back from CPU memory counts in the `vllm:external_prefix_cache_hits_total` counter.
+
 ```takeaways
 - The prefix cache makes earlier turns free while their blocks stay in the pool.
 - Send earlier turns unchanged, and never change the start of the conversation.
 - Offload blocks to CPU memory when idle sessions do not fit the GPU pool.
 ```
 
-Sources: the vLLM source at v0.31.0 (vllm/config/cache.py, vllm/v1/kv_offload/), vLLM documentation at v0.31.0 (docs/features/kv_offloading_usage.md, docs/design/prefix_caching.md).
+Sources: the vLLM source at v0.31.0 (vllm/config/cache.py, vllm/config/vllm.py, vllm/v1/kv_offload/, vllm/v1/metrics/loggers.py, vllm/distributed/kv_transfer/kv_connector/factory.py), vLLM documentation at v0.31.0 (docs/features/kv_offloading_usage.md, docs/design/prefix_caching.md).
