@@ -94,7 +94,7 @@
   "plate": {
     "figure": "plate-vllm-request",
     "title": "One request, three processes, one block pool",
-    "caption": "A chat request crosses the three vLLM processes. On our L4, the prefix cache served 87.2 percent of the prompt tokens, and the first token came sooner at every shared length. From capture/gpu/out-l4/server-h2h-prefix-vllm.log and capture/gpu/summary/l4.json."
+    "caption": "A chat request crosses the three vLLM processes. On our L4, the prefix cache served 87.2 percent of the prompt tokens. The first token came sooner at each of the three shared lengths shown. From capture/gpu/out-l4/server-h2h-prefix-vllm.log and capture/gpu/summary/l4.json."
   },
   "parts": [
     {
