@@ -43,7 +43,7 @@ The name `enable_thinking` comes from the Qwen3 chat template. Other families us
 
 ## Know what changes for JSON and tools
 
-With a reasoning parser on, structured output applies to the answer only, after the thinking ends. The thinking itself is free text. The Qwen3 parser also works with tool calls, so a request can return `reasoning` and `tool_calls` together. [The JSON page](#s-return-valid-json-and-tool-calls) shows how to ask for a schema.
+With a reasoning parser on, structured output applies to the answer only, after the thinking ends. The thinking itself is free text. The Qwen3 parser also works with tool calls, so a request can return `reasoning` and `tool_calls` together. For tool calls, also start the server with `--enable-auto-tool-choice` and a tool call parser, such as `--tool-call-parser hermes` for Qwen3. [The JSON page](#s-return-valid-json-and-tool-calls) shows how to ask for a schema.
 
 Give a thinking request a large `max_tokens`. If the limit ends the request inside the thinking, `content` is empty and `finish_reason` is `length`. A response that a limit cut is not valid JSON.
 
