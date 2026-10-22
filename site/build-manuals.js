@@ -3,7 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { githubSourceUrl } = require('./build.js');
+const { githubSourceUrl, sourceRepository } = require('./build.js');
 const { localPath, within } = require('./build-projects.js');
 const figkit = require('../manuals/_shared/figkit.js');
 const { validateSvg } = require('../manuals/_shared/svg.js');
@@ -231,12 +231,29 @@ function newInline() {
   return { refs: [], repoLinks: [] };
 }
 
+let evidenceRevisionCache = null;
+
+function evidenceRevision(env = process.env) {
+  const sha = String(env.VERCEL_GIT_COMMIT_SHA || '').trim();
+  if (/^[0-9a-f]{7,40}$/i.test(sha)) return sha;
+  if (env === process.env && evidenceRevisionCache) return evidenceRevisionCache;
+  let head = '';
+  try {
+    head = require('child_process').execSync('git rev-parse HEAD', { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+  } catch (e) { head = ''; }
+  const revision = /^[0-9a-f]{40}$/.test(head) ? head : 'main';
+  if (env === process.env) evidenceRevisionCache = revision;
+  return revision;
+}
+
 function evidenceUrl(file, where) {
   const rel = path.relative(ROOT, file);
   if (rel.startsWith('..') || path.isAbsolute(rel)) return null;
   ensure(fs.existsSync(file), `${where}: evidence path ${rel} does not exist`);
   const kind = fs.statSync(file).isDirectory() ? 'tree' : 'blob';
-  return githubSourceUrl(rel.split(path.sep).join('/'), kind);
+  const { owner, repo } = sourceRepository();
+  const cleanPath = rel.split(path.sep).map(encodeURIComponent).join('/');
+  return `https://github.com/${owner}/${repo}/${kind}/${encodeURIComponent(evidenceRevision())}/${cleanPath}`;
 }
 
 function evidenceLink(url, label) {
@@ -329,6 +346,9 @@ function linkHtml(label, href, where, acc) {
   const [target, fragment] = href.split('#');
   acc.repoLinks.push({ path: target, where });
   const full = path.join(ROOT, target);
+  if (/^manuals\/[^/]+\/capture(?:\/|$)/.test(target)) {
+    return `<a href="${escapeHtml(evidenceUrl(full, where) + (fragment ? `#${fragment}` : ''))}" target="_blank" rel="noopener">${label}</a>`;
+  }
   const view = fs.existsSync(full) && fs.statSync(full).isFile() ? 'blob' : 'tree';
   return `<a href="${escapeHtml(githubSourceUrl(target, view) + (fragment ? `#${fragment}` : ''))}" rel="noopener">${label}</a>`;
 }
@@ -765,12 +785,12 @@ function manualCard(manual) {
   if (manual.status === 'ready') actions.push(action(pdfUrl(manual), 'Download the PDF'));
   actions.push(sourceAction(manual));
   const draft = manual.status === 'draft' ? '<div class="m-draft-note">Draft edition</div>' : '';
-  return `<article class="m-index-card">${draft}<div class="m-kicker m-index-pin">${pinLine(manual)}</div><h2 class="m-index-name"><a href="${pageName(manual.id)}">${escapeHtml(manual.title)}</a></h2><p class="m-index-subtitle">${escapeHtml(manual.subtitle)}</p><p class="m-index-summary">${escapeHtml(manual.summary)}</p>${partDots(manual)}<div class="m-kicker m-index-stats">${manual.parts.length} parts · ${sectionCount(manual)} sections · ${manual.figures.size} figures</div><div class="m-index-actions">${actions.join('')}</div>${plateHtml(manual, 'class="m-fig m-plate"')}</article>`;
+  return `<article class="m-index-card">${plateHtml(manual, 'class="m-fig m-plate"')}<div class="m-index-body">${draft}<div class="m-kicker m-index-pin">${pinLine(manual)}</div><h2 class="m-index-name"><a href="${pageName(manual.id)}">${escapeHtml(manual.title)}</a></h2><p class="m-index-subtitle">${escapeHtml(manual.subtitle)}</p><p class="m-index-summary">${escapeHtml(manual.summary)}</p>${partDots(manual)}<div class="m-kicker m-index-stats">${manual.parts.length} parts · ${sectionCount(manual)} sections · ${manual.figures.size} figures</div><div class="m-index-actions">${actions.join('')}</div></div></article>`;
 }
 
 function indexPage(listed) {
   const gives = INDEX_GIVES.map(([label, text]) => `<li><span class="m-kicker">${label}</span><p>${text}</p></li>`).join('');
-  const body = listed.length ? listed.map(manualCard).join('') : '<p class="m-index-empty">No manual is published yet.</p>';
+  const body = listed.length ? `<div class="m-index-grid">${listed.map(manualCard).join('')}</div>` : '<p class="m-index-empty">No manual is published yet.</p>';
   return pageShell({
     title: 'Manuals - AI Engineering from Scratch',
     ogTitle: 'Manuals · AI Engineering from Scratch',
@@ -778,7 +798,7 @@ function indexPage(listed) {
     canonical: `${SITE_ORIGIN}/manuals.html`,
     noindex: !listed.some(manual => manual.status === 'ready'),
     card: 'page/manuals',
-    main: `<main id="main" class="m-web"><div class="manual m-index"><section class="m-index-hero">${ditherHtml('manuals', 'Manuals', false)}<div class="m-kicker m-cover-kicker">AI Engineering from Scratch</div><h1 class="m-index-title">Manuals</h1><p class="m-index-lede">${INDEX_LEDE}</p><ul class="m-index-gives">${gives}</ul></section>${body}</div></main>`,
+    main: `<main id="main" class="m-web"><div class="manual m-index"><section class="m-index-hero">${ditherHtml('manuals', 'Manuals', true)}<div class="m-index-intro"><div class="m-kicker m-cover-kicker">AI Engineering from Scratch</div><h1 class="m-index-title">Manuals</h1><p class="m-index-lede">${INDEX_LEDE}</p></div><ul class="m-index-gives">${gives}</ul></section>${body}</div></main>`,
   });
 }
 
@@ -884,6 +904,7 @@ module.exports = {
   SCHEMA,
   LISTING_LANGS,
   evidenceUrl,
+  evidenceRevision,
   inlineHtml,
   readerCaption,
   tableHtml,
