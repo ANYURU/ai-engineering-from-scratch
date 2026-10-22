@@ -58,7 +58,7 @@ The fix in AlphaEvolve: ship a held-out evaluator the LLM has never seen, with i
 
 The LLM can produce compilable, semantically plausible modifications. A random-mutation GA on a 2000-line Python file almost always produces syntax errors. The LLM also concentrates search on plausible neighborhoods (change one function, not random bytes) which dramatically reduces wasted evaluator calls.
 
-The evaluator, in turn, catches the LLM's confabulations. LLMs will confidently claim that a function "is O(n log n) in the limit" when it is actually O(n^2); a wall-clock benchmark makes the question settled.
+The evaluator, in turn, catches the LLM's confabulations. LLMs will confidently claim that a function "is $O(n \log n)$ in the limit" when it is actually $O(n^2)$; a wall-clock benchmark makes the question settled.
 
 ### Where AlphaEvolve fits in the frontier stack
 
@@ -70,6 +70,10 @@ The evaluator, in turn, catches the LLM's confabulations. LLMs will confidently 
 | Darwin Godel Machine (L4) | agent scaffolding | SWE-bench / Polyglot | agent code | 20% → 50% SWE-bench |
 
 All four are variations on the same recipe: generator plus evaluator, loop. The differences are what the evaluator grades and how rigorous it is.
+
+```figure
+alphaevolve-loop
+```
 
 ## Use It
 

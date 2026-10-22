@@ -48,6 +48,10 @@ Violate the order — put the user message above the system prompt, interleave d
 
 Anthropic's 25% write premium means a cached block has to be read at least twice to net-save money. 1 write + 1 read averages 0.675x cost per request (saves 32%); 1 write + 10 reads averages 0.205x (saves 80%). Rule of thumb: cache anything you expect to reuse at least 3 times within the TTL.
 
+```figure
+prompt-cache-hit
+```
+
 ## Build It
 
 ### Step 1: Anthropic prompt caching with explicit markers
@@ -137,7 +141,7 @@ from google.genai import types
 client = genai.Client()
 
 cache = client.caches.create(
-    model="gemini-3-pro",
+    model="gemini-3.8-flash",
     config=types.CreateCachedContentConfig(
         display_name="rubric-v3",
         system_instruction=RUBRIC,
@@ -147,7 +151,7 @@ cache = client.caches.create(
 )
 
 resp = client.models.generate_content(
-    model="gemini-3-pro",
+    model="gemini-3.8-flash",
     contents=["Review this code:\n" + code],
     config=types.GenerateContentConfig(cached_content=cache.name),
 )

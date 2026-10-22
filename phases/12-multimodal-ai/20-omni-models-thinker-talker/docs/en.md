@@ -41,10 +41,10 @@ The separation matters. Thinker has to be big for good reasoning. Talker can be 
 
 Running both in parallel:
 
-1. Thinker emits text token t_i.
-2. Talker consumes t_i (via streaming) and emits speech tokens s_i, s_{i+1}, ..., s_{i+k}.
+1. Thinker emits text token $t_i$.
+2. Talker consumes $t_i$ (via streaming) and emits speech tokens $s_i, s_{i+1}, \ldots, s_{i+k}$.
 3. Speech decoder consumes speech tokens as they come and emits audio samples.
-4. By the time Thinker is at text token t_{i+3}, Talker has already streamed audio for t_0..t_{i+2}.
+4. By the time Thinker is at text token $t_{i+3}$, Talker has already streamed audio for $t_0, \ldots, t_{i+2}$.
 
 ### TMRoPE — time-aligned multimodal positions
 
@@ -92,6 +92,10 @@ Total TTFAB: 320-510ms at 7B, 600-900ms at 70B. Frontier quality usually means 7
 At 16kHz speech with 50 Hz base speech tokens, you need 50 speech tokens per second of output. Talker must emit ≥50 tok/s to keep up. At a typical LLM throughput of 30-80 tok/s on an H100, a small (200-300M) Talker is fast enough; a 7B Talker would fall behind.
 
 This is why small dedicated Talker models exist rather than "just use the main model."
+
+```figure
+l5-thinker-talker
+```
 
 ## Use It
 

@@ -1,52 +1,366 @@
 <p align="center">
-  <img src="assets/banner.svg" alt="AI Engineering from Scratch — reference manual banner" width="100%">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/header-dark.svg">
+    <img src="assets/readme/header-light.svg" alt="AI Engineering from Scratch" width="840">
+  </picture>
 </p>
 
 <p align="center">
+ <a href="https://www.star-history.com/rohitg00/ai-engineering-from-scratch">
+  <picture><source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=rank&theme=dark" /><source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=rank" /><img alt="Star History Rank" src="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=rank" /></picture> <picture><source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=trending&theme=dark" /><source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=trending" /><img alt="GitHub Trending Repository of the Day" src="https://api.star-history.com/badge?repo=rohitg00/ai-engineering-from-scratch&type=trending" /></picture>
+ </a>
+</p>
+
+Implement model internals, retrieval pipelines, and agent runtimes. Test them, inspect failures, and keep the code and evaluation results.
+
+**[Start learning](https://aiengineeringfromscratch.com/lesson?path=phases/00-setup-and-tooling/01-dev-environment)** · **[Choose a path](#learning-routes)** · **[Try a lab](#interactive-lab)** · **[Build a project](#project-challenges)** · **[Browse the curriculum](#contents)**
+
+Free, open source, MIT. Learn on the website, with a coding agent, or by running local code.
+
+> 542 lessons. 20 phases. Python, TypeScript, Rust, Julia.
+
+<p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-1a1a1a?style=flat-square&labelColor=fafaf5" alt="MIT License"></a>
-  <a href="ROADMAP.md"><img src="https://img.shields.io/badge/lessons-503-3553ff?style=flat-square&labelColor=fafaf5" alt="503 lessons"></a>
+  <a href="ROADMAP.md"><img src="https://img.shields.io/badge/lessons-542-3553ff?style=flat-square&labelColor=fafaf5" alt="542 lessons"></a>
   <a href="#contents"><img src="https://img.shields.io/badge/phases-20-3553ff?style=flat-square&labelColor=fafaf5" alt="20 phases"></a>
   <a href="https://github.com/rohitg00/ai-engineering-from-scratch/stargazers"><img src="https://img.shields.io/github/stars/rohitg00/ai-engineering-from-scratch?style=flat-square&labelColor=fafaf5&color=3553ff" alt="GitHub stars"></a>
   <a href="https://aiengineeringfromscratch.com"><img src="https://img.shields.io/badge/web-aiengineeringfromscratch.com-3553ff?style=flat-square&labelColor=fafaf5" alt="Website"></a>
 </p>
 
-## From the creator of [Agent Memory - #1 Persistent memory ⭐](https://github.com/rohitg00/agentmemory) <a href="https://github.com/rohitg00/agentmemory/stargazers"><img src="https://img.shields.io/github/stars/rohitg00/agentmemory?style=flat-square&labelColor=fafaf5&color=3553ff" alt="GitHub stars"></a> which naturally works with any agents or chat assistants.
+<details>
+<summary>Read in your language</summary>
 
+<p align="center">
+  <a href="README.md">🇬🇧 English</a> ·
+  <a href="i18n/zh/README.md">🇨🇳 简体中文</a> ·
+  <a href="i18n/zh-TW/README.md">🇹🇼 繁體中文（台灣）</a> ·
+  <a href="i18n/ja/README.md">🇯🇵 日本語</a> ·
+  <a href="i18n/ko/README.md">🇰🇷 한국어</a> ·
+  <a href="i18n/pt/README.md">🇵🇹 Português</a> ·
+  <a href="i18n/pt-BR/README.md">🇧🇷 Português (Brasil)</a> ·
+  <a href="i18n/es/README.md">🇪🇸 Español</a> ·
+  <a href="i18n/de/README.md">🇩🇪 Deutsch</a> ·
+  <a href="i18n/fr/README.md">🇫🇷 Français</a> ·
+  <a href="i18n/it/README.md">🇮🇹 Italiano</a> ·
+  <a href="i18n/nl/README.md">🇳🇱 Nederlands</a> ·
+  <a href="i18n/pl/README.md">🇵🇱 Polski</a> ·
+  <a href="i18n/cs/README.md">🇨🇿 Čeština</a> ·
+  <a href="i18n/ro/README.md">🇷🇴 Română</a> ·
+  <a href="i18n/hu/README.md">🇭🇺 Magyar</a> ·
+  <a href="i18n/el/README.md">🇬🇷 Ελληνικά</a> ·
+  <a href="i18n/sv/README.md">🇸🇪 Svenska</a> ·
+  <a href="i18n/da/README.md">🇩🇰 Dansk</a> ·
+  <a href="i18n/no/README.md">🇳🇴 Norsk</a> ·
+  <a href="i18n/fi/README.md">🇫🇮 Suomi</a> ·
+  <a href="i18n/ru/README.md">🇷🇺 Русский</a> ·
+  <a href="i18n/uk/README.md">🇺🇦 Українська</a> ·
+  <a href="i18n/tr/README.md">🇹🇷 Türkçe</a> ·
+  <a href="i18n/he/README.md">🇮🇱 עברית</a> ·
+  <a href="i18n/ar/README.md">🇸🇦 العربية</a> ·
+  <a href="i18n/fa/README.md">🇮🇷 فارسی</a> ·
+  <a href="i18n/hi/README.md">🇮🇳 हिन्दी</a> ·
+  <a href="i18n/bn/README.md">🇧🇩 বাংলা</a> ·
+  <a href="i18n/ur/README.md">🇵🇰 اردو</a> ·
+  <a href="i18n/th/README.md">🇹🇭 ไทย</a> ·
+  <a href="i18n/vi/README.md">🇻🇳 Tiếng Việt</a> ·
+  <a href="i18n/id/README.md">🇮🇩 Bahasa Indonesia</a> ·
+  <a href="i18n/tl/README.md">🇵🇭 Tagalog</a>
+</p>
+
+</details>
+
+### Sponsors
+
+<p align="center">
+  <a href="https://serpapi.com/ai-engineering-from-scratch"><picture><source media="(min-width: 768px)" srcset="assets/sponsors/serpapi-banner-compact.png" width="48%"><img src="assets/sponsors/serpapi-banner-compact.png" alt="SerpApi. Web Search API for your AI apps. Available in Markdown and JSON for any integration." width="440"></picture></a>
+</p>
+
+<p align="center">
+  <sub><span>Your support keeps every lesson free and open source.</span> <a href="#supporters">See all supporters</a> · <a href="SPONSORS.md">Become a sponsor</a></sub>
+</p>
+
+<a id="see-what-you-will-build-and-keep"></a>
+<a id="learning-routes"></a>
+
+## Learning paths
+
+| Route | Starting lesson |
+|---|---|
+| Model foundations | [Setup and tooling](https://aiengineeringfromscratch.com/lesson?path=phases/00-setup-and-tooling/01-dev-environment) |
+| LLM systems | [Prompt engineering](https://aiengineeringfromscratch.com/lesson?path=phases/11-llm-engineering/01-prompt-engineering) |
+| Agents and delivery | [The agent loop](https://aiengineeringfromscratch.com/lesson?path=phases/14-agent-engineering/01-the-agent-loop) |
+
+[Compare career paths](https://aiengineeringfromscratch.com/learning-paths.html) · [Prerequisites and study time](#study-guide)
+
+<a id="interactive-lab"></a>
+
+### Gradient descent
+
+Twenty starting points follow gradient descent on a quadratic loss. The graph shows their positions and mean loss after each update.
+
+<p align="center">
+  <a href="https://aiengineeringfromscratch.com/lesson?path=phases/01-math-foundations/08-optimization#loss-landscape-visualization">
+    <picture>
+      <source media="(max-width: 600px) and (prefers-color-scheme: dark) and (prefers-reduced-motion: reduce)" srcset="assets/readme/101-gradient-mobile-dark.png">
+      <source media="(max-width: 600px) and (prefers-reduced-motion: reduce)" srcset="assets/readme/101-gradient-mobile-light.png">
+      <source media="(prefers-color-scheme: dark) and (prefers-reduced-motion: reduce)" srcset="assets/readme/101-gradient-dark.png">
+      <source media="(prefers-reduced-motion: reduce)" srcset="assets/readme/101-gradient-light.png">
+      <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset="assets/readme/101-gradient-mobile-dark.gif">
+      <source media="(max-width: 600px)" srcset="assets/readme/101-gradient-mobile-light.gif">
+      <source media="(prefers-color-scheme: dark)" srcset="assets/readme/101-gradient-dark.gif">
+      <img src="assets/readme/101-gradient-light.gif" alt="Gradient descent moves scattered starting points toward the loss minimum. The mean loss decreases with each update." width="840">
+    </picture>
+  </a>
+</p>
+
+[Adjust the learning rate in the lesson](https://aiengineeringfromscratch.com/lesson?path=phases/01-math-foundations/08-optimization#loss-landscape-visualization) · [Compare GD, momentum, and Adam in code](phases/01-math-foundations/08-optimization/code/optimizers.py)
+
+<a id="project-challenges"></a>
+
+### Projects
+
+Three projects with staged starters, reference implementations, and local graders. Run commands from the repository root after [setup](#local-setup). Starters fail until you implement the stages.
+
+<details>
+<summary><strong>01 · Retrieval Evaluation Lab</strong> · Python · Ranking metrics and regression checks</summary>
+
+A candidate improves mean NDCG while one query ranks its most relevant evidence lower. Build a query-by-query comparison that reports the regression and can fail a release check.
+
+Use Python 3.10+. Review [RAG](phases/11-llm-engineering/06-rag/docs/en.md) and [model evaluation](phases/02-ml-fundamentals/09-model-evaluation/docs/en.md). Implement ranking validation, precision and recall, rank-sensitive metrics, then system comparison.
+
+```bash
+python3 scripts/project_test.py retrieval-evaluation-lab \
+  --init learning-artifacts/retrieval-evaluation-lab
+python3 scripts/project_test.py retrieval-evaluation-lab \
+  --stage 1 --path learning-artifacts/retrieval-evaluation-lab --strict
+python3 scripts/project_test.py retrieval-evaluation-lab \
+  --all --path learning-artifacts/retrieval-evaluation-lab --strict
 ```
-░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒
+
+**Keep:** a reproducible comparison with per-query deltas and the judgments used to score them. Metrics describe those judgments; they do not establish answer correctness.
+
+[Start the project](https://aiengineeringfromscratch.com/project.html?id=retrieval-evaluation-lab) · [Inspect the reference](projects/retrieval-evaluation-lab/solution/) · [Run on your own inputs](projects/retrieval-evaluation-lab/README.md#run-with-your-own-inputs)
+
+</details>
+
+<details>
+<summary><strong>02 · Agent Trace Debugger</strong> · TypeScript · Trace parsing and timing</summary>
+
+A supplied trace still takes 100 ms, but total token usage rises by 200 and one span starts failing. Separate overlapping child work from parent execution time, then produce a report that exposes the change.
+
+Use Node.js 22.18+ and Python 3 for the grader. Implement JSONL parsing, parent validation, interval arithmetic, then an inspectable timeline.
+
+```bash
+python3 scripts/project_test.py agent-trace-debugger \
+  --init learning-artifacts/agent-trace-debugger
+python3 scripts/project_test.py agent-trace-debugger \
+  --stage 1 --path learning-artifacts/agent-trace-debugger --strict
+python3 scripts/project_test.py agent-trace-debugger \
+  --all --path learning-artifacts/agent-trace-debugger --strict
 ```
 
-> **84% of students already use AI tools. Only 18% feel prepared to use them
-> professionally.** This curriculum closes that gap.
->
-> 503 lessons. 20 phases. ~320 hours. Python, TypeScript, Rust, Julia. Every lesson ships
-> a reusable artifact: a prompt, a skill, an agent, an MCP server. Free, open source, MIT.
->
-> You don't just learn AI. You build it. End-to-end. By hand.
+**Keep:** the input trace, an HTML timeline, and a JSON regression report. Preserve exclusive per-span token counts so parent and child usage are not counted twice.
 
-<!-- STATS:START (generated from site/stats.json by build.js — do not edit by hand) -->
-<p align="center"><sub><b>150,639</b> readers &nbsp;·&nbsp; <b>241,669</b> page views in the last 30 days &nbsp;·&nbsp; as of 2026-06-07</sub></p>
-<!-- STATS:END -->
+[Start the project](https://aiengineeringfromscratch.com/project.html?id=agent-trace-debugger) · [Inspect the reference](projects/agent-trace-debugger/solution/) · [Explore timing interactively](https://aiengineeringfromscratch.com/project.html?id=agent-trace-debugger&stage=03-timing)
 
-## How this works
+</details>
 
-Most AI material teaches in scattered pieces. A paper here, a fine-tuning post there, a
-flashy agent demo somewhere else. The pieces rarely line up. You ship a chatbot but can't
-explain its loss curve. You hook a function to an agent but can't say what attention does
-inside the model that's calling it.
+<details>
+<summary><strong>03 · Tool Call Firewall</strong> · Rust · Role checks and approval receipts</summary>
 
-This curriculum is the spine. 20 phases, 503 lessons, four languages: Python, TypeScript,
-Rust, Julia. Linear algebra at one end, autonomous swarms at the other. Every algorithm
-gets built from raw math first. Backprop. Tokenizer. Attention. Agent loop. By the time
-PyTorch shows up, you already know what it's doing under the hood.
+A write changes after review, or an approval is replayed. Validate the call envelope, check the caller's role and path, then consume an approval bound to the exact request and content.
 
-Each lesson runs the same loop: read the problem, derive the math, write the code, run
-the test, keep the artifact. No five-minute videos, no copy-paste deploys, no hand-holding.
-Free, open source, and built to run on your own laptop.
+Use Rust and Python 3.10+. Review [tool schema design](phases/13-tools-and-protocols/05-tool-schema-design/docs/en.md) and [security boundaries](phases/17-infrastructure-and-production/25-security-secrets-audit/docs/en.md). The caller application supplies identity; the model proposes an operation.
 
+```bash
+python3 scripts/project_test.py tool-call-firewall \
+  --init learning-artifacts/tool-call-firewall
+python3 scripts/project_test.py tool-call-firewall \
+  --stage 1 --path learning-artifacts/tool-call-firewall --strict
+python3 scripts/project_test.py tool-call-firewall \
+  --all --path learning-artifacts/tool-call-firewall --strict
 ```
-░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒
+
+**Keep:** an audit receipt showing the requested operation and the policy decision. Approvals are single-use within one invocation; this project does not provide persistent authorization or an operating-system sandbox.
+
+[Start the project](https://aiengineeringfromscratch.com/project.html?id=tool-call-firewall) · [Inspect the reference](projects/tool-call-firewall/solution/) · [Explore approval boundaries](https://aiengineeringfromscratch.com/project.html?id=tool-call-firewall&stage=03-consume-a-request-bound-approval-once)
+
+</details>
+
+[Browse all projects](https://aiengineeringfromscratch.com/projects.html) · [Career practice guide](learning-paths/CAREER-PRACTICE.md)
+
+## Choose how to learn
+
+### On the website
+
+Open any completed lesson on [aiengineeringfromscratch.com](https://aiengineeringfromscratch.com) or expand a phase under [Contents](#contents). No setup, no cloning.
+
+### With an AI tutor
+
+If Node.js, `npx`, and a skill-capable coding agent are already installed, your coding agent can become your tutor. A repository clone is not needed to install or read the tutor. Runnable focused-path labs need `python3`. Agent Skills host labs also need a selected host and a writable user or project skill scope.
+
+```bash
+npx skills add rohitg00/ai-engineering-from-scratch
 ```
+
+Choose the host and scope when the installer asks. Use `start-learning` in Codex, `/start-learning` in Claude Code, or ask your host to use the skill by name.
+
+<details>
+<summary>Tutor setup and host commands</summary>
+
+Check the local requirements first:
+
+```bash
+node --version
+npx --version
+python3 --version
+```
+
+`skills` writes to the host and scope selected during installation, such as
+`.claude/skills/`, `.cursor/skills/`, `.codex/skills/`, or another supported
+skills folder. Verify that the selected host discovers that exact destination.
+
+Invocation syntax belongs to the host, not to the portable `SKILL.md` format:
+
+| Host | Start the course | Start Model Context Protocol (MCP) | Start Agent Skills | Run a phase quiz |
+|---|---|---|---|---|
+| Codex | `start-learning`, or choose it from `/skills` | `learn-mcp`, or choose it from `/skills` | `learn-agent-skills`, or choose it from `/skills` | `check-understanding 13`, or choose it from `/skills` |
+| Claude Code | `/start-learning` | `/learn-mcp` | `/learn-agent-skills` | `/check-understanding 13` |
+| Other compatible hosts | `Use start-learning to begin the course.` | `Use learn-mcp to start the Model Context Protocol (MCP) path.` | `Use learn-agent-skills to start the Agent Skills Engineering path.` | `Use check-understanding to quiz me on Phase 13.` |
+
+A ten-question placement quiz maps what you already know to a starting phase and
+saves a personalized study plan to `LEARNING.md`. From there, the `learn` skill
+teaches one lesson per session: concept, math, code, quiz. It streams lessons
+straight from this repo, and the `course-guide` skill jumps you to the exact
+lesson that covers anything you are stuck on. In Codex, invoke these skills with
+`learn` and `course-guide`; in Claude Code, use `/learn` and `/course-guide`;
+in other compatible hosts, ask to use the skill by name.
+
+Only want Model Context Protocol (MCP)? Use the MCP invocation for your host. It creates
+`MCP-LEARNING.md` and follows one 17-lesson route through stateless
+requests, transports, bidirectional work, security, reliability, registry
+governance, and conformance evidence. The exact order and checkpoints live in
+the [Model Context Protocol (MCP) manifest](learning-paths/model-context-protocol.json).
+
+Only want Agent Skills? Use the Agent Skills invocation for your host. It
+creates `AGENT-SKILLS-LEARNING.md` and follows one coherent five-lesson route:
+contract, discovery, invocation, sandbox boundaries, then release evals and
+real-host portability. Start on the web with the
+[Agent Skills path](https://aiengineeringfromscratch.com/lesson?path=phases/13-tools-and-protocols/22-skills-and-agent-sdks&learningPath=agent-skills).
+
+The installer lists the hosts it can configure and asks where to install. If
+you do not have Node.js, `npx`, `python3`, a supported host, or a writable
+scope yet, use the website or read `docs/en.md` manually. That path teaches the
+concepts, but real-host discovery, invocation, script, and uninstall evidence
+remains pending until the preflight is available. Read the lessons at
+[aiengineeringfromscratch.com](https://aiengineeringfromscratch.com).
+
+### The learning skills
+
+| Skill | What it does |
+|---|---|
+| [`start-learning`](skills/start-learning/SKILL.md) | One-time onboarding: why you're learning, placement quiz, personalized plan saved to `LEARNING.md`. |
+| [`learn`](skills/learn/SKILL.md) | The tutor loop. Warm-up recall, then the next lesson taught interactively, then its quiz; records progress and a review queue. |
+| [`course-guide`](skills/course-guide/SKILL.md) | Topic router. "Where do I learn attention?" or "my loss is NaN" → the exact lessons, with links. |
+| [`learn-mcp`](skills/learn-mcp/SKILL.md) | Focused Model Context Protocol (MCP) tutor. Creates `MCP-LEARNING.md`, follows the 17-lesson manifest, and records wire, security, reliability, and conformance evidence. |
+| [`learn-agent-skills`](skills/learn-agent-skills/SKILL.md) | Focused Agent Skills tutor. Creates `AGENT-SKILLS-LEARNING.md`, teaches lessons 22, 24, 25, 26, and 27, and records real-host evidence. |
+| [`learn-reverse-engineering`](skills/learn-reverse-engineering/SKILL.md) | Focused Reverse Engineering tutor. Creates `REVERSE-ENGINEERING-LEARNING.md`, teaches Phase 13 lessons 32 to 45 on programs you build yourself, and records lab evidence. |
+| [`claude-certification`](skills/claude-certification/SKILL.md) | Certification tutor. Chooses CCAO-F, CCDV-F, CCAR-F, or CCAR-P; teaches each lesson; runs labs; reviews artifacts; administers diagnostics and mocks; saves progress. |
+| [`mcpa-certification`](skills/mcpa-certification/SKILL.md) | MCPA tutor. Follows the 34-lesson `mcpa-f` route on the 2026-07-28 protocol; teaches each lesson; runs labs and the wire checker; administers the diagnostic and three mocks; saves progress. |
+| [`find-your-level`](skills/find-your-level/SKILL.md) | Ten-question placement quiz. Maps your knowledge to a starting phase and produces a personalized path with hour estimates. |
+| [`check-understanding <phase>`](skills/check-understanding/SKILL.md) | Per-phase quiz, eight questions, with feedback and specific lessons to review. Use the Codex, Claude Code, or natural-language form in the invocation table above. |
+
+</details>
+
+<a id="local-setup"></a>
+
+### Run local code
+
+```bash
+git clone https://github.com/rohitg00/ai-engineering-from-scratch.git
+cd ai-engineering-from-scratch
+python3 phases/00-setup-and-tooling/01-dev-environment/code/verify.py --route beginner
+python3 phases/01-math-foundations/01-linear-algebra-intuition/code/vectors.py
+```
+
+The preflight separates requirements needed now from tools needed later. Every
+required failure includes the detected reason and a corrective command. The
+`vectors.py` command is a dependency-free lesson and ends by showing that a matrix
+times a vector is the operation inside a neural network layer. Save that
+terminal output as your first evidence.
+
+<details>
+<summary>Use every lesson the same way</summary>
+
+### Use every lesson the same way
+
+1. **Read** `docs/en.md` and explain the core idea in your own words.
+2. **Type and build** the important code instead of treating the code block as decoration.
+3. **Run** the lesson command from the repository root, the directory containing `README.md` and `phases/`.
+4. **Keep evidence**: the command, working directory, exit code, meaningful output, and the artifact you changed or produced.
+5. **Continue** only when you can explain the output and make one small change without guessing.
+
+Commands in lesson pages are paths from the repository root unless the lesson
+explicitly says to change directories. If a lesson offers several languages,
+run the implementation for the language you are learning.
+
+</details>
+
+<a id="study-guide"></a>
+
+## Choose a learning path
+
+You do not need to scan 542 lessons before beginning. Pick one goal. Each link
+opens the same curriculum on GitHub or the website, and both versions use the
+same lesson code.
+
+| Your goal | Learn on GitHub | Learn on the website |
+|---|---|---|
+| I am new and want the complete foundation | [Phase 0: Setup and Tooling](phases/00-setup-and-tooling/) | [Dev Environment](https://aiengineeringfromscratch.com/lesson?path=phases/00-setup-and-tooling/01-dev-environment) |
+| I know Python and want math plus ML foundations | [Phase 1: Math Foundations](phases/01-math-foundations/) | [Linear Algebra Intuition](https://aiengineeringfromscratch.com/lesson?path=phases/01-math-foundations/01-linear-algebra-intuition) |
+| I want to build production LLM applications | [Phase 11: LLM Engineering](phases/11-llm-engineering/) | [Prompt Engineering](https://aiengineeringfromscratch.com/lesson?path=phases/11-llm-engineering/01-prompt-engineering) |
+| I want to build agents | [Phase 14: Agent Engineering](phases/14-agent-engineering/) | [The Agent Loop](https://aiengineeringfromscratch.com/lesson?path=phases/14-agent-engineering/01-the-agent-loop) |
+| I want to use coding agents on real repositories | [Agent-Assisted Engineering path](learning-paths/using-coding-agents.json) | [Agent-Assisted Engineering](https://aiengineeringfromscratch.com/lesson?path=phases/14-agent-engineering/31-agent-workbench-why-models-fail&learningPath=using-coding-agents) |
+| I want to shape the right build before implementation | [Product Judgment and Delivery path](learning-paths/shaping-the-build.json) | [Product Judgment and Delivery](https://aiengineeringfromscratch.com/lesson?path=phases/14-agent-engineering/47-outcomes-before-output&learningPath=shaping-the-build) |
+
+Not sure where you fit? Use the [`start-learning` placement tutor](skills/start-learning/SKILL.md)
+or the [website prerequisites guide](https://aiengineeringfromscratch.com/prereqs.html).
+
+Compare four core domains and six career routes in the [AI Engineering Learning Paths](https://aiengineeringfromscratch.com/learning-paths.html).
+
+<details>
+<summary>Focused MCP, Agent Skills, and Reverse Engineering paths</summary>
+
+| Your goal | Learn on GitHub | Learn on the website |
+|---|---|---|
+| I want to build with Model Context Protocol (MCP) | [Model Context Protocol (MCP) route](phases/13-tools-and-protocols/README.md#model-context-protocol-mcp-path) | [Model Context Protocol (MCP) path](https://aiengineeringfromscratch.com/lesson?path=phases/13-tools-and-protocols/06-mcp-fundamentals&learningPath=model-context-protocol) |
+| I want to write and ship Agent Skills | [Focused Agent Skills route](phases/13-tools-and-protocols/README.md#agent-skills-fast-path) | [Agent Skills path](https://aiengineeringfromscratch.com/lesson?path=phases/13-tools-and-protocols/22-skills-and-agent-sdks&learningPath=agent-skills) |
+| I want to read compiled programs | [Reverse Engineering route](phases/13-tools-and-protocols/README.md#reverse-engineering-path) | [Reverse Engineering path](https://aiengineeringfromscratch.com/lesson?path=phases/13-tools-and-protocols/32-program-anatomy-elf-from-scratch&learningPath=reverse-engineering) |
+
+</details>
+
+<details>
+<summary>Prerequisites and study time</summary>
+
+### Prerequisites
+
+- You can write code (any language; Python helps).
+- You want to understand how AI **actually works**, not just call APIs.
+
+## Where to start
+
+| Background | Start at | Estimated time |
+|---|---|---|
+| New to programming and AI | Phase 0 — Setup | ~306 hours |
+| Know Python, new to ML | Phase 1 — Math Foundations | ~270 hours |
+| Know ML, new to deep learning | Phase 3 — Deep Learning Core | ~200 hours |
+| Know deep learning, want LLMs and agents | Phase 10 — LLMs from Scratch | ~100 hours |
+| Senior engineer, only want agent engineering | Phase 14 — Agent Engineering | ~60 hours |
+| Only want to build production MCP systems | [Model Context Protocol (MCP) path](learning-paths/model-context-protocol.json) | ~23 hours 15 min |
+| Only want to build production Agent Skills | [Agent Skills Engineering path](learning-paths/agent-skills.json) | ~9.5 hours |
+| Only want to learn reverse engineering | [Reverse Engineering path](learning-paths/reverse-engineering.json) | ~32.5 hours |
+
+</details>
 
 ## The shape of the curriculum
 
@@ -80,164 +394,6 @@ flowchart TB
   P18 --> P19
 ```
 
-```
-░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒
-```
-
-## The shape of a lesson
-
-Each lesson lives in its own folder, with the same structure across the entire curriculum:
-
-```
-phases/<NN>-<phase-name>/<NN>-<lesson-name>/
-├── code/      runnable implementations (Python, TypeScript, Rust, Julia)
-├── docs/
-│   └── en.md  lesson narrative
-└── outputs/   prompts, skills, agents, or MCP servers this lesson produces
-```
-
-Every lesson follows six beats. The *Build It / Use It* split is the spine — you implement the
-algorithm from scratch first, then run the same thing through the production library. You
-understand what the framework is doing because you wrote the smaller version yourself.
-
-```mermaid
-%%{init: {'theme':'base','themeVariables':{'primaryColor':'#fafaf5','primaryTextColor':'#1a1a1a','primaryBorderColor':'#3553ff','lineColor':'#3553ff','fontFamily':'JetBrains Mono','fontSize':'13px'}}}%%
-flowchart LR
-  M["MOTTO<br/><sub>one-line core idea</sub>"] --> Pr["PROBLEM<br/><sub>concrete pain</sub>"]
-  Pr --> C["CONCEPT<br/><sub>diagrams &amp; intuition</sub>"]
-  C --> B["BUILD IT<br/><sub>raw math, no frameworks</sub>"]
-  B --> U["USE IT<br/><sub>same thing in PyTorch / sklearn</sub>"]
-  U --> S["SHIP IT<br/><sub>prompt · skill · agent · MCP</sub>"]
-```
-
-## Getting started
-
-Three ways in. Pick one.
-
-**Option A — read.** Open any completed lesson on
-[aiengineeringfromscratch.com](https://aiengineeringfromscratch.com) or expand a phase under
-[Contents](#contents). No setup, no cloning.
-
-**Option B — clone and run.**
-
-```bash
-git clone https://github.com/rohitg00/ai-engineering-from-scratch.git
-cd ai-engineering-from-scratch
-python phases/01-math-foundations/01-linear-algebra-intuition/code/vectors.py
-```
-
-**Option C — find your level *(recommended)*.** Skip ahead intelligently. Inside Claude, Cursor, Codex, OpenClaw, Hermes, or any agent with the curriculum skills installed:
-
-```bash
-/find-your-level
-```
-
-Ten questions. Maps your knowledge to a starting phase, builds a personalized path with hour
-estimates. After each phase:
-
-```bash
-/check-understanding 3        # quiz yourself on phase 3
-ls phases/03-deep-learning-core/05-loss-functions/outputs/
-# ├── prompt-loss-function-selector.md
-# └── prompt-loss-debugger.md
-```
-
-### Prerequisites
-
-- You can write code (any language; Python helps).
-- You want to understand how AI **actually works**, not just call APIs.
-
-### Built-in agent skills (Claude, Cursor, Codex, OpenClaw, Hermes)
-
-| Skill | What it does |
-|---|---|
-| [`/find-your-level`](.claude/skills/find-your-level/SKILL.md) | Ten-question placement quiz. Maps your knowledge to a starting phase and produces a personalized path with hour estimates. |
-| [`/check-understanding <phase>`](.claude/skills/check-understanding/SKILL.md) | Per-phase quiz, eight questions, with feedback and specific lessons to review. |
-
-```
-░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒
-```
-
-## Every lesson ships something
-
-Other curricula end with *"congratulations, you learned X."* Each lesson here ends with a
-**reusable tool** you can install or paste into your daily workflow.
-
-<table>
-<tr>
-<th align="left" width="25%"><img src="site/assets/figures/001-a-prompts.svg" width="96" height="96" alt="FIG_001.A prompts"/><br/><sub>FIG_001 · A</sub><br/><b>PROMPTS</b></th>
-<th align="left" width="25%"><img src="site/assets/figures/001-b-skills.svg" width="96" height="96" alt="FIG_001.B skills"/><br/><sub>FIG_001 · B</sub><br/><b>SKILLS</b></th>
-<th align="left" width="25%"><img src="site/assets/figures/001-c-agents.svg" width="96" height="96" alt="FIG_001.C agents"/><br/><sub>FIG_001 · C</sub><br/><b>AGENTS</b></th>
-<th align="left" width="25%"><img src="site/assets/figures/001-d-mcp-servers.svg" width="96" height="96" alt="FIG_001.D MCP servers"/><br/><sub>FIG_001 · D</sub><br/><b>MCP SERVERS</b></th>
-</tr>
-<tr>
-<td valign="top">Paste into any AI assistant for expert-level help on a narrow task.</td>
-<td valign="top">Drop into Claude, Cursor, Codex, OpenClaw, Hermes, or any agent that reads <code>SKILL.md</code>.</td>
-<td valign="top">Deploy as autonomous workers — you wrote the loop yourself in Phase 14.</td>
-<td valign="top">Plug into any MCP-compatible client. Built end-to-end in Phase 13.</td>
-</tr>
-</table>
-
-> Install the lot with `python3 scripts/install_skills.py`. Real tools, not homework.
-> By the end of the curriculum, you have a portfolio of 503 artifacts you actually
-> understand because you built them.
-
-### FIG_002 · A worked sample
-
-Phase 14, lesson 1: the agent loop. ~120 lines of pure Python, no dependencies.
-
-<table>
-<tr>
-<td valign="top" width="50%">
-
-**`code/agent_loop.py`** &nbsp; <sub><i>build it</i></sub>
-
-```python
-def run(query, tools):
-    history = [user(query)]
-    for step in range(MAX_STEPS):
-        msg = llm(history)
-        if msg.tool_calls:
-            for call in msg.tool_calls:
-                result = tools[call.name](**call.args)
-                history.append(tool_result(call.id, result))
-            continue
-        return msg.content
-    raise StepLimitExceeded
-```
-
-</td>
-<td valign="top" width="50%">
-
-**`outputs/skill-agent-loop.md`** &nbsp; <sub><i>ship it</i></sub>
-
-```markdown
----
-name: agent-loop
-description: ReAct-style loop for any tool list
-phase: 14
-lesson: 01
----
-
-Implement a minimal agent loop that...
-```
-
-**`outputs/prompt-debug-agent.md`**
-
-```markdown
-You are an agent debugger. Given the trace
-of an agent run, identify the step where
-the agent went wrong and explain why...
-```
-
-</td>
-</tr>
-</table>
-
-```
-░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒
-```
-
 <a id="contents"></a>
 
 ## Contents
@@ -245,7 +401,7 @@ the agent went wrong and explain why...
 Twenty phases. Click any phase to expand its lesson list.
 
 <a id="phase-0"></a>
-### Phase 0: Setup & Tooling `12 lessons`
+### Phase 0: Setup & Tooling `13 lessons`
 > Get your environment ready for everything that follows.
 
 | # | Lesson | Type | Lang |
@@ -262,6 +418,7 @@ Twenty phases. Click any phase to expand its lesson list.
 | 10 | [Terminal & Shell](phases/00-setup-and-tooling/10-terminal-and-shell/) | Learn | — |
 | 11 | [Linux for AI](phases/00-setup-and-tooling/11-linux-for-ai/) | Learn | — |
 | 12 | [Debugging & Profiling](phases/00-setup-and-tooling/12-debugging-and-profiling/) | Build | Python |
+| 13 | [Python for AI Engineering](phases/00-setup-and-tooling/13-python-for-ai-engineering/) | Build | Python |
 
 <details id="phase-1">
 <summary><b>Phase 1 — Math Foundations</b> &nbsp;<code>22 lessons</code>&nbsp; <em>The intuition behind every AI algorithm, through code.</em></summary>
@@ -295,7 +452,7 @@ Twenty phases. Click any phase to expand its lesson list.
 </details>
 
 <details id="phase-2">
-<summary><b>Phase 2 — ML Fundamentals</b> &nbsp;<code>18 lessons</code>&nbsp; <em>Classical ML — still the backbone of most production AI.</em></summary>
+<summary><b>Phase 2 — ML Fundamentals</b> &nbsp;<code>21 lessons</code>&nbsp; <em>Classical ML — still the backbone of most production AI.</em></summary>
 <br/>
 
 | # | Lesson | Type | Lang |
@@ -318,6 +475,9 @@ Twenty phases. Click any phase to expand its lesson list.
 | 16 | [Anomaly Detection](phases/02-ml-fundamentals/16-anomaly-detection/) | Build | Python |
 | 17 | [Handling Imbalanced Data](phases/02-ml-fundamentals/17-imbalanced-data/) | Build | Python |
 | 18 | [Feature Selection](phases/02-ml-fundamentals/18-feature-selection/) | Build | Python |
+| 19 | [ML System Design — From Problem to Deployed Model](phases/02-ml-fundamentals/19-ml-system-design/) | Build | Python |
+| 20 | [Monitoring Models in Production — Data Drift and Concept Drift](phases/02-ml-fundamentals/20-model-monitoring-and-drift/) | Build | Python |
+| 21 | [Feature Stores and Training-Serving Skew](phases/02-ml-fundamentals/21-feature-stores-and-training-serving-skew/) | Build | Python |
 
 </details>
 
@@ -445,7 +605,7 @@ Twenty phases. Click any phase to expand its lesson list.
 </details>
 
 <details id="phase-7">
-<summary><b>Phase 7 — Transformers Deep Dive</b> &nbsp;<code>14 lessons</code>&nbsp; <em>The architecture that changed everything.</em></summary>
+<summary><b>Phase 7 — Transformers Deep Dive</b> &nbsp;<code>16 lessons</code>&nbsp; <em>The architecture that changed everything.</em></summary>
 <br/>
 
 | # | Lesson | Type | Lang |
@@ -470,7 +630,7 @@ Twenty phases. Click any phase to expand its lesson list.
 </details>
 
 <details id="phase-8">
-<summary><b>Phase 8 — Generative AI</b> &nbsp;<code>14 lessons</code>&nbsp; <em>Create images, video, audio, 3D, and more.</em></summary>
+<summary><b>Phase 8 — Generative AI</b> &nbsp;<code>15 lessons</code>&nbsp; <em>Create images, video, audio, 3D, and more.</em></summary>
 <br/>
 
 | # | Lesson | Type | Lang |
@@ -515,7 +675,7 @@ Twenty phases. Click any phase to expand its lesson list.
 </details>
 
 <details id="phase-10">
-<summary><b>Phase 10 — LLMs from Scratch</b> &nbsp;<code>22 lessons</code>&nbsp; <em>Build, train, and understand large language models.</em></summary>
+<summary><b>Phase 10 — LLMs from Scratch</b> &nbsp;<code>24 lessons</code>&nbsp; <em>Build, train, and understand large language models.</em></summary>
 <br/>
 
 | # | Lesson | Type | Lang |
@@ -568,7 +728,7 @@ Twenty phases. Click any phase to expand its lesson list.
 | 13 | [Building a Production LLM App](phases/11-llm-engineering/13-production-app/) | Build | Python |
 | 14 | [Model Context Protocol (MCP)](phases/11-llm-engineering/14-model-context-protocol/) | Build | Python |
 | 15 | [Prompt Caching & Context Caching](phases/11-llm-engineering/15-prompt-caching/) | Build | Python |
-| 16 | [LangGraph: State Machines for Agents](phases/11-llm-engineering/16-langgraph-state-machines/) | Build | Python |
+| 16 | [Agent State Machines — Graphs, Nodes, Checkpoints](phases/11-llm-engineering/16-langgraph-state-machines/) | Build | Python |
 | 17 | [Agent Framework Tradeoffs](phases/11-llm-engineering/17-agent-framework-tradeoffs/) | Learn | Python |
 
 </details>
@@ -608,7 +768,7 @@ Twenty phases. Click any phase to expand its lesson list.
 </details>
 
 <details id="phase-13">
-<summary><b>Phase 13 — Tools & Protocols</b> &nbsp;<code>23 lessons</code>&nbsp; <em>The interfaces between AI and the real world.</em></summary>
+<summary><b>Phase 13 — Tools & Protocols</b> &nbsp;<code>45 lessons</code>&nbsp; <em>The interfaces between AI and the real world.</em></summary>
 <br/>
 
 | # | Lesson | Type | Lang |
@@ -618,29 +778,63 @@ Twenty phases. Click any phase to expand its lesson list.
 | 03 | [Parallel and Streaming Tool Calls](phases/13-tools-and-protocols/03-parallel-and-streaming-tool-calls/) | Build | Python |
 | 04 | [Structured Output](phases/13-tools-and-protocols/04-structured-output/) | Build | Python |
 | 05 | [Tool Schema Design](phases/13-tools-and-protocols/05-tool-schema-design/) | Learn | Python |
-| 06 | [MCP Fundamentals](phases/13-tools-and-protocols/06-mcp-fundamentals/) | Learn | Python |
-| 07 | [Building an MCP Server](phases/13-tools-and-protocols/07-building-an-mcp-server/) | Build | Python |
-| 08 | [Building an MCP Client](phases/13-tools-and-protocols/08-building-an-mcp-client/) | Build | Python |
-| 09 | [MCP Transports](phases/13-tools-and-protocols/09-mcp-transports/) | Learn | Python |
-| 10 | [MCP Resources and Prompts](phases/13-tools-and-protocols/10-mcp-resources-and-prompts/) | Build | Python |
-| 11 | [MCP Sampling](phases/13-tools-and-protocols/11-mcp-sampling/) | Build | Python |
-| 12 | [MCP Roots and Elicitation](phases/13-tools-and-protocols/12-mcp-roots-and-elicitation/) | Build | Python |
-| 13 | [MCP Async Tasks](phases/13-tools-and-protocols/13-mcp-async-tasks/) | Build | Python |
-| 14 | [MCP Apps](phases/13-tools-and-protocols/14-mcp-apps/) | Build | Python |
-| 15 | [MCP Security I — Tool Poisoning](phases/13-tools-and-protocols/15-mcp-security-tool-poisoning/) | Learn | Python |
-| 16 | [MCP Security II — OAuth 2.1](phases/13-tools-and-protocols/16-mcp-security-oauth-2-1/) | Build | Python |
-| 17 | [MCP Gateways and Registries](phases/13-tools-and-protocols/17-mcp-gateways-and-registries/) | Learn | Python |
-| 18 | [MCP Auth in Production — Enrollment, JWKS Refresh, Audience Pinning](phases/13-tools-and-protocols/18-mcp-auth-production/) | Build | Python |
+| 06 | [MCP Fundamentals: Stateless Requests and JSON-RPC](phases/13-tools-and-protocols/06-mcp-fundamentals/) | Learn | Python |
+| 07 | [Building an MCP Server: Stateless Python and TypeScript](phases/13-tools-and-protocols/07-building-an-mcp-server/) | Build | Python, TypeScript |
+| 08 | [Building an MCP Client: Discovery, Routing, and Dual-Era Fallback](phases/13-tools-and-protocols/08-building-an-mcp-client/) | Build | Python |
+| 09 | [MCP Transports: stdio and Stateless Streamable HTTP](phases/13-tools-and-protocols/09-mcp-transports/) | Learn | Python |
+| 10 | [MCP Resources and Prompts: Addressable Context for Stateless Servers](phases/13-tools-and-protocols/10-mcp-resources-and-prompts/) | Build | Python |
+| 11 | [MCP Model Input: Sampling Migration and Stateless MRTR](phases/13-tools-and-protocols/11-mcp-sampling/) | Build | Python |
+| 12 | [Explicit Scope and Stateless Elicitation](phases/13-tools-and-protocols/12-mcp-roots-and-elicitation/) | Build | Python |
+| 13 | [MCP Tasks Extension: Durable Work on a Stateless Core](phases/13-tools-and-protocols/13-mcp-async-tasks/) | Build | Python |
+| 14 | [MCP Apps on the Stateless Protocol](phases/13-tools-and-protocols/14-mcp-apps/) | Build | Python |
+| 15 | [MCP Security: Poisoned Metadata, Routing, and MRTR State](phases/13-tools-and-protocols/15-mcp-security-tool-poisoning/) | Learn | Python |
+| 16 | [MCP Authorization: CIMD, Issuer Binding, PKCE, and Step-Up](phases/13-tools-and-protocols/16-mcp-security-oauth-2-1/) | Build | Python |
+| 17 | [Stateless MCP Gateways and Registry Admission](phases/13-tools-and-protocols/17-mcp-gateways-and-registries/) | Learn | Python |
+| 18 | [MCP Auth in Production: Issuer-Bound Enrollment and Tokens](phases/13-tools-and-protocols/18-mcp-auth-production/) | Build | Python |
 | 19 | [A2A Protocol](phases/13-tools-and-protocols/19-a2a-protocol/) | Build | Python |
 | 20 | [OpenTelemetry GenAI](phases/13-tools-and-protocols/20-opentelemetry-genai/) | Build | Python |
 | 21 | [LLM Routing Layer](phases/13-tools-and-protocols/21-llm-routing-layer/) | Learn | Python |
-| 22 | [Skills and Agent SDKs](phases/13-tools-and-protocols/22-skills-and-agent-sdks/) | Learn | Python |
-| 23 | [Capstone — Tool Ecosystem](phases/13-tools-and-protocols/23-capstone-tool-ecosystem/) | Build | Python |
+| 22 | [Agent Skills: Portable Contract and Runtime Boundary](phases/13-tools-and-protocols/22-skills-and-agent-sdks/) | Build | Python |
+| 23 | [Capstone: Stateless Tool Ecosystem](phases/13-tools-and-protocols/23-capstone-tool-ecosystem/) | Build | Python |
+| 24 | [Skill Discovery and Progressive Disclosure](phases/13-tools-and-protocols/24-skill-discovery-and-progressive-disclosure/) | Build | Python |
+| 25 | [Skill Invocation and Routing](phases/13-tools-and-protocols/25-skill-invocation-and-routing/) | Build | Python |
+| 26 | [Skill Permissions, Sandboxes, and Trust](phases/13-tools-and-protocols/26-skill-permissions-sandboxes-and-trust/) | Build | Python |
+| 27 | [Skill Evals, Packaging, and Portability](phases/13-tools-and-protocols/27-skill-evals-packaging-and-portability/) | Build | Python |
+| 28 | [MCP Tool Contracts and Content](phases/13-tools-and-protocols/28-mcp-tool-contracts-and-content/) | Build | Python |
+| 29 | [MCP Reliability, Cancellation, and Flow Control](phases/13-tools-and-protocols/29-mcp-reliability-cancellation-and-flow-control/) | Build | Python |
+| 30 | [MCP Registry Supply Chain: Admission, Drift, and Rollback](phases/13-tools-and-protocols/30-mcp-registry-supply-chain-and-drift/) | Build | Python |
+| 31 | [MCP Conformance Engineering: Versioning, Evidence, and Operations](phases/13-tools-and-protocols/31-mcp-conformance-versioning-and-operations/) | Build | Python |
+| 32 | [Program Anatomy: An ELF Reader From Scratch](phases/13-tools-and-protocols/32-program-anatomy-elf-from-scratch/) | Build | Python |
+| 33 | [Disassembly and Control Flow: From Bytes to a Graph You Can Check](phases/13-tools-and-protocols/33-disassembly-and-control-flow/) | Build | Python |
+| 34 | [Lifting to Pseudocode: IR, SSA, and Structuring From Scratch](phases/13-tools-and-protocols/34-lifting-to-pseudocode/) | Build | Python |
+| 35 | [Evidence, Confidence, and Unknowns in Binary Analysis](phases/13-tools-and-protocols/35-evidence-confidence-and-unknowns/) | Build | Python |
+| 36 | [Rebuild and Prove Equal: Differential Tests, Byte Comparison, and the Evidence Loop](phases/13-tools-and-protocols/36-rebuild-and-prove-equal/) | Build | Python |
+| 37 | [The Reverse Engineering Landscape: History, Tool Families, and How a Decompiler Is Built](phases/13-tools-and-protocols/37-the-reverse-engineering-landscape/) | Build | Python |
+| 38 | [Calling Conventions and Stack Frames: System V, Windows x64, and AArch64](phases/13-tools-and-protocols/38-calling-conventions-and-stack-frames/) | Build | Python |
+| 39 | [Compiler Idioms: What Optimization Does to Your Code and How to Read It Back](phases/13-tools-and-protocols/39-compiler-idioms-and-optimization/) | Build | Python |
+| 40 | [Linking, Loading, and Stripped Binaries: PLT, GOT, Imports, Fixups, and Function Identification](phases/13-tools-and-protocols/40-linking-loading-and-stripped-binaries/) | Build | Python |
+| 41 | [Recovering Data and Types: Structs, Arrays, C++ Objects, and DWARF](phases/13-tools-and-protocols/41-recovering-data-and-types/) | Build | Python |
+| 42 | [Dynamic Analysis of Your Own Program: Debuggers, Traces, and Confirming Static Claims](phases/13-tools-and-protocols/42-dynamic-analysis-of-your-own-program/) | Build | Python |
+| 43 | [Beyond Native Code: Python, JVM, .NET, and WebAssembly Bytecode](phases/13-tools-and-protocols/43-bytecode-and-managed-formats/) | Build | Python |
+| 44 | [Binary Diffing and Symbolic Execution: Matching Functions and Solving for Inputs](phases/13-tools-and-protocols/44-binary-diffing-and-symbolic-execution/) | Build | Python |
+| 45 | [AI-Assisted Reverse Engineering: LLM Decompilers, Analysis Agents, and Ground Truth](phases/13-tools-and-protocols/45-ai-assisted-reverse-engineering/) | Build | Python |
+
+Lessons 06-18 and 28-31 form the focused
+[Model Context Protocol (MCP) path](learning-paths/model-context-protocol.json). Its manifest order
+is 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 18, 17, 28, 29, 30, 31. Start
+it with the host-specific `learn-mcp` invocation above. Lesson 23
+is its only optional capstone and also requires Lessons 19 and 20.
+
+Lessons 22 and 24-27 form the focused
+[Agent Skills learning path](learning-paths/agent-skills.json), from package
+contract through real-host release gates. Start it with the host-specific
+`learn-agent-skills` invocation shown above; do not follow numeric next
+navigation from 22 to 23.
 
 </details>
 
 <details id="phase-14">
-<summary><b>Phase 14 — Agent Engineering</b> &nbsp;<code>42 lessons</code>&nbsp; <em>Build agents from first principles — loop, memory, planning, frameworks, benchmarks, production, workbench.</em></summary>
+<summary><b>Phase 14 — Agent Engineering</b> &nbsp;<code>54 lessons</code>&nbsp; <em>Build agents from first principles, use coding agents reliably, and shape the work before implementation.</em></summary>
 <br/>
 
 | # | Lesson | Type | Lang |
@@ -651,18 +845,18 @@ Twenty phases. Click any phase to expand its lesson list.
 | 04 | [Tree of Thoughts and LATS](phases/14-agent-engineering/04-tree-of-thoughts-lats/) | Build | Python |
 | 05 | [Self-Refine and CRITIC](phases/14-agent-engineering/05-self-refine-and-critic/) | Build | Python |
 | 06 | [Tool Use and Function Calling](phases/14-agent-engineering/06-tool-use-and-function-calling/) | Build | Python |
-| 07 | [Memory — Virtual Context and MemGPT](phases/14-agent-engineering/07-memory-virtual-context-memgpt/) | Build | Python |
+| 07 | [Agent Memory — Virtual Context and Memory Paging](phases/14-agent-engineering/07-memory-virtual-context-memgpt/) | Build | Python |
 | 08 | [Memory Blocks and Sleep-Time Compute](phases/14-agent-engineering/08-memory-blocks-sleep-time-compute/) | Build | Python |
-| 09 | [Hybrid Memory — Mem0 Vector + Graph + KV](phases/14-agent-engineering/09-hybrid-memory-mem0/) | Build | Python |
-| 10 | [Skill Libraries and Lifelong Learning — Voyager](phases/14-agent-engineering/10-skill-libraries-voyager/) | Build | Python |
+| 09 | [Hybrid Memory — Vector + Graph + KV](phases/14-agent-engineering/09-hybrid-memory-mem0/) | Build | Python |
+| 10 | [Skill Libraries and Lifelong Learning (Voyager)](phases/14-agent-engineering/10-skill-libraries-voyager/) | Build | Python |
 | 11 | [Planning with HTN and Evolutionary Search](phases/14-agent-engineering/11-planning-htn-and-evolutionary/) | Build | Python |
 | 12 | [Anthropic's Workflow Patterns](phases/14-agent-engineering/12-anthropic-workflow-patterns/) | Build | Python |
-| 13 | [LangGraph — Stateful Graphs and Durable Execution](phases/14-agent-engineering/13-langgraph-stateful-graphs/) | Build | Python |
-| 14 | [AutoGen v0.4 — Actor Model](phases/14-agent-engineering/14-autogen-actor-model/) | Build | Python |
-| 15 | [CrewAI — Role-Based Crews and Flows](phases/14-agent-engineering/15-crewai-role-based-crews/) | Build | Python |
+| 13 | [Stateful Graph Orchestration — Durable Execution and Checkpoints](phases/14-agent-engineering/13-langgraph-stateful-graphs/) | Build | Python |
+| 14 | [The Actor Model for Agents](phases/14-agent-engineering/14-autogen-actor-model/) | Build | Python |
+| 15 | [Role-Based Agent Teams — Roles, Tasks, Processes](phases/14-agent-engineering/15-crewai-role-based-crews/) | Build | Python |
 | 16 | [OpenAI Agents SDK — Handoffs, Guardrails, Tracing](phases/14-agent-engineering/16-openai-agents-sdk/) | Build | Python |
-| 17 | [Claude Agent SDK — Subagents and Session Store](phases/14-agent-engineering/17-claude-agent-sdk/) | Build | Python |
-| 18 | [Agno and Mastra — Production Runtimes](phases/14-agent-engineering/18-agno-and-mastra-runtimes/) | Learn | Python |
+| 17 | [The Harness as a Library — Subagents and Session Store](phases/14-agent-engineering/17-claude-agent-sdk/) | Build | Python |
+| 18 | [Production Agent Runtimes](phases/14-agent-engineering/18-agno-and-mastra-runtimes/) | Learn | Python |
 | 19 | [Benchmarks — SWE-bench, GAIA, AgentBench](phases/14-agent-engineering/19-benchmarks-swebench-gaia/) | Learn | Python |
 | 20 | [Benchmarks — WebArena and OSWorld](phases/14-agent-engineering/20-benchmarks-webarena-osworld/) | Learn | Python |
 | 21 | [Computer Use — Claude, OpenAI CUA, Gemini](phases/14-agent-engineering/21-computer-use-agents/) | Build | Python |
@@ -687,8 +881,26 @@ Twenty phases. Click any phase to expand its lesson list.
 | 40 | [Multi-Session Handoff](phases/14-agent-engineering/40-multi-session-handoff/) | Build | Python |
 | 41 | [The Workbench on a Real Repo](phases/14-agent-engineering/41-workbench-for-real-repos/) | Build | Python |
 | 42 | [Capstone: Ship a Reusable Agent Workbench Pack](phases/14-agent-engineering/42-agent-workbench-capstone/) | Build | Python |
+| 43 | [Frame the Task Before the Agent Writes Code](phases/14-agent-engineering/43-frame-the-task-before-code/) | Build | Python |
+| 44 | [Build an Evidence-Backed Execution Plan](phases/14-agent-engineering/44-plan-from-evidence/) | Build | Python |
+| 45 | [Delegate Agent Work with Isolation and Merge Contracts](phases/14-agent-engineering/45-delegate-with-isolation/) | Build | Python |
+| 46 | [Turn Every Agent Correction into a System Improvement](phases/14-agent-engineering/46-turn-feedback-into-system/) | Build | Python |
+| 47 | [Define the Outcome Before You Choose the Output](phases/14-agent-engineering/47-outcomes-before-output/) | Build | Python |
+| 48 | [Discover the Workflow People Actually Perform](phases/14-agent-engineering/48-discover-the-real-workflow/) | Build | Python |
+| 49 | [Map Assumptions and Resolve the Riskiest One First](phases/14-agent-engineering/49-map-assumptions-and-risk/) | Build | Python |
+| 50 | [Choose the Smallest Slice That Can Change the Decision](phases/14-agent-engineering/50-choose-the-smallest-testable-slice/) | Build | Python |
+| 51 | [Write Specifications That Preserve Judgment](phases/14-agent-engineering/51-write-specifications-that-preserve-judgment/) | Build | Python |
+| 52 | [Design Success Metrics Before the Result Exists](phases/14-agent-engineering/52-design-success-metrics/) | Build | Python |
+| 53 | [Choose Prototype, Pilot, or Production Deliberately](phases/14-agent-engineering/53-prototype-pilot-or-production/) | Build | Python |
+| 54 | [Build a Feedback Ratchet with Ownership and Retirement](phases/14-agent-engineering/54-build-the-feedback-ratchet/) | Build | Python |
 
 Each Phase 14 workbench lesson (31-42) ships a `mission.md` briefing the agent before it opens the full lesson docs.
+
+Lessons 31-46 form the [Agent-Assisted Engineering path](learning-paths/using-coding-agents.json).
+Its manifest order combines the workbench foundation with task framing, planning,
+delegation, and durable feedback. Lessons 47-54 form the
+[Product Judgment and Delivery path](learning-paths/shaping-the-build.json), from outcome framing
+through evidence, risk, scope, measurement, staged release, and feedback ownership.
 
 </details>
 
@@ -707,7 +919,7 @@ Each Phase 14 workbench lesson (31-42) ships a `mission.md` briefing the agent b
 | 07 | [Recursive Self-Improvement: Capability vs Alignment](phases/15-autonomous-systems/07-recursive-self-improvement/) | Learn | Python |
 | 08 | [Bounded Self-Improvement Designs](phases/15-autonomous-systems/08-bounded-self-improvement/) | Learn | Python |
 | 09 | [Autonomous Coding Agent Landscape (SWE-bench, CodeAct)](phases/15-autonomous-systems/09-coding-agent-landscape/) | Learn | Python |
-| 10 | [Claude Code Permission Modes and Auto Mode](phases/15-autonomous-systems/10-claude-code-permission-modes/) | Learn | Python |
+| 10 | [Permission Modes for Autonomous Agents](phases/15-autonomous-systems/10-claude-code-permission-modes/) | Learn | Python |
 | 11 | [Browser Agents and Indirect Prompt Injection](phases/15-autonomous-systems/11-browser-agents/) | Learn | Python |
 | 12 | [Durable Execution for Long-Running Agents](phases/15-autonomous-systems/12-durable-execution/) | Learn | Python |
 | 13 | [Action Budgets, Iteration Caps, Cost Governors](phases/15-autonomous-systems/13-cost-governors/) | Learn | Python |
@@ -758,7 +970,7 @@ Each Phase 14 workbench lesson (31-42) ships a `mission.md` briefing the agent b
 </details>
 
 <details id="phase-17">
-<summary><b>Phase 17 — Infrastructure & Production</b> &nbsp;<code>28 lessons</code>&nbsp; <em>Ship AI to the real world.</em></summary>
+<summary><b>Phase 17 — Infrastructure & Production</b> &nbsp;<code>29 lessons</code>&nbsp; <em>Ship AI to the real world.</em></summary>
 <br/>
 
 | # | Lesson | Type | Lang |
@@ -766,10 +978,10 @@ Each Phase 14 workbench lesson (31-42) ships a `mission.md` briefing the agent b
 | 01 | [Managed LLM Platforms — Bedrock, Azure OpenAI, Vertex AI](phases/17-infrastructure-and-production/01-managed-llm-platforms/) | Learn | Python |
 | 02 | [Inference Platform Economics — Fireworks, Together, Baseten, Modal](phases/17-infrastructure-and-production/02-inference-platform-economics/) | Learn | Python |
 | 03 | [GPU Autoscaling on Kubernetes — Karpenter, KAI Scheduler](phases/17-infrastructure-and-production/03-gpu-autoscaling-kubernetes/) | Learn | Python |
-| 04 | [vLLM Serving Internals — PagedAttention, Continuous Batching, Chunked Prefill](phases/17-infrastructure-and-production/04-vllm-serving-internals/) | Learn | Python |
+| 04 | [Serving Engine Internals — PagedAttention, Continuous Batching, Chunked Prefill](phases/17-infrastructure-and-production/04-vllm-serving-internals/) | Learn | Python |
 | 05 | [EAGLE-3 Speculative Decoding in Production](phases/17-infrastructure-and-production/05-eagle3-speculative-decoding/) | Learn | Python |
-| 06 | [SGLang and RadixAttention for Prefix-Heavy Workloads](phases/17-infrastructure-and-production/06-sglang-radixattention/) | Learn | Python |
-| 07 | [TensorRT-LLM on Blackwell with FP8 and NVFP4](phases/17-infrastructure-and-production/07-tensorrt-llm-blackwell/) | Learn | Python |
+| 06 | [Prefix-Cache Serving — RadixAttention and KV Reuse](phases/17-infrastructure-and-production/06-sglang-radixattention/) | Learn | Python |
+| 07 | [Hardware-Specialized Inference Compilation — FP8 and NVFP4 on Blackwell](phases/17-infrastructure-and-production/07-tensorrt-llm-blackwell/) | Learn | Python |
 | 08 | [Inference Metrics — TTFT, TPOT, ITL, Goodput, P99](phases/17-infrastructure-and-production/08-inference-metrics-goodput/) | Learn | Python |
 | 09 | [Production Quantization — AWQ, GPTQ, GGUF, FP8, NVFP4](phases/17-infrastructure-and-production/09-production-quantization/) | Learn | Python |
 | 10 | [Cold Start Mitigation for Serverless LLMs](phases/17-infrastructure-and-production/10-cold-start-mitigation/) | Learn | Python |
@@ -780,7 +992,7 @@ Each Phase 14 workbench lesson (31-42) ships a `mission.md` briefing the agent b
 | 15 | [Batch APIs — the 50% Discount as Industry Standard](phases/17-infrastructure-and-production/15-batch-apis/) | Learn | Python |
 | 16 | [Model Routing as a Cost-Reduction Primitive](phases/17-infrastructure-and-production/16-model-routing/) | Learn | Python |
 | 17 | [Disaggregated Prefill/Decode — NVIDIA Dynamo and llm-d](phases/17-infrastructure-and-production/17-disaggregated-prefill-decode/) | Learn | Python |
-| 18 | [vLLM Production Stack with LMCache KV Offloading](phases/17-infrastructure-and-production/18-vllm-production-stack-lmcache/) | Learn | Python |
+| 18 | [Production Serving Stack — KV Offloading and Cache-Aware Routing](phases/17-infrastructure-and-production/18-vllm-production-stack-lmcache/) | Learn | Python |
 | 19 | [AI Gateways — LiteLLM, Portkey, Kong, Bifrost](phases/17-infrastructure-and-production/19-ai-gateways/) | Learn | Python |
 | 20 | [Shadow, Canary, and Progressive Deployment](phases/17-infrastructure-and-production/20-shadow-canary-progressive/) | Learn | Python |
 | 21 | [A/B Testing LLM Features — GrowthBook and Statsig](phases/17-infrastructure-and-production/21-ab-testing-llm-features/) | Learn | Python |
@@ -790,7 +1002,8 @@ Each Phase 14 workbench lesson (31-42) ships a `mission.md` briefing the agent b
 | 25 | [Security — Secrets, PII Scrubbing, Audit Logs](phases/17-infrastructure-and-production/25-security-secrets-audit/) | Learn | Python |
 | 26 | [Compliance — SOC 2, HIPAA, GDPR, EU AI Act, ISO 42001](phases/17-infrastructure-and-production/26-compliance-frameworks/) | Learn | Python |
 | 27 | [FinOps for LLMs — Unit Economics and Multi-Tenant Attribution](phases/17-infrastructure-and-production/27-finops-llms/) | Learn | Python |
-| 28 | [Self-Hosted Serving Selection — llama.cpp, Ollama, TGI, vLLM, SGLang](phases/17-infrastructure-and-production/28-self-hosted-serving-selection/) | Learn | Python |
+| 28 | [Self-Hosted Serving Selection — Matching Engine to Hardware and Scale](phases/17-infrastructure-and-production/28-self-hosted-serving-selection/) | Learn | Python |
+| 29 | [Model Demo Interfaces — From a Function to a Shareable App](phases/17-infrastructure-and-production/29-model-demo-interfaces/) | Build | Python |
 
 </details>
 
@@ -851,7 +1064,7 @@ Each Phase 14 workbench lesson (31-42) ships a `mission.md` briefing the agent b
 | 10 | [Multi-Agent Software Engineering Team](phases/19-capstone-projects/10-multi-agent-software-team/) | P11 P13 P14 P15 P16 P17 | Python |
 | 11 | [LLM Observability & Eval Dashboard](phases/19-capstone-projects/11-llm-observability-dashboard/) | P11 P13 P17 P18 | Python |
 | 12 | [Video Understanding Pipeline (Scene → QA)](phases/19-capstone-projects/12-video-understanding-pipeline/) | P4 P6 P7 P11 P12 P17 | Python |
-| 13 | [MCP Server with Registry and Governance](phases/19-capstone-projects/13-mcp-server-with-registry/) | P11 P13 P14 P17 P18 | Python |
+| 13 | [Stateless MCP Server with Registry and Governance](phases/19-capstone-projects/13-mcp-server-with-registry/) | P11 P13 P14 P17 P18 | Python |
 | 14 | [Speculative-Decoding Inference Server](phases/19-capstone-projects/14-speculative-decoding-server/) | P3 P7 P10 P17 | Python |
 | 15 | [Constitutional Safety Harness + Red-Team Range](phases/19-capstone-projects/15-constitutional-safety-harness/) | P10 P11 P13 P14 P18 | Python |
 | 16 | [GitHub Issue-to-PR Autonomous Agent](phases/19-capstone-projects/16-github-issue-to-pr-agent/) | P11 P13 P14 P15 P17 | Python |
@@ -932,44 +1145,140 @@ Each Phase 14 workbench lesson (31-42) ships a `mission.md` briefing the agent b
 
 </details>
 
-```
-░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒
-```
+## Books and certifications
+
+<details>
+<summary>Read the core curriculum as a book</summary>
+
+The 20-phase core curriculum under `phases/` compiles into a six-volume book series. EPUB and PDF are built by CI from the same core lesson sources and attached to every [GitHub release](https://github.com/rohitg00/ai-engineering-from-scratch/releases); the links below always resolve to the newest release. Volume numbers index the series, not versions: each copy carries a dated edition stamp, and older editions stay downloadable from their release.
+
+Certification curricula are intentionally not converted into the books. Their
+AI tutor state, runnable labs, interactive figures, diagnostics, and timed mocks
+remain first-class on GitHub and the website.
+
+| Vol | Title | Phases | Download |
+|-----|-------|--------|----------|
+| 1 | Foundations · Math, Tooling, and Classical Machine Learning | 00-02 | [EPUB](https://github.com/rohitg00/ai-engineering-from-scratch/releases/latest/download/aiefs-vol1-foundations.epub) · [PDF](https://github.com/rohitg00/ai-engineering-from-scratch/releases/latest/download/aiefs-vol1-foundations.pdf) |
+| 2 | Deep Learning · Networks, Vision, and Speech | 03, 04, 06 | [EPUB](https://github.com/rohitg00/ai-engineering-from-scratch/releases/latest/download/aiefs-vol2-deep-learning.epub) · [PDF](https://github.com/rohitg00/ai-engineering-from-scratch/releases/latest/download/aiefs-vol2-deep-learning.pdf) |
+| 3 | Language · NLP Foundations and the Transformer | 05, 07 | [EPUB](https://github.com/rohitg00/ai-engineering-from-scratch/releases/latest/download/aiefs-vol3-language.epub) · [PDF](https://github.com/rohitg00/ai-engineering-from-scratch/releases/latest/download/aiefs-vol3-language.pdf) |
+| 4 | Large Language Models · Generation, Reinforcement, Pretraining, and Engineering | 08-11 | [EPUB](https://github.com/rohitg00/ai-engineering-from-scratch/releases/latest/download/aiefs-vol4-llms.epub) · [PDF](https://github.com/rohitg00/ai-engineering-from-scratch/releases/latest/download/aiefs-vol4-llms.pdf) |
+| 5 | Agents · Multimodality, Protocols, Autonomy, and Swarms | 12-16 | [EPUB](https://github.com/rohitg00/ai-engineering-from-scratch/releases/latest/download/aiefs-vol5-agents.epub) · [PDF](https://github.com/rohitg00/ai-engineering-from-scratch/releases/latest/download/aiefs-vol5-agents.pdf) |
+| 6 | Production · Infrastructure, Safety, and Capstones | 17-19 | [EPUB](https://github.com/rohitg00/ai-engineering-from-scratch/releases/latest/download/aiefs-vol6-production.epub) · [PDF](https://github.com/rohitg00/ai-engineering-from-scratch/releases/latest/download/aiefs-vol6-production.pdf) |
+
+The book is the snapshot; this repository is the living edition. Every chapter ends with links back to the lesson's animated figures, quiz, and runnable code. Build locally with `python3 scripts/build_book.py` (pandoc required); pipeline details in [book/README.md](book/README.md).
+
+</details>
+
+<details>
+<summary>Prepare for Claude certifications</summary>
+
+The [Claude Certification Academy](certifications/claude/README.md) is a free,
+open-source preparation program for all four official Claude certification tracks:
+Associate Foundations, Developer Foundations, Architect Foundations, and Architect
+Professional. Each route combines blueprint-mapped lessons, runnable labs, a
+diagnostic, capstone work, and a full-length original practice exam.
+
+Use the [AI-native GitHub onboarding guide](certifications/claude/GETTING_STARTED.md)
+with Claude Code, Codex, ChatGPT, Cursor, or another agent. Run
+`claude-certification` in Codex, `/claude-certification` in Claude Code, or ask
+another host to use `claude-certification`. It chooses a track, creates a
+persistent route in `CLAUDE-CERTIFICATION.md`, teaches one step at a time, runs
+the real labs, and gives artifact-based feedback. The same curriculum remains
+available on the [certification website](https://aiengineeringfromscratch.com/certifications.html).
+
+The academy is independent study material based on public exam objectives. It is not
+affiliated with Anthropic, does not reproduce live exam questions, and cannot guarantee
+a passing score.
+
+</details>
+
+<details>
+<summary>Prepare for MCP Associate (MCPA)</summary>
+
+The [MCPA Certification Curriculum](certifications/mcpa/README.md) is a free,
+open-source preparation program for the Model Context Protocol Associate exam from the
+Agentic AI Foundation, delivered through Linux Foundation Training. Its 34 lessons teach
+the stateless 2026-07-28 protocol across the five exam domains: per-request `_meta` and
+`server/discover` in place of the old handshake, multi round-trip requests, subscriptions,
+caching, the tasks and MCP Apps extensions, OAuth authorization, and the registry and SDK
+tiers. Every lesson ships a runnable standard-library lab whose transcript is checked for
+the current wire shape, and the track adds a diagnostic, a capstone, and three full-length
+original practice exams whose question mix follows the published blueprint weights.
+
+Use the [AI-native GitHub onboarding guide](certifications/mcpa/GETTING_STARTED.md) with
+Claude Code, Codex, ChatGPT, Cursor, or another agent. Run `mcpa-certification` in Codex,
+`/mcpa-certification` in Claude Code, or ask another host to use `mcpa-certification`. It
+creates a persistent route in `MCPA-CERTIFICATION.md`, teaches one step at a time, runs
+the real labs, and gives artifact-based feedback. The same curriculum is available on the
+[MCPA track page](https://aiengineeringfromscratch.com/certification?id=mcpa-f).
+
+This curriculum is independent study material based on public exam objectives. It is not
+affiliated with the Agentic AI Foundation or the Linux Foundation, does not reproduce
+live exam questions, and cannot guarantee a passing score.
+
+</details>
 
 ## The toolkit
 
-Every lesson produces a reusable artifact. By the end you have:
+Every lesson produces a reusable artifact. Install one in your agent or use the scripts below from the repository root.
 
-```
-outputs/
-├── prompts/      prompt templates for every AI task
-└── skills/       SKILL.md files for AI coding agents
-```
+<details>
+<summary>Lesson structure and reusable artifacts</summary>
 
-Install them with `npx skills add`. Plug them into Claude, Cursor, Codex,
-OpenClaw, Hermes, or any agent that reads a SKILL.md / AGENTS.md directory.
-Real tools, not homework.
+## The shape of a lesson
 
-### Install every course skill into your agent
+Each lesson lives in its own folder, with the same structure across the entire curriculum:
 
-The repo ships 388 skills and 99 prompts under `phases/**/outputs/`.
-
-**Recommended: install via [skills.sh](https://skills.sh).** No clone, no Python,
-detects your agent's skills directory automatically:
-
-```bash
-npx skills add rohitg00/ai-engineering-from-scratch                       # every skill
-npx skills add rohitg00/ai-engineering-from-scratch --skill agent-loop    # one skill
-npx skills add rohitg00/ai-engineering-from-scratch --phase 14            # one phase
+```text
+phases/<NN>-<phase-name>/<NN>-<lesson-name>/
+├── code/      runnable implementations (Python, TypeScript, Rust, Julia)
+├── docs/
+│   └── en.md  lesson narrative
+└── outputs/   prompts, skills, agents, or MCP servers this lesson produces
 ```
 
-`skills` writes to whichever directory your agent picks up: `.claude/skills/`,
-`.cursor/skills/`, `.codex/skills/`, OpenClaw's skills folder, Hermes's bundle
-path, or any SKILL.md-aware tool. One command, every agent.
+Every lesson follows six beats. The *Build It / Use It* split is the spine — you implement the
+algorithm from scratch first, then run the same thing through the production library. You
+understand what the framework is doing because you wrote the smaller version yourself.
 
-**Advanced: offline / custom layout via `scripts/install_skills.py`.** Requires
-cloning the repo. Useful when you need tag filters, dry-runs, or a non-default
-layout:
+```mermaid
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#fafaf5','primaryTextColor':'#1a1a1a','primaryBorderColor':'#3553ff','lineColor':'#3553ff','fontFamily':'JetBrains Mono','fontSize':'13px'}}}%%
+flowchart LR
+  M["MOTTO<br/><sub>one-line core idea</sub>"] --> Pr["PROBLEM<br/><sub>concrete pain</sub>"]
+  Pr --> C["CONCEPT<br/><sub>diagrams &amp; intuition</sub>"]
+  C --> B["BUILD IT<br/><sub>raw math, no frameworks</sub>"]
+  B --> U["USE IT<br/><sub>same thing in PyTorch / sklearn</sub>"]
+  U --> S["SHIP IT<br/><sub>prompt · skill · agent · MCP</sub>"]
+```
+
+## Every lesson ships something
+
+Other curricula end with *"congratulations, you learned X."* Each lesson here ends with a
+**reusable tool** you can install or paste into your daily workflow.
+
+<table>
+<tr>
+<th align="left" width="25%"><img src="site/assets/figures/001-a-prompts.svg" width="120" height="120" alt="FIG_001.A prompts"/><br/><sub>FIG_001 · A</sub><br/><b>PROMPTS</b></th>
+<th align="left" width="25%"><img src="site/assets/figures/001-b-skills.svg" width="120" height="120" alt="FIG_001.B skills"/><br/><sub>FIG_001 · B</sub><br/><b>SKILLS</b></th>
+<th align="left" width="25%"><img src="site/assets/figures/001-c-agents.svg" width="120" height="120" alt="FIG_001.C agents"/><br/><sub>FIG_001 · C</sub><br/><b>AGENTS</b></th>
+<th align="left" width="25%"><img src="site/assets/figures/001-d-mcp-servers.svg" width="120" height="120" alt="FIG_001.D MCP servers"/><br/><sub>FIG_001 · D</sub><br/><b>MCP SERVERS</b></th>
+</tr>
+<tr>
+<td valign="top">Paste into any AI assistant for expert-level help on a narrow task.</td>
+<td valign="top">Drop into Claude, Cursor, Codex, OpenClaw, Hermes, or any agent that reads <code>SKILL.md</code>.</td>
+<td valign="top">Deploy as autonomous workers — you wrote the loop yourself in Phase 14.</td>
+<td valign="top">Plug into any MCP-compatible client. Built end-to-end in Phase 13.</td>
+</tr>
+</table>
+
+</details>
+
+<details>
+<summary>Install lesson artifacts</summary>
+
+**The lesson artifacts.** The repo ships 414 skills and 100 prompts under
+`phases/**/outputs/`; install them via `scripts/install_skills.py`. Requires
+cloning the repo. Supports tag filters, dry-runs, and per-agent layouts:
 
 ```bash
 python3 scripts/install_skills.py <target>                                 # every skill, default --layout skills (nested)
@@ -998,7 +1307,10 @@ phase. Pick the layout your agent reads:
 | `by-phase`  | `<target>/phase-NN/<name>.md` |
 | `flat`      | `<target>/<name>.md` |
 
-### Drop the agent workbench into your own repo
+</details>
+
+<details>
+<summary>Drop the agent workbench into your own repo</summary>
 
 The Phase 14 capstone ships a reusable Agent Workbench pack (AGENTS.md, schemas,
 init / verify / handoff scripts). Scaffold it into any repo with:
@@ -1016,7 +1328,10 @@ task, edit `AGENTS.md`, run `scripts/init_agent.py`, hand the contract to
 your agent. The pack source lives at
 `phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/`.
 
-### Browse the entire course as JSON
+</details>
+
+<details>
+<summary>Browse the entire course as JSON</summary>
 
 `scripts/build_catalog.py` walks every phase, every lesson, every artifact on
 disk and writes `catalog.json` at the repo root. One file, every course truth.
@@ -1032,13 +1347,14 @@ what is actually on disk. Use it for site builds, downstream tooling, or to
 verify the README counts have not drifted. Schema is documented at the top of
 the script.
 
-A GitHub Action (`.github/workflows/curriculum.yml`) rebuilds `catalog.json`
-on every PR and fails the build if the committed file is stale. After editing
-any lesson, run `python3 scripts/build_catalog.py` and commit the result, or
-CI will reject the PR. The same workflow runs `audit_lessons.py` in
-warn-only mode (so existing drift does not block contributors).
+The curriculum workflow builds `catalog.json` as an ephemeral, gitignored
+artifact. Do not commit it. The same workflow runs `audit_lessons.py` as a
+blocking check.
 
-### Smoke-check every lesson's Python code
+</details>
+
+<details>
+<summary>Smoke-check every lesson's Python code</summary>
 
 `scripts/lesson_run.py` byte-compiles every `.py` file under each lesson's
 `code/` directory. Default mode is syntax-check only — no execution, no API
@@ -1063,41 +1379,10 @@ the default skip-list (`twitter.com`, `x.com`, `linkedin.com`,
 `instagram.com`, `medium.com` — domains that aggressively block automated
 HEAD/GET).
 
-## Where to start
+</details>
 
-| Background | Start at | Estimated time |
-|---|---|---|
-| New to programming and AI | Phase 0 — Setup | ~306 hours |
-| Know Python, new to ML | Phase 1 — Math Foundations | ~270 hours |
-| Know ML, new to deep learning | Phase 3 — Deep Learning Core | ~200 hours |
-| Know deep learning, want LLMs and agents | Phase 10 — LLMs from Scratch | ~100 hours |
-| Senior engineer, only want agent engineering | Phase 14 — Agent Engineering | ~60 hours |
-
-```
-░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒
-```
-
-## Why this matters now
-
-<table>
-<tr>
-<th align="left" width="50%"><sub>FIG_003 · A</sub><br/><b>THE INDUSTRY SIGNAL</b></th>
-<th align="left" width="50%"><sub>FIG_003 · B</sub><br/><b>FOUNDATIONAL PAPERS COVERED</b></th>
-</tr>
-<tr>
-<td valign="top">
-
-> *"The hottest new programming language is English."*<br/>
-> — **Andrej Karpathy** ([tweet](https://x.com/karpathy/status/1617979122625712128))
-
-> *"Software engineering is being remade in front of our eyes."*<br/>
-> — **Boris Cherny**, creator of Claude Code
-
-> *"Models will keep getting better. The skill that compounds is **knowing what to build**."*<br/>
-> — Industry consensus, 2026
-
-</td>
-<td valign="top">
+<details>
+<summary>Foundational papers and protocols</summary>
 
 - *Attention Is All You Need* — Vaswani et al., 2017 → [Phase 7](#phase-7)
 - *Language Models are Few-Shot Learners* (GPT-3) → [Phase 10](#phase-10)
@@ -1108,13 +1393,7 @@ HEAD/GET).
 - *ReAct: Reasoning + Acting in LLMs* → [Phase 14](#phase-14)
 - *Model Context Protocol* — Anthropic → [Phase 13](#phase-13)
 
-</td>
-</tr>
-</table>
-
-```
-░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒
-```
+</details>
 
 ## Contributing
 
@@ -1140,42 +1419,20 @@ shape, `docs/en.md` presence + H1, `code/` non-emptiness, `quiz.json` schema
 (rejects the legacy `q/choices/answer` keys that caused issue #102), and
 relative links inside lesson docs.
 
-```
-░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒
-```
+<a id="supporters"></a>
 
 ## Sponsor the work
 
-Free, MIT-licensed, 503 lessons. The curriculum is maintained on sponsorship alone. Cash only.
+<!-- STATS:START (generated from site/stats.json by build.js — do not edit by hand) -->
+<p align="center"><sub><b>114,584</b> readers &nbsp;·&nbsp; <b>181,995</b> page views in the last 30 days &nbsp;·&nbsp; as of 2026-08-29</sub></p>
+<!-- STATS:END -->
 
-**Reach (verified 2026-05-14):** 55,593 monthly visitors · 90,709 page views · 7.5K stars ·
-Twitter/X is the #1 acquisition channel.
+Free, MIT-licensed, 542 lessons. Thank you to the sponsors and backers who make the work possible.
+[See all sponsors and backers](BACKERS.md).
 
-**Current sponsors:** [CodeRabbit](https://coderabbit.link/rohit-ghumare) · [iii](https://iii.dev?utm_source=ai-engineering-from-scratch&utm_medium=readme&utm_campaign=sponsor)
-
-| Tier | $/mo | What you get |
-|------|------|---|
-| Backer | $25 | Name in BACKERS.md |
-| Bronze | $250 | Text-only row in README sponsor block + launch-day tweet |
-| Silver | $750 | Small logo in README + listed as one supported provider in API lessons |
-| Gold | $2,000 | Medium logo in README + sponsor page + quarterly X / LinkedIn co-feature |
-| Platinum | $5,000 | Hero logo above the fold + one dedicated integration lesson, max 1 partner |
-
-Full rate card, hard rules, pricing anchors, and reach data: [SPONSORS.md](SPONSORS.md).
-Sign up via [GitHub Sponsors](https://github.com/sponsors/rohitg00).
-
-```
-░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒░░░▒▒▒
-```
-
-## Star history
-
-<a href="https://star-history.com/#rohitg00/ai-engineering-from-scratch&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=rohitg00/ai-engineering-from-scratch&type=Date&theme=dark">
-    <img alt="Star history" src="https://api.star-history.com/svg?repos=rohitg00/ai-engineering-from-scratch&type=Date" width="100%">
-  </picture>
-</a>
+Want to support the work? See [sponsorship options](SPONSORS.md), including
+[hardware sponsorships](SPONSORS.md#hardware-lab-partner), or
+[sponsor on GitHub](https://github.com/sponsors/rohitg00).
 
 If this manual helped you, star the repo. It keeps the project alive.
 

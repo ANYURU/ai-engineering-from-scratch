@@ -44,8 +44,8 @@ Failure mode: critics grow with N agents (input includes all actions). Does not 
 
 Cooperative only. Global reward is the sum of a monotone function of per-agent Q-values:
 
-```
-Q_tot(tau, a) = f(Q_1(tau_1, a_1), ..., Q_n(tau_n, a_n)),   df/dQ_i >= 0
+```math
+Q_{\text{tot}}(\tau, a) = f\big(Q_1(\tau_1, a_1), \ldots, Q_n(\tau_n, a_n)\big), \quad \frac{\partial f}{\partial Q_i} \ge 0
 ```
 
 The monotonicity guarantees `argmax_a Q_tot` can be computed by each agent choosing `argmax_{a_i} Q_i` independently. That is **exactly the decentralized execution property** you need. At training time, a mixing network produces `Q_tot` from the per-agent Qs.
@@ -96,6 +96,10 @@ In LLM-agent systems, non-stationarity manifests as "my agent worked last month,
 ### What this lesson does NOT cover
 
 Training actual networks is a Phase 09 topic. This lesson builds scripted-policy versions that demonstrate the CTDE, value-decomposition, and centralized-value patterns without gradient updates. The goal is to internalize the patterns before you pick up a full MARL library (PyMARL, MARLlib, RLlib multi-agent).
+
+```figure
+sw-ctde
+```
 
 ## Build It
 

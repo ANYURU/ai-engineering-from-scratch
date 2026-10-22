@@ -50,6 +50,10 @@ This lesson ships four gates:
 
 The observation ledger is the bookkeeping. Every successful tool call writes one row: tool name, turn, tokens emitted, cumulative. The ledger answers two questions: how much has the model seen total, and how much has it seen of tool X. The budget gate reads the first. A per-tool budget gate, which you will write as an exercise, reads the second.
 
+```figure
+cg-gate-chain
+```
+
 ## Architecture
 
 ```mermaid
@@ -78,7 +82,7 @@ The token counter is intentionally a stupid `len(text) // 4` heuristic. The poin
 
 ## Why the chain order matters
 
-A deny is cheaper than an allow. `WhitelistGate` runs in O(1) hash lookup. `RegexGate` runs in O(pattern * argv). `RecencyGate` reads a small slice of the message store. `BudgetGate` reads the entire ledger. You order them by ascending cost so a denied call short-circuits before doing the expensive work.
+A deny is cheaper than an allow. `WhitelistGate` runs in $O(1)$ hash lookup. `RegexGate` runs in $O(\text{pattern} \cdot \text{argv})$. `RecencyGate` reads a small slice of the message store. `BudgetGate` reads the entire ledger. You order them by ascending cost so a denied call short-circuits before doing the expensive work.
 
 You also order them by blast radius. Whitelist is the strongest claim: this tool is not in the contract. The regex gate is next: this argument is not in the contract. Recency comes after: the harness still cares but the call is structurally legal. Budget is last because, by definition, it only fires when everything else passed.
 

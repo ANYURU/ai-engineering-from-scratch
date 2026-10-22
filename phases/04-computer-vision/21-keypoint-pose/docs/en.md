@@ -50,8 +50,8 @@ Top-down (HRNet, ViTPose) is the accuracy leader; bottom-up (OpenPose, HigherHRN
 
 Instead of regressing `(x, y)` directly, predict an `H x W` heatmap per keypoint with a Gaussian blob centred at the true location.
 
-```
-target[k, y, x] = exp(-((x - cx_k)^2 + (y - cy_k)^2) / (2 sigma^2))
+```math
+\text{target}[k, y, x] = \exp\left(-\frac{(x - \mathit{cx}_k)^2 + (y - \mathit{cy}_k)^2}{2 \sigma^2}\right)
 ```
 
 At inference, the argmax of each heatmap is the predicted keypoint location.
@@ -86,6 +86,10 @@ The standard body-pose dataset: 17 keypoints per person, PCK (Percentage of Corr
   - Lift 2D predictions to 3D with a small MLP (VideoPose3D).
   - Direct 3D regression from image (PyMAF, MHFormer).
   - Multi-view setups (CMU Panoptic) for ground truth.
+
+```figure
+cv3-pose-heatmap
+```
 
 ## Build It
 

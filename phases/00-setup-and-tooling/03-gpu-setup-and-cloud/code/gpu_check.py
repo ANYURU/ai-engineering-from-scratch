@@ -1,5 +1,4 @@
 import time
-import sys
 
 
 def _sync(backend):

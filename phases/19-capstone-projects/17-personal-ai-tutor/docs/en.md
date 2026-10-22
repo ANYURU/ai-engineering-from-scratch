@@ -72,6 +72,10 @@ learner device
 - Safety: Llama Guard 4 + custom age-appropriate filter
 - Eval: Bloom-level question generation, pre/post test harness, efficacy study tooling
 
+```figure
+cf-tutor-loop
+```
+
 ## Build It
 
 1. **Curriculum graph.** Build a Neo4j of 50-150 concept nodes (e.g., K-12 algebra from "number line" to "quadratic formula") with prerequisite edges. Attach OER content per node (Open Textbook, OpenStax).
@@ -147,7 +151,7 @@ learner: "6"
 
 - [Khanmigo (Khan Academy)](https://www.khanmigo.ai) — reference consumer K-12 tutor
 - [Duolingo Max](https://blog.duolingo.com/duolingo-max/) — reference language-learning tutor
-- [Google LearnLM / Gemini for Education](https://blog.google/technology/google-deepmind/learnlm) — hosted reference model
+- [Google LearnLM / Gemini for Education](https://blog.google/products-and-platforms/products/education/google-learnlm-gemini-generative-ai/) — hosted reference model
 - [Quizlet Q-Chat](https://quizlet.com) — alternate reference
 - [Synthesis Tutor](https://www.synthesis.com) — startup reference
 - [FSRS algorithm](https://github.com/open-spaced-repetition/fsrs4anki) — spaced-repetition scheduler

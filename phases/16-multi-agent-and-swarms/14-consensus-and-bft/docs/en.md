@@ -83,6 +83,10 @@ The `threshold` parameter decides when to accept and when to retry. Too low: you
 - **Compound questions.** "Write code and explain it" — two answers. Vote on each independently.
 - **Adversarial multi-round.** If agents can observe prior rounds and mimic (Du 2023 debate), they start agreeing with each other regardless of truth. Bound the rounds (2-3 typically).
 
+```figure
+swarm-consensus-wave
+```
+
 ## Build It
 
 `code/main.py` implements:
@@ -144,7 +148,7 @@ Before shipping any consensus mechanism:
 
 ## Further Reading
 
-- [Castro & Liskov — Practical Byzantine Fault Tolerance (OSDI 1999)](https://pmg.csail.mit.edu/papers/osdi99.pdf) — the foundation
+- [Castro & Liskov — Practical Byzantine Fault Tolerance (OSDI 1999)](https://www.usenix.org/conference/osdi-99/practical-byzantine-fault-tolerance) — the foundation
 - [CP-WBFT — Confidence-Probe Weighted BFT](https://arxiv.org/abs/2511.10400) — vote weighting by confidence
 - [DecentLLMs — leaderless multi-agent consensus](https://arxiv.org/abs/2507.14928) — geometric-median aggregation
 - [WBFT — Weighted BFT with Hierarchical Structure Clustering](https://arxiv.org/abs/2505.05103) — Core/Edge split for bounded latency

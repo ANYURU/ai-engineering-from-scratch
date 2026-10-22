@@ -4,7 +4,7 @@
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy memory and throughput comparison across formats)
-**Prerequisites:** Phase 10 · 13 (Quantization foundations), Phase 17 · 04 (vLLM Serving Internals)
+**Prerequisites:** Phase 10 · 13 (Quantization foundations), Phase 17 · 04 (Serving Engine Internals)
 **Time:** ~75 minutes
 
 ## Learning Objectives
@@ -103,6 +103,8 @@ gpu-memory-breakdown
 ## Use It
 
 `code/main.py` computes memory footprint (weights + KV + activations) and relative throughput across the six formats for a range of model sizes. Shows where KV cache dominates, where weight compression pays, and where FP8 is the safe pick.
+
+The [Inside an LLM Serving GPU](https://aiengineeringfromscratch.com/inside-an-llm-serving-gpu?dtype=fp8&users=64) machine shows FP8 on an NVIDIA L4. The weights fall from 15.28 GB to 8.81 GB, the KV pool grows from 24,094 to 142,369 tokens, and the measured output at 64 users goes from 250.85 to 735.91 tokens per second.
 
 ## Ship It
 

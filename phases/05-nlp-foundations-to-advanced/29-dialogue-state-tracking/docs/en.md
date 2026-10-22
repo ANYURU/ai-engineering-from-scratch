@@ -50,6 +50,10 @@ The modern pipeline: classical DST concepts + LLM extractors + structured-output
 - **Correction.** "Actually make it 7 pm." Must update time without clearing other slots.
 - **Coreference to previous system utterance.** "Yes, that one." Which "that"?
 
+```figure
+n5-slot-tracker
+```
+
 ## Build It
 
 ### Step 1: rule-based slot extractor
@@ -143,7 +147,7 @@ On a detected correction, overwrite the last-updated slot rather than appending.
 
 ## Pitfalls
 
-- **Full-history regeneration cost.** Letting the LLM regenerate state each turn costs O(n²) total tokens. Cap history or summarize older turns.
+- **Full-history regeneration cost.** Letting the LLM regenerate state each turn costs $O(n^2)$ total tokens. Cap history or summarize older turns.
 - **Schema drift.** Adding new slots post-hoc breaks old training data. Version your schema.
 - **Case sensitivity.** "Italian" vs "italian" vs "ITALIAN" — normalize everywhere.
 - **Implicit inheritance.** If the user has previously specified "for 4 people," a new request for a different time should not clear people. Always pass the full history.

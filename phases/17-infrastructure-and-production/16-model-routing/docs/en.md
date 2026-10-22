@@ -73,6 +73,10 @@ Gate routes by online quality metrics:
 - GPT-4-level 2022 vs 2026: ~$20/M → ~$0.40/M.
 - Cascade latency impact: ~1.2x median, ~2x escalated (~10% of traffic).
 
+```figure
+model-cascade-router
+```
+
 ## Use It
 
 `code/main.py` simulates pre-route, cascade, and ensemble on a mixed workload. Reports blended cost, quality loss, and escalation rate.
@@ -105,7 +109,7 @@ This lesson produces `outputs/skill-router-plan.md`. Given workload and quality 
 
 ## Further Reading
 
-- [AbhyashSuchi — Model Routing LLM 2026 Best Practices](https://abhyashsuchi.in/model-routing-llm-2026-best-practices/)
+- [AbhyashSuchi — Model Routing LLM 2026 Best Practices](https://web.archive.org/web/20260413143335/https://abhyashsuchi.in/model-routing-llm-2026-best-practices/)
 - [Lukas Brunner — Rise of Inference Optimization 2026](https://dev.to/lukas_brunner/the-rise-of-inference-optimization-the-real-llm-infra-trend-shaping-2026-4e4o)
 - [RouteLLM paper / code](https://github.com/lm-sys/RouteLLM)
 - [Not Diamond — model routing](https://www.notdiamond.ai/)

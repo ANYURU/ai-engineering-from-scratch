@@ -85,6 +85,10 @@ Cold-start anatomy for a 70B model on a fresh node (illustrative):
 - Run:ai Model Streamer: ~2x weight-load speedup.
 - ServerlessLLM tiered loading: 10-200x latency reduction (paper numbers).
 
+```figure
+cold-start-pipeline
+```
+
 ## Use It
 
 `code/main.py` models a cold-start path with and without each mitigation. Reports total cold-start time, warm-pool cost, and the break-even request rate above which warm pool pays for itself.
@@ -121,6 +125,6 @@ This lesson produces `outputs/skill-cold-start-planner.md`. Given SLA, model siz
 - [Modal — Cold start performance](https://modal.com/docs/guide/cold-start) — Modal's published benchmarks and checkpoint architecture.
 - [AWS Bottlerocket](https://github.com/bottlerocket-os/bottlerocket) — pre-seeded data volume snapshot pattern.
 - [NVIDIA Run:ai Model Streamer](https://github.com/run-ai/runai-model-streamer) — overlap weights load with compute setup.
-- [Baseten — Cold-start mitigation](https://www.baseten.co/blog/cold-start-mitigation/) — pre-warming playbook.
+- [Baseten — Cold starts](https://docs.baseten.co/deployment/autoscaling/cold-starts) — pre-warming playbook.
 - [ServerlessLLM paper (USENIX OSDI'24)](https://www.usenix.org/conference/osdi24/presentation/fu) — tiered loading design.
 - [NVIDIA — Disaggregated LLM Inference on Kubernetes](https://developer.nvidia.com/blog/deploying-disaggregated-llm-inference-workloads-on-kubernetes/) — live migration for disaggregated deployments.

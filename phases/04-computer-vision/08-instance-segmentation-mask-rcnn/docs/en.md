@@ -86,8 +86,8 @@ Upsample the 28x28 mask to the proposal's original pixel size to produce the fin
 
 Mask R-CNN has four losses added together:
 
-```
-L = L_rpn_cls + L_rpn_box + L_box_cls + L_box_reg + L_mask
+```math
+L = L_{\text{rpn\_cls}} + L_{\text{rpn\_box}} + L_{\text{box\_cls}} + L_{\text{box\_reg}} + L_{\text{mask}}
 ```
 
 - `L_rpn_cls`, `L_rpn_box` — objectness + box regression for the RPN proposals.
@@ -111,6 +111,10 @@ Each loss has its own default weight; the torchvision implementation exposes the
 ```
 
 The mask is full image resolution already. The 28x28 head output has been upsampled internally.
+
+```figure
+cv3-roialign-sampling
+```
 
 ## Build It
 

@@ -89,7 +89,7 @@ Common reranking models (2026 lineup):
 - Jina-Reranker-v2 Multilingual: open-weight, 100+ languages
 - bge-reranker-v2-m3: open-weight, strong baseline
 - cross-encoder/ms-marco-MiniLM-L-6-v2: open-weight, runs on CPU for prototyping
-- ColBERTv2 / Jina-ColBERT-v2: late-interaction multi-vector rerankers — O(tokens) not O(docs) at scoring time
+- ColBERTv2 / Jina-ColBERT-v2: late-interaction multi-vector rerankers — $O(\text{tokens})$ not $O(\text{docs})$ at scoring time
 
 ### Query Transformation
 
@@ -168,6 +168,10 @@ graph TD
         Q --> Faith["Faithfulness evaluation<br/>Is answer grounded<br/>in retrieved docs?"]
         Q --> Correct["Correctness evaluation<br/>Does answer match<br/>expected answer?"]
     end
+```
+
+```figure
+agentic-rag-loop
 ```
 
 ## Build It
@@ -459,7 +463,7 @@ client = anthropic.Anthropic()
 
 def hyde_with_llm(query):
     response = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model="claude-sonnet-5",
         max_tokens=256,
         messages=[{
             "role": "user",

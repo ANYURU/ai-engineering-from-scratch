@@ -86,6 +86,10 @@ The architecture is the reference. Extensions swap components (vector store for 
 
 Smallville is the proof of concept that multi-agent emergence is cheap when the components are right. The architecture has now been replicated on open-source models (smaller LLMs lose believability gracefully, not sharply). Any production system that needs **emergent social behavior** uses this shape. Any system that needs **tight task execution** uses the supervisor / roles / primitives patterns from earlier in this phase.
 
+```figure
+a5-memory-reflection
+```
+
 ## Build It
 
 `code/main.py` implements the three components in stdlib Python with scripted agent policies (no real LLM). The demo reproduces the Valentine's-party emergence in miniature:
@@ -113,7 +117,7 @@ Rules for production simulations:
 
 - **Memory is the database.** Pick a real store (vector DB, Postgres) at scale. In-memory stdlib is for prototypes.
 - **Log the retrieval trace.** For every action, log the top-k memories that drove it. This is your debug ability.
-- **Budget per-agent tokens.** Each agent's retrieve + reflect + plan per tick is O(k) LLM calls. N agents × T ticks × calls-per-tick can dwarf your budget.
+- **Budget per-agent tokens.** Each agent's retrieve + reflect + plan per tick is $O(k)$ LLM calls. N agents × T ticks × calls-per-tick can dwarf your budget.
 - **Compact memory periodically.** Summarize-and-prune low-importance entries. Retention policy is a design decision, not a detail.
 - **Detect spatial / social norm violations** explicitly. The architecture does not learn them.
 

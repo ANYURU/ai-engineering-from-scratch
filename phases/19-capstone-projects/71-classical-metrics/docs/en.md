@@ -15,6 +15,10 @@
 - Dispatch on the metric_name field from lesson 70 so the runner stays metric-agnostic.
 - Pin the behaviour with reference vectors drawn from worked examples, not from a third-party library.
 
+```figure
+cd-bleu-overlap
+```
+
 ## Why reimplement
 
 You will read papers that report BLEU 28.3 and another that reports BLEU 0.283. You will find ROUGE-L scores that differ by ten points across two libraries because one truncates to lowercase and the other does not. The fastest way to stop being confused is to write the metrics yourself, then point at the line where the tokenizer is decided and the line where the smoothing is applied. After that, comparing numbers across papers becomes a matter of reading the metric setup, not arguing about libraries.
@@ -101,7 +105,7 @@ def lcs_length(a, b):
     return int(dp[n, m])
 ```
 
-The numpy table makes the implementation legible; pure Python lists would work too. Tasks that opt into ROUGE-L pay the O(n m) cost per task. For typical summary lengths that stays under a millisecond.
+The numpy table makes the implementation legible; pure Python lists would work too. Tasks that opt into ROUGE-L pay the $O(n m)$ cost per task. For typical summary lengths that stays under a millisecond.
 
 ## Accuracy
 

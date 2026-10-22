@@ -82,6 +82,10 @@ The 2025 follow-up (LLaVA-OneVision-1.5, arXiv 2509.23661) is "fully open" in tr
 
 Qwen2.5-VL (Lesson 12.09) makes different choices. It uses M-RoPE and dynamic FPS instead of fixed pooling. Its budget scales with input — a 1-minute video uses more tokens than a 5-second video. LLaVA-OneVision fixes the budget and scales the pooling. Both work; they trade configurability for predictability.
 
+```figure
+l5-onevision-budget
+```
+
 ## Use It
 
 `code/main.py` is a curriculum and budget planner for a OneVision-style VLM. Given a token budget per sample and a target scenario mix (say 40% single-image, 30% multi-image, 30% video), it:
@@ -118,7 +122,7 @@ This lesson produces `outputs/skill-onevision-budget-planner.md`. Given a target
 | Curriculum | "Training order" | Stage ordering (single-image → multi-image → video) chosen for emergent transfer |
 | Bilinear pooling | "Token shrink" | Applying bilinear interpolation to the patch grid (2D) to reduce token count while preserving locality |
 | Emergent skill | "Not trained, still works" | Capability that appears at inference without matching training data, due to curriculum composition |
-| AnyRes-k | "k-tile setup" | k sub-tiles of fixed resolution plus one thumbnail, typical k ∈ {4, 9} |
+| AnyRes-k | "k-tile setup" | k sub-tiles of fixed resolution plus one thumbnail, typical $k \in \lbrace 4, 9 \rbrace$ |
 | Task transfer | "Cross-scenario generalization" | Skills learned on single-image that apply to video (and vice versa) via shared backbone |
 
 ## Further Reading

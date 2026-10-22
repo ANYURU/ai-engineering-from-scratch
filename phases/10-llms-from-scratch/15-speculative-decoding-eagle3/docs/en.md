@@ -36,8 +36,8 @@ Stack `N` of these calls back to back using one verifier forward pass on `prefix
 
 Let `α` be the expected acceptance rate per drafted token. Let `c = cost(draft) / cost(verifier)` be the cost ratio. The expected number of accepted tokens per verifier forward is:
 
-```
-E[accepted] = (1 - α^(N+1)) / (1 - α)
+```math
+\mathbb{E}[\text{accepted}] = \frac{1 - \alpha^{N+1}}{1 - \alpha}
 ```
 
 The expected total wall time per accepted token is `(N * c + 1) / E[accepted]`. Minimize that with respect to `N` and you get the sweet spot. For `α = 0.8, c = 0.05`: optimal `N` is around 5–7, speedup is 3.2×. For `α = 0.95, c = 0.02`: optimal `N` is around 8–10, speedup pushes 5×.
@@ -72,6 +72,10 @@ For EAGLE-2 tree search, the verifier runs attention with a non-causal mask that
 | Lookahead | No draft (Jacobi iteration) | N/A | 1.3-1.6× | None |
 
 In 2026 production: vLLM and SGLang default to EAGLE-3 when available, EAGLE-2 otherwise. TensorRT-LLM has the fastest Medusa path for Meta and NVIDIA public models. llama.cpp ships vanilla draft for CPU deployments.
+
+```figure
+l5-spec-decode-eagle
+```
 
 ## Build It
 

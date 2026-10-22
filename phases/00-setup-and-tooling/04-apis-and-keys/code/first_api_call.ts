@@ -1,13 +1,14 @@
 // Phase 0 · Lesson 04 — APIs and keys (TypeScript port).
 // Reads ANTHROPIC_API_KEY from env, parses a minimal .env file, then makes one
 // /v1/messages call with global fetch. Set MOCK=1 to skip the network entirely.
-// Refs: https://docs.anthropic.com/en/api/messages
+// Refs: https://platform.claude.com/docs/en/api/messages
 //       https://nodejs.org/api/process.html#processenv
 //       https://nodejs.org/api/globals.html#fetch (Node 18+ ships fetch)
 
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import process from "node:process";
+
 
 type MessagesRequest = {
   model: string;
@@ -90,6 +91,7 @@ async function callMessages(apiKey: string, request: MessagesRequest): Promise<M
 
 async function main(): Promise<number> {
   const env = mergeEnv();
+  const model = (env.LLM_MODEL ?? "").trim() || "claude-sonnet-5";
   const apiKey = env.ANTHROPIC_API_KEY ?? "mock";
   const usingMock = process.env.MOCK === "1" || apiKey === "mock";
 
@@ -101,7 +103,7 @@ async function main(): Promise<number> {
   );
 
   const request: MessagesRequest = {
-    model: "claude-sonnet-4-6",
+    model,
     max_tokens: 256,
     messages: [{ role: "user", content: "What is a neural network in one sentence?" }],
   };

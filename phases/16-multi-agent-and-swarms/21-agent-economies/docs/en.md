@@ -61,8 +61,8 @@ Why this matters for LLM systems: you can outsource completion tasks to multiple
 
 A DID-bound reputation score accumulates from confirmed contributions. A simple update rule:
 
-```
-rep(i, t+1) = alpha * rep(i, t) + (1 - alpha) * contribution_quality(i, t)
+```math
+\text{rep}(i, t+1) = \alpha \cdot \text{rep}(i, t) + (1 - \alpha) \cdot \text{contribution\_quality}(i, t)
 ```
 
 With decay factor `alpha` close to 1. Reputation:
@@ -90,6 +90,10 @@ The LaMAS proposal (AAMAS 2025) combines: DID identity, Shapley-value credit att
 - **Tokenized payments are legally viable** in your jurisdiction.
 
 In closed corporate systems, economics gives way to simpler allocation (managers assign work, metrics are internal). The economics literature applies mostly to open networks.
+
+```figure
+swarm-auction
+```
 
 ## Build It
 

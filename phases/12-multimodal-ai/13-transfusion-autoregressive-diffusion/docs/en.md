@@ -62,9 +62,9 @@ Implemented as a block-triangular mask at training and inference.
 The diffusion loss is standard: add noise to an image patch, ask the model to predict the noise (or the clean patch, equivalently). Transfusion's version uses flow matching — predict the velocity field from noisy to clean.
 
 During training:
-1. For each image patch x0, sample a random timestep t.
-2. Sample noise ε, compute xt = (1-t) * x0 + t * ε (linear interpolation for flow matching).
-3. The transformer predicts v_theta(xt, t); loss = MSE(v_theta(xt, t), ε - x0).
+1. For each image patch $x_0$, sample a random timestep $t$.
+2. Sample noise $\epsilon$, compute $x_t = (1-t) \cdot x_0 + t \cdot \epsilon$ (linear interpolation for flow matching).
+3. The transformer predicts $v_\theta(x_t, t)$; $\text{loss} = \mathop{\mathrm{MSE}}(v_\theta(x_t, t), \epsilon - x_0)$.
 4. Backprop alongside text NTP losses from the same sequence.
 
 At inference, generation is:
@@ -98,6 +98,10 @@ Downside: Transfusion is a dual-loss model, making training dynamics trickier. L
 Janus-Pro (Lesson 12.15) refines Transfusion's idea by decoupling the vision encoder for understanding and generation — SigLIP for one, VQ for the other — while sharing the transformer body. Show-o (Lesson 12.14) swaps diffusion for discrete-diffusion (masked prediction). The unified-generation family branches rapidly after Transfusion.
 
 2026 production VLMs that emit images — Gemini 3 Pro, GPT-5, Claude Opus 4.7's image generation path — almost certainly use some descendant of this family. Details are proprietary.
+
+```figure
+cfg-guidance-scale
+```
 
 ## Use It
 

@@ -1,6 +1,6 @@
-# vLLM Serving Internals: PagedAttention, Continuous Batching, Chunked Prefill
+# Serving Engine Internals — PagedAttention, Continuous Batching, Chunked Prefill
 
-> vLLM's dominance in 2026 rests on three compounding defaults, not a single trick. PagedAttention is always on. Continuous batching injects new requests into the active batch between decode iterations. Chunked prefill slices long prompts so decode tokens never starve. Turn all three on and a Llama 3.3 70B FP8 on one H100 SXM5 pushes 2,200-2,400 tok/s at 128 concurrent — roughly 25% above vLLM's own default and 3-4x a naive PyTorch loop. This lesson reads the scheduler and attention kernel at a level you can diagram, and ends with a toy continuous batcher in `code/main.py` that schedules prefill and decode the way vLLM does.
+> Modern serving-engine throughput rests on three compounding defaults, not a single trick. PagedAttention is always on. Continuous batching injects new requests into the active batch between decode iterations. Chunked prefill slices long prompts so decode tokens never starve. Turn all three on and a Llama 3.3 70B FP8 on one H100 SXM5 pushes 2,200-2,400 tok/s at 128 concurrent — roughly 25% above vLLM's own default and 3-4x a naive PyTorch loop. This lesson reads the scheduler and attention kernel of vLLM — the reference engine for all three techniques — at a level you can diagram, and ends with a toy continuous batcher in `code/main.py` that schedules prefill and decode the way vLLM does.
 
 **Type:** Learn
 **Languages:** Python (stdlib, toy continuous batching scheduler)
@@ -12,7 +12,7 @@
 - Explain PagedAttention as a KV cache allocator: blocks, block tables, and why fragmentation stays under 4% at production load.
 - Diagram continuous batching at the iteration level: how finished sequences leave the batch and new ones join without draining.
 - Describe chunked prefill in one sentence and name which latency metric it protects (hint: it is TTFT tail, not mean throughput).
-- Name the 2026 vLLM v0.18.0 gotcha that bites teams enabling every optimization at once.
+- Check a vLLM feature combination against the compatibility matrix for your version before enabling every optimization at once.
 
 ## The Problem
 
@@ -56,9 +56,9 @@ All three features assume each other. PagedAttention gives the scheduler a fine-
 
 You do not need to know every flag. You need to know what the scheduler optimizes: goodput under KV-block budget, subject to chunked prefill slicing.
 
-### The 2026 v0.18.0 gotcha
+### Check the compatibility matrix
 
-In vLLM v0.18.0 you cannot combine `--enable-chunked-prefill` with draft-model speculative decoding (`--speculative-model`). The documented exception is N-gram GPU speculative decoding in the V1 scheduler. Teams that flip every flag on without reading the release notes get a run-time error at startup, not a soft regression. If your speculative gain was worth enabling chunked prefill for, revisit the choice — the right answer in 2026 is often EAGLE-3 without chunked prefill, not a draft model plus chunked prefill that does not compile.
+Check every feature combination against the compatibility matrix for your exact vLLM version before enabling all of them at once, because what composes changes between releases. In v0.18.0 the feature matrix marks speculative decoding as compatible with chunked prefill and prefix caching, and the speculative-decoding page lists two known incompatibilities: pipeline parallelism through v0.15.0, and draft-model speculation through v0.10.0. For the draft method itself, the 2026 default is often EAGLE-3 (`"method": "eagle3"`), covered in Phase 17 · 05.
 
 ### Numbers you should remember
 
@@ -131,7 +131,7 @@ This lesson produces `outputs/skill-vllm-scheduler-reader.md`. Given a serving c
 | TTFT | "first token time" | Prefill + queue + network; dominated by prefill at long prompts |
 | ITL | "inter-token latency" | Time between consecutive decode tokens; dominated by batch size |
 | Goodput | "throughput that meets SLO" | Tokens/sec where every request still hit TTFT and ITL targets |
-| V1 scheduler | "the new scheduler" | vLLM's 2026 scheduler; N-gram spec decode is the chunked-prefill-compatible path |
+| V1 scheduler | "the new scheduler" | vLLM's 2026 scheduler; runs continuous batching with chunked prefill |
 | `--gpu-memory-utilization` | "the memory knob" | Fraction of HBM reserved for KV blocks after weights and activations |
 
 ## Further Reading

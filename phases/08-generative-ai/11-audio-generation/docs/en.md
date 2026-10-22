@@ -56,6 +56,10 @@ The 2024-2026 trend: flow matching is winning for music (faster inference, clean
 | AudioCraft 2 | Music + SFX | Flow matching | ~5s for 5s clip |
 | Riffusion v2 | Music | Spectrogram diffusion | ~10s |
 
+```figure
+score-matching
+```
+
 ## Build It
 
 `code/main.py` simulates the core idea: train a tiny next-token transformer on synthetic "audio token" sequences generated from two distinct "styles" (alternating low and high tokens for style A, monotonic ramp for style B). Condition on style and sample.
@@ -141,4 +145,4 @@ If the product is "live voice chat" or "real-time music continuation", pick the 
 - [Wang et al. (2023). Neural Codec Language Models are Zero-Shot Text to Speech Synthesizers (VALL-E)](https://arxiv.org/abs/2301.02111) — VALL-E.
 - [Copet et al. (2023). Simple and Controllable Music Generation (MusicGen)](https://arxiv.org/abs/2306.05284) — MusicGen.
 - [Liu et al. (2023). AudioLDM 2: Learning Holistic Audio Generation with Self-supervised Pretraining](https://arxiv.org/abs/2308.05734) — AudioLDM 2.
-- [Stability AI (2024). Stable Audio 2.5](https://stability.ai/news/introducing-stable-audio-2-5) — 2025 text-to-music with flow matching.
+- [Stability AI (2025). Stable Audio 2.5](https://stability.ai/news-updates/stability-ai-introduces-stable-audio-25-the-first-audio-model-built-for-enterprise-sound-production-at-scale) — 2025 text-to-music with flow matching.
