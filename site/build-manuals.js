@@ -86,7 +86,7 @@ function fenceBlock(info, body, label) {
     const { head, rest } = splitHeader(body, label);
     const values = keyValues(head, label, 'rule', ['label', 'source']);
     const quote = rest.map(line => line.trim()).filter(Boolean).join(' ');
-    ensure(quote, `${label}: rule needs a quote`);
+    ensure(quote, `${label}: rule needs text`);
     return { type: 'rule', ...values, quote };
   }
   if (info === 'takeaways') {
@@ -498,7 +498,7 @@ function blockHtml(block, doc, manual, acc) {
     case 'contents': return tocHtml(manual, 'web');
     case 'listing': return `<figure class="m-listing"><div class="m-listing-head"><span class="m-listing-title">${inline(block.title)}</span><span>${escapeHtml(block.lang)}</span></div><pre><code>${highlight(block.code, block.lang)}</code></pre>${block.note ? `<figcaption class="m-listing-note">${inline(block.note)}</figcaption>` : ''}</figure>`;
     case 'takeaways': return `<aside class="m-takeaways"><div class="m-box-label">${TAKEAWAYS_LABEL}</div><ul>${block.items.map(item => `<li>${inline(item)}</li>`).join('')}</ul></aside>`;
-    case 'rule': return `<aside class="m-rule"><div class="m-box-label">${escapeHtml(block.label)}</div><blockquote>${inline(block.quote)}</blockquote><div class="m-rule-src">${escapeHtml(block.source)}</div></aside>`;
+    case 'rule': return `<aside class="m-rule"><div class="m-box-label">${escapeHtml(block.label)}</div><p>${inline(block.quote)}</p></aside>`;
     default: throw new Error(`${where}: unknown block ${block.type}`);
   }
 }
