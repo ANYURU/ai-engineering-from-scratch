@@ -9,9 +9,11 @@ Use this page to check a number from another section, or to repeat a run. When y
 - **Hardware and versions.** [The version pins page](#s-ref-version-pins) lists them.
 - **Client.** Every run used the SGLang 0.5.22 benchmark client. The vLLM runs used `--backend vllm`.
 - **Seeds.** The runs to 2026-10-21 used seeds 1, 2, and 3. Most runs on 2026-10-22 used seeds 1 and 2, and the tables give the count. Tables give the median, and some columns give the lowest and the highest.
+- **Server settings.** The sweep tool starts every vLLM server with `VLLM_USE_FLASHINFER_SAMPLER=0`, because the FlashInfer sampler fails to build on our L4. It also sets `--seed 0`, `--max-model-len`, `--num-gpu-blocks-override`, and `--gpu-memory-utilization`. The L4 used 8,192 tokens, 1,506 blocks, and 0.9. The GB10 used 8,192 tokens, 14,685 blocks, and 0.75. The shared L4 GPU used 2,048 or 2,304 tokens, 183 blocks, and 0.83. The small-pool run used 4,096 tokens and 410 blocks.
+- **Rounding.** The tables round a half to the even digit, so 1,012.5 shows as 1,012. The sections round a half up.
 - **Pools.** On the L4, vLLM ran with `--num-gpu-blocks-override 1506`, a pool of 24,096 tokens, against 24,094 for SGLang. On the GB10, vLLM ran with 14,685 blocks, a pool of 234,960 tokens. The SGLang pools on the GB10 were 233,303 tokens for load, 234,958 for waves, and 251,910 for mixed.
 - **Clocks.** A sampler recorded the SM clock and the temperature every second. The sweep tool can wait for the GPU to cool before a run, and repeat a run below a clock floor. The clock column shows the result for each point. On 2026-10-22, most runs had the SM clock locked at 900 MHz with `nvidia-smi -lgc`. A lock caps the clock, but a hot GPU still slows below it. The sections compare two points only at similar clocks, and they say so where a point ran below the lock or in a throttled session.
-- **Dates.** The L4 load runs of `vllm` and `sglang` were on 2026-10-17, and the `vllm-b`, `vllm-async`, `vllm-eager`, and `vllm-seqs-16` load runs on 2026-10-21. The L4 rate and waves runs were on 2026-10-18. The L4 run without the prefix cache was on 2026-10-21. Every GB10 run in these tables was on 2026-10-21. Every run in the three L4 tables for 2026-10-22 was on that day. The runs on the shared GPU of the L4 node had a pool of 2,928 tokens, so they tested 1 and 4 users only.
+- **Dates.** The L4 load runs of `vllm` and `sglang` were on 2026-10-17, and the `vllm-b`, `vllm-async`, `vllm-eager`, and `vllm-seqs-16` load runs on 2026-10-21. The L4 rate and waves runs were on 2026-10-18. The L4 prefix runs with the cache on ran from 2026-10-17 into 2026-10-18, and the run without the prefix cache was on 2026-10-21. Every GB10 run in these tables was on 2026-10-21. Every run in the three L4 tables for 2026-10-22 was on that day. The runs on the shared GPU of the L4 node had a pool of 2,928 tokens, so they tested 1 and 4 users only.
 
 ## Not run yet
 
@@ -199,7 +201,7 @@ The lock caps the clock. A hot GPU still slows below it, as the 1-user runs of `
 | 64 | `vllm-async` | 235.9 (233.2 to 240.2) | 961 ms | 249.1 ms | 527 (524 to 529) ms | 2,398 MHz |
 | 64 | `sglang` | 245.1 (239.4 to 247.7) | 573 ms | 246.0 ms | 271 (268 to 273) ms | 2,411 MHz |
 
-### GB10, mixed: prompts of 1,024 to 4,096 tokens, 256 output tokens, by rate
+### GB10, mixed: prompts of 1,024 to 4,096 tokens, 64 to 256 output tokens, by rate
 
 | Rate | Config | Output tok/s (min to max) | Median TTFT | Median TPOT | P99 ITL (min to max) | Median SM clock |
 |---|---|---|---|---|---|---|
