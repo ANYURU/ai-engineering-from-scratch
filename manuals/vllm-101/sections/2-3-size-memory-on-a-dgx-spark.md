@@ -16,7 +16,7 @@ vLLM 0.31.0 knows this. On an integrated GPU it reads free memory from the opera
 
 The fraction sets the share that vLLM plans for. On unified memory it does not always limit what vLLM takes. Reports from other users show two cases. We did not see them in our run:
 
-- Issue 46307 reports a GB10 at a fraction of 0.70. It used about 112 GiB during the startup profile, against a share of about 83 GiB. The machine stopped responding. The issue was closed after 0.31.0, so check that your release has the fix.
+- Issue 46307 reports a GB10 at a fraction of 0.70. It used about 112 GiB during the startup profile, against a share of about 83 GiB. The machine stopped responding. The issue was closed as stale with no fix.
 - Issue 44740 reports a negative estimate of the CUDA graph memory with MTP speculation on the GB10. The KV cache grew too large, and the start ran out of memory. The issue is open.
 
 In our run, the numbers matched the share of 0.75. That is one run, with no speculation.
