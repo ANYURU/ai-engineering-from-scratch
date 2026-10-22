@@ -3,12 +3,17 @@
   "title": "Miles 101",
   "subtitle": "Reinforcement learning on language models with Miles, from one GPU to a run you can trust",
   "summary": "How to run GRPO with Miles on one GPU, choose a model that fits, and check that the run is correct. Every measured line comes from recorded runs on a DGX Spark.",
+  "plate": {
+    "figure": "plate-miles-loop",
+    "title": "One GRPO step on one GPU",
+    "caption": "The engine writes the answers, a reward scores them, the trainer learns from them, and the new weights go back to the engine. Medians of 48 steps on one GB10."
+  },
   "audience": "You can serve a model and you know what a reward is. You want to train a model with reinforcement learning, and you want to know which settings matter before you rent a cluster.",
   "edition": "2026.10",
   "status": "draft",
   "pin": {
     "subject": "Miles",
-    "version": "main 08752a12 in radixark/miles:latest",
+    "version": "radixark/miles:latest, Miles main of 2026-10-15",
     "source": "https://github.com/radixark/miles",
     "commit": "08752a1283",
     "date": "2026-10-15",
@@ -308,6 +313,10 @@
       {
         "id": "R.4",
         "file": "sections/r-4-sources.md"
+      },
+      {
+        "id": "R.5",
+        "file": "sections/r-5-figure-index.md"
       }
     ]
   },
