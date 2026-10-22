@@ -60,7 +60,7 @@ note: The output_ids list and the weight_versions list are cut.
 Every field answers a question you will ask in production:
 
 - `finish_reason` says why it stopped: `length` here, because the request asked for 12 tokens and got 12.
-- `queue_time` is 0.24 ms, so the request did not wait. Under load this number is the first one to grow.
+- `queue_time` is 0.24 ms, so the request did not wait. Under load, this number grows while requests wait in the queue.
 - `first_token_latency` is 889 ms and `e2e_latency` is 950 ms. The first token cost most of the time on a cold server.
 - `num_retractions` is 0. [Section 2.3](#s-admission-and-retraction) explains what a nonzero value costs.
 - `cached_tokens` is 2 of 5 prompt tokens, all on the device and none from host memory.
@@ -136,7 +136,7 @@ The incomplete-character rule has a cost when the tokens never complete a charac
 
 Use the native `/generate` endpoint when you debug, measure, or build your own client. Its `meta_info` tells you queue time, first token latency, cache hits, and retractions per request. The OpenAI format has no place for most of that.
 
-Use the OpenAI endpoints for applications that already speak that format. Start every server with `--enable-cache-report`, so those clients can see cache hits too. It costs nothing, and [part 3](#s-prefix-friendly-prompts) shows how much the number is worth.
+Use the OpenAI endpoints for applications that already speak that format. Start every server with `--enable-cache-report`, so those clients can see cache hits too. We did not measure a cost, and [part 3](#s-prefix-friendly-prompts) shows how much the number is worth.
 
 ```takeaways
 - Debug and measure with /generate and read its meta_info fields.

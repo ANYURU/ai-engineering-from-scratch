@@ -46,7 +46,7 @@ lang: text
 SGLANG_USE_MLX=1 sglang serve --model-path mlx-community/Qwen3-0.6B-4bit --disable-cuda-graph --host 127.0.0.1 --port 30000 --enable-cache-report --enable-metrics --mem-fraction-static 0.4
 ```
 
-Two flags are not defaults, and both are deliberate. `--enable-cache-report` puts the cached token count into every OpenAI-style response, so [section 2.5](#s-streaming-stop-strings-and-the-openai-api) can show it. `--mem-fraction-static 0.4` limits the KV pool, and [section 3.2](#s-mem-fraction-static-and-startup-sizing) explains the crash we had without it.
+Three flags are not defaults, and all three are deliberate. `--enable-cache-report` puts the cached token count into every OpenAI-style response, so [section 2.5](#s-streaming-stop-strings-and-the-openai-api) can show it. `--enable-metrics` turns on the `/metrics` endpoint that [section 5.2](#s-the-metrics-endpoint) reads. `--mem-fraction-static 0.4` limits the KV pool, and [section 3.2](#s-mem-fraction-static-and-startup-sizing) explains the crash we had without it.
 
 The log objects to one flag. The Apple silicon page of the SGLang docs tells you to pass `--disable-cuda-graph`. The second line of our log says the flag "is deprecated and will be removed in a future release", and names `--cuda-graph-backend-{decode,prefill}=disabled` as the replacement.
 
@@ -108,7 +108,7 @@ lang: text
 [2026-10-16 14:01:45] Subprocess scheduler_0 (pid=5909) crashed with exit code -15. Triggering SIGQUIT for cleanup...
 ```
 
-The main process is pid 5782 and the scheduler is pid 5909. Exit code -15 is our own SIGTERM, so the word "crashed" is misleading. Learn to read this line, because a real scheduler crash prints the same shape with a different exit code, as [section 2.4](#s-the-overlap-scheduler) shows.
+The main process is pid 5782 and the scheduler is pid 5909. Exit code -15 is our own SIGTERM, so the word "crashed" is misleading. A real scheduler crash looks different. It prints a traceback and then "SIGQUIT received ... It usually means one child failed", as [section 2.4](#s-the-overlap-scheduler) shows.
 
 ## Our position
 

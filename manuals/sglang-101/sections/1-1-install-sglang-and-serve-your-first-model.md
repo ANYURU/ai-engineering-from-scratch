@@ -94,7 +94,7 @@ We ran the uv path. The Docker command follows the SGLang install page {{docs}}.
 
 Three flags in the command are our choice:
 
-- `--enable-cache-report` puts `cached_tokens` in every response. Without it, a client cannot see the prefix cache.
+- `--enable-cache-report` puts `cached_tokens` in every response. Without it, a client cannot see the cache hits of its own request.
 - `--enable-metrics` turns on the `/metrics` endpoint, which [section 1.2](#s-check-that-the-server-is-healthy) reads.
 - `--mem-fraction-static 0.85` sets how much GPU memory SGLang takes. [Section 3.2](#s-mem-fraction-static-and-startup-sizing) shows how to choose the value.
 
