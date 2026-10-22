@@ -6,6 +6,8 @@ We ran the same GRPO setup three times. The first run used the default seed, whi
 
 When you finish this section, you can tell a real effect from seed noise, and time a run on a hot GPU.
 
+**Our result:** in one 12-step run, the median rollout was 83.9 s over all steps. Over the 6 steps with no heat pause, it was 59.1 s.
+
 ## Know the noise of your setup
 
 Each run trained Qwen3-0.6B on GSM8K for 48 steps, with 32 prompts and 8 answers each. We compare the mean of the first 8 steps with the mean of the last 8:
@@ -39,6 +41,14 @@ Our GB10 runs hot. A heat guard pauses the container when the GPU reaches 84 C, 
 So we report times from steps whose rollout overlapped no pause. Our summary script finds those steps from the pause log and the step timestamps. [The lab notes](#s-ref-lab-notes) give the rule.
 
 Clean steps are not enough on their own. The same setting gave a 47.5 s rollout on one day and 59.1 s on another, both from steps without pauses. Our reading is that a hot card runs at a lower clock, and our summary does not record the clock yet. Compare times only between runs from the same session, and repeat them with a second seed.
+```figure
+id: fig-5-3
+kind: chart
+title: A heat pause adds time that is not the work
+claim: Steps that overlapped a heat pause took about 45 s longer than the clean steps.
+caption: Rollout seconds per step for one 12-step run.
+```
+
 
 ```takeaways
 - Run at least two seeds for every change you want to report.
