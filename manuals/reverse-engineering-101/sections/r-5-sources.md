@@ -2,15 +2,15 @@
 
 > One pinned source tree, its documentation pages, one recorded capture, and the specifications, papers, and statutes, ranked by authority.
 
-The pin is `rea-agents` 6.7.0, the npm package published on 2026-10-18, whose tag `rea-agents-6.7.0` is commit `27dc42d10249f0410904a75c0997842eb03b931c` of `github.com/morluto/rea`. The provider is Ghidra 12.1.4 with OpenJDK 21.0.12.1. The facts were verified on 2026-10-18 against a read-only checkout of that commit, and the files in each Sources line are paths in it.
+The pin is `rea-agents` 6.7.0, the npm package published on 2026-10-18, whose tag `rea-agents-6.7.0` is commit `27dc42d10249f0410904a75c0997842eb03b931c` of `github.com/morluto/rea`. The provider is Ghidra 12.1.4 with OpenJDK 21.0.12.1. The facts were verified on 2026-10-18 against a read-only checkout of that commit, and the source files of each section are paths in it.
 
 ## The ranked sources
 
 When two sources disagree, the higher one wins and the section says so.
 
-| Rank | Source | Used for | Cited as |
+| Rank | Source | Used for | Source key |
 |---|---|---|---|
-| 1 | the rea source at `27dc42d` | every claim about how rea works | the file, in the Sources line |
+| 1 | the rea source at `27dc42d` | every claim about how rea works | the file |
 | 2 | the rea documentation at `27dc42d` | documented behaviour, limits, and the responsible use rules | `{{mcp ...}}`, `{{cli ...}}`, `{{install ...}}`, and the other keys below |
 | 3 | the capture, `capture/out/`, recorded on 2026-10-18 | every listing and every number in a figure | the file name |
 | 4 | the format and architecture specifications | ELF, Mach-O, x86-64, AArch64, calling conventions | `{{spec ...}}` |

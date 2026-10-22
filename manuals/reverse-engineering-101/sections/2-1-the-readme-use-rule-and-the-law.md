@@ -52,7 +52,7 @@ id: fig-2-1
 kind: decision
 title: five questions before the first command
 claim: Five questions from 17 USC 1201(f), Directive 2009/24/EC, Sega, and Connectix stand before the first command, and the fixtures of this manual answer all five by construction.
-caption: Read the five questions from the top down, and follow a dashed rose arrow at the first no. The references are the statutes and decisions in the Sources line, and the file names come from capture/out/00-fixtures.txt.
+caption: Read the five questions from the top down, and follow a dashed rose arrow at the first no. The references are the statutes and decisions that the sources reference lists.
 ```
 
 ## The rule of this manual

@@ -2,13 +2,13 @@
 
 > The manual ranks its sources by authority, and this page lists every external source the sections cite, with the sections that use each one.
 
-The ranks match [the front matter](#s-front). When two sources disagree, the higher one wins and the section says so. The SGLang source files each section used are named in the Sources line at its end, at the tag, and are not repeated here. Every page below was read on 2026-10-16.
+The ranks match [the front matter](#s-front). When two sources disagree, the higher one wins and the section says so. The SGLang source files each section used are recorded in the manual source and checked by the audit. They are not listed here. Every page below was read on 2026-10-16.
 
 ## The ranked sources
 
-| Rank | Source | What the manual takes from it | Cited as |
+| Rank | Source | What the manual takes from it | Source key |
 |---|---|---|---|
-| 1 | the SGLang source at the tag, `baa9befa` | every default and every mechanism | the file list in the Sources line of each section |
+| 1 | the SGLang source at the tag, `baa9befa` | every default and every mechanism | the source files of each section, in the manual source |
 | 2 | the captured runs in `capture/out/` | every listing and every number marked as measured | the capture file name |
 | 3 | SGLang issues and pull requests | incidents and the design history of each feature | `issue` and its number |
 | 4 | papers | the original design of RadixAttention and the methods SGLang implements | `paper` and a title |
