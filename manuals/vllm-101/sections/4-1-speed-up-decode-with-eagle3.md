@@ -61,8 +61,8 @@ The median TPOT fell, but the gaps between the token groups grew. At 32 users, t
 
 Our gain holds for random prompts and outputs of 128 tokens. Other teams found that real traffic can give less. We did not measure these effects ourselves:
 
-- A 2026 benchmark study by NVIDIA researchers found that synthetic prompts overstate the speculative throughput of real prompts. It also found that the best draft depth changes with the batch size.
-- A 2026 study of EAGLE-3 and other drafts found that the acceptance length falls as the answer grows. Within a few thousand output tokens it came close to 1, which means no gain.
+- A 2026 benchmark study by NVIDIA researchers, SPEED-Bench, found that synthetic prompts overstate the speculative throughput of real prompts. It also found that the best draft depth changes with the batch size.
+- A 2026 study of EAGLE-3 and other drafts, Test-Time Speculation, found that the acceptance length falls as the answer grows. Within a few thousand output tokens it came close to 1, which means no gain.
 - A 2025 study of serving benchmarks found that speculation lowered the median TPOT but raised the P99 TPOT and the TTFT.
 
 So a gain on short random answers does not predict a gain on long chat answers or on reasoning traces.
