@@ -13,7 +13,7 @@ id: fig-1-1
 kind: flow
 title: One GRPO step on one GPU
 claim: Each step runs rollout, scoring, log probabilities, training, and a weight update, in that order, on one GPU.
-caption: Medians of 48 steps with no heat pause, Qwen3-0.6B on one GB10. The numbers follow the order of the arrows.
+caption: Medians of 48 steps of a run made before we added the heat guard, so no pause could occur. Qwen3-0.6B on one GB10. The numbers follow the order of the arrows.
 ```
 
 ## Check what you need
@@ -153,7 +153,7 @@ id: fig-1-1b
 kind: chart
 title: Where the time of one step goes
 claim: Training and rollout take almost all of a step, and the hand-offs take about 2 s.
-caption: Median seconds per phase over 48 steps with no heat pause.
+caption: Median seconds per phase over 48 steps of a run made before we added the heat guard. The log-probability pass and the gradient step together make the training phase.
 ```
 
 
