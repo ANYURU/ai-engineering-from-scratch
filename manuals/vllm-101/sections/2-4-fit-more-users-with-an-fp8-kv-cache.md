@@ -41,13 +41,16 @@ On our L4, the first start with `--kv-cache-dtype fp8` failed. The cause is the 
 
 ```listing
 title: the FlashInfer build error on our L4
-source: capture/gpu/incidents/l4-vllm-flashinfer-jit.txt
+source: capture/gpu/incidents/l4-vllm-kv-fp8-flashinfer-attention-jit.txt
 lang: text
-note: This copy comes from an earlier start that hit the same build error. The CUDA compiler and the CUDA headers that FlashInfer used came from different releases.
+note: Our FP8 start on 2026-10-22. vLLM picked FlashInfer from two valid backends. The build of its FP8 prefill kernel failed, because the CUDA compiler and the CUDA headers came from different releases.
 ---
-/data/vllm/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include/cuda/std/__cccl/cuda_toolkit.h:41:8: error: #error "CUDA compiler and CUDA toolkit headers are incompatible, please check your include paths"
+(EngineCore pid=814129) INFO 10-22 09:11:03 [cuda.py:526] Using FLASHINFER attention backend out of potential backends: ['FLASHINFER', 'TRITON_ATTN'].
+(EngineCore pid=814129) ERROR 10-22 09:11:53 [core.py:1433] /data/vllm/.venv/lib/python3.12/site-packages/flashinfer/data/cccl/libcudacxx/include/cuda/std/__cccl/cuda_toolkit.h:41:8: error: #error "CUDA compiler and CUDA toolkit headers are incompatible, please check your include paths"
 RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
 ```
+
+The FlashInfer sampler fails to build in the same way on this node. So our sweep tool starts vLLM with `VLLM_USE_FLASHINFER_SAMPLER=0`.
 
 Pick the Triton backend. It reads an FP8 KV cache and does not use the FlashInfer build:
 
@@ -83,4 +86,4 @@ We did not measure output quality with an FP8 KV cache. With no scale file, vLLM
 - Check output quality on your own prompts before production.
 ```
 
-Sources: capture/gpu/summary/l4.json (load.vllm-fast-b, load.vllm-kv-fp8-triton), capture/gpu/incidents/l4-vllm-flashinfer-jit.txt, the vLLM source at v0.31.0 (vllm/platforms/cuda.py, vllm/v1/attention/backends/fa_utils.py, vllm/v1/attention/backends/triton_attn.py), vLLM documentation at v0.31.0 (docs/features/quantization/quantized_kvcache.md).
+Sources: capture/gpu/summary/l4.json (load.vllm-fast-b, load.vllm-kv-fp8-triton), capture/gpu/incidents/l4-vllm-kv-fp8-flashinfer-attention-jit.txt, capture/gpu/incidents/l4-vllm-flashinfer-jit.txt, the vLLM source at v0.31.0 (vllm/platforms/cuda.py, vllm/v1/attention/backends/fa_utils.py, vllm/v1/attention/backends/triton_attn.py), vLLM documentation at v0.31.0 (docs/features/quantization/quantized_kvcache.md).
