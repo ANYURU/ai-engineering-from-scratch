@@ -68,7 +68,9 @@ For example, Qwen publishes a 4-bit AWQ checkpoint of Qwen3-14B:
 vllm serve Qwen/Qwen3-14B-AWQ --max-model-len 8192
 ```
 
-We did not run any of these formats. A 4-bit model can lose more accuracy than an FP8 model, and the loss depends on the model and the method. Test both formats on your own prompts.
+We started this AWQ checkpoint once on an L4, with no `--quantization` flag. The log showed `quantization=auto_awq` and the Marlin kernel. The weights took 9.44 GiB, and the pool held 36,272 tokens. We did not measure its speed or its accuracy, and we did not run the other formats.
+
+A 4-bit model can lose more accuracy than an FP8 model, and the loss depends on the model and the method. Test both formats on your own prompts.
 
 ## Check the accuracy
 
@@ -80,4 +82,4 @@ We did not measure output quality with FP8 weights. Run your own prompts on both
 - Check output quality on your own prompts before production.
 ```
 
-Sources: capture/gpu/summary/l4.json (load.vllm-lock-b, load.vllm-lock-fp8), the vLLM source at v0.31.0 (vllm/model_executor/layers/quantization/fp8.py), vLLM documentation at v0.31.0 (docs/features/quantization/online.md, docs/features/quantization/README.md, docs/features/quantization/auto_awq.md, docs/features/quantization/gptqmodel.md, docs/features/quantization/bnb.md, docs/features/quantization/gguf.md, docs/features/quantization/llm_compressor/).
+Sources: capture/gpu/summary/l4.json (load.vllm-lock-b, load.vllm-lock-fp8), the vLLM source at v0.31.0 (vllm/model_executor/layers/quantization/fp8.py), vLLM documentation at v0.31.0 (docs/features/quantization/online.md, docs/features/quantization/README.md, docs/features/quantization/auto_awq.md, docs/features/quantization/gptqmodel.md, docs/features/quantization/bnb.md, docs/features/quantization/gguf.md, docs/features/quantization/llm_compressor/), capture/gpu/out-l4/livecheck-2026-10-22.txt.
