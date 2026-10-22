@@ -17,7 +17,7 @@ caption: The five symptoms from our runs. The entries below add six more from is
 ## The GPU is idle and the log keeps growing
 
 - **Cause:** the rollout engine died, and the trainer keeps sending requests to it.
-- **Check:** count `503 Service Unavailable` in each of the last few minutes of the log. Our failed run wrote more than 1,800 every minute for an hour. A healthy run with 16 answers for each prompt wrote short bursts of up to a minute, then none.
+- **Check:** count `503 Service Unavailable` in each of the last few minutes of the log. Our failed run wrote more than 2,600 in every full minute for an hour. A healthy run with 16 answers for each prompt wrote short bursts of up to a minute, then none.
 - **Fix:** stop the run, then read the engine lines above the first 503 error. Start every unattended run with the watchdog in [section 1.2](#s-add-a-watchdog).
 
 ## The engine stops at start with a FlashAttention 3 error
@@ -86,4 +86,4 @@ caption: The five symptoms from our runs. The entries below add six more from is
 - Treat entries from the issue tracker as reports to check, not as results we measured.
 ```
 
-Sources: capture/gpu/out-gb10/engine-died-503.log; capture/gpu/out-gb10/engine-died-count.txt; capture/gpu/out-gb10/ray-oom-4b.log; capture/gpu/out-gb10/thermostat.log; capture/gpu/summary/miles-gb10-lab.json; manuals/sglang-101/capture/gpu/out-miles/true-on-policy-error.log; Miles issues 3649, 3714, 4003, 4019, 4134, 4238.
+Sources: capture/gpu/out-gb10/engine-died-503.log; capture/gpu/out-gb10/engine-died-count.txt; capture/gpu/out-gb10/503-bursts.txt; capture/gpu/out-gb10/ray-oom-4b.log; capture/gpu/out-gb10/thermostat.log; capture/gpu/summary/miles-gb10-lab.json; manuals/sglang-101/capture/gpu/out-miles/true-on-policy-error.log; Miles issues 3649, 3714, 4003, 4019, 4134, 4238.
