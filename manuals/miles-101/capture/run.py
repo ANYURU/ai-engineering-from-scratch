@@ -107,7 +107,8 @@ def run():
         new = json.loads(fresh.read_text())
         old = json.loads(SUMMARY.read_text())
         problems = summary_problems(new, pause_log)
-        problems += [f"{name}: stored, but missing from the runs folder" for name in sorted(set(old["runs"]) - set(new["runs"]))]
+        for key in ("runs", "excluded"):
+            problems += [f"{name}: stored in {key}, but missing from the runs folder" for name in sorted(set(old[key]) - set(new[key]))]
         if problems:
             for problem in problems:
                 print(f"drift: {problem}")
