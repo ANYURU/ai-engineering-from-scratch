@@ -14,12 +14,12 @@ Every step logs `perf/update_weights_time` in seconds. Read it next to `perf/ste
 
 | Model | Weight update, 4 steps | Trainer offload, median | Trainer onload, median |
 |---|---|---|---|
-| Qwen3-0.6B | 0.63 to 0.65 s | 1.6 s | 0.8 s |
+| Qwen3-0.6B | 0.63 to 0.66 s | 1.6 s | 0.8 s |
 | Qwen3-1.7B | 0.89 to 0.95 s | 3.8 s | 1.4 s |
 
 **Trainer offload:** the time the trainer takes to move its weights and optimizer state to host memory after training, logged as `perf/sleep_time`. **Trainer onload:** the time it takes to move them back before the next log probabilities, logged as `perf/wake_up_time`.
 
-The larger model is about 2.8 times the size, and its update took about 1.4 times as long. The trainer offload and onload grew faster than the update did, because the optimizer state grows with the model.
+The larger model is about 2.8 times the size, and its update took about 1.4 times as long. The trainer offload and onload grew faster than the update did. Our reading: the update sends only the weights, and the offload also moves the gradients and the optimizer state.
 
 The short answers cut almost every reply, so the reward in these runs stayed near 0. These runs measure the copy, not the training.
 
