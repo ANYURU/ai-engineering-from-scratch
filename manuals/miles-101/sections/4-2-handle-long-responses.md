@@ -42,10 +42,26 @@ Partial rollout works together with over-sampling. `--over-sampling-batch-size` 
 
 A continued answer starts under one set of weights and ends under a later one. So part of its tokens come from older weights. Watch the gap between the trainer and the engine, as in [section 5.2](#s-check-the-first-step), after you turn partial rollout on.
 
+## Speculative decoding, a lever we have not measured
+
+Speculative decoding is another way to shorten rollout. A cheap draft guesses the next few tokens, and the engine checks all of them in one forward pass. Miles passes the SGLang speculative flags through with the `--sglang-` prefix:
+
+```bash
+--sglang-speculative-algorithm EAGLE --sglang-speculative-num-steps 3 --sglang-speculative-eagle-topk 1 --sglang-speculative-num-draft-tokens 4
+```
+
+There are two kinds of draft to start from:
+
+- **An MTP draft.** A model with its own MTP layers uses them as the draft. As training changes the policy, the draft falls behind, and fewer of its tokens pass the check. Miles can train the MTP layers with the policy: `--mtp-num-layers 1 --enable-mtp-training`, on the Megatron trainer only.
+- **An n-gram draft.** `--sglang-speculative-algorithm NGRAM` needs no draft model. It guesses from tokens that the engine already generated. SGLang supports it on CUDA only, and it turns off the overlap scheduler.
+
+The Miles documentation advises against speculative decoding on dense models below about 13B parameters when rollout is the bottleneck. There, the check can cost more than the draft saves. Our Qwen3-0.6B is in that range, and we have not measured it. If you try it, compare the rollout time and the gap over the same steps and seed.
+
 ```takeaways
 - Read the cut share before you change the length limit.
 - Raise the limit when the cut answers are close to right.
 - Use partial rollout when a few long answers set the step time, and then watch the gap.
+- Treat speculative decoding as a lever to measure, not a default, on a small dense model.
 ```
 
-Sources: capture/gpu/summary/miles-gb10-lab.json (runs.plain-48, runs.plain-48-s2, runs.plain-48-s3); Miles partial rollout and over-sampling arguments and the single-turn generate function at main 08752a12.
+Sources: capture/gpu/summary/miles-gb10-lab.json (runs.plain-48, runs.plain-48-s2, runs.plain-48-s3); Miles partial rollout and over-sampling arguments and the single-turn generate function at main 08752a12; Miles speculative decoding documentation and SGLang argument pass-through at main 08752a12; SGLang speculative decoding documentation.
