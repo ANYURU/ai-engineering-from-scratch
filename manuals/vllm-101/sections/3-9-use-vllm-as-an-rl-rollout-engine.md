@@ -24,6 +24,16 @@ The routes below exist only when you start the server with `VLLM_SERVER_DEV_MODE
 
 **External launch.** With `--distributed-executor-backend external_launcher`, a launcher such as `torchrun` starts the vLLM workers inside the trainer's processes. Some colocated frameworks use this path.
 
+## Know the sleep mode problems at 0.31.0
+
+Three problems with sleep mode are known at 0.31.0. We did not reproduce them ourselves:
+
+- **A level 2 wake does not reload a speculative draft.** Issue 52479 reports that the weight reload covers only the target model. The target model then rejects every draft token, so decode falls to about the speed with no speculation. The output stays correct, and no error appears. The issue is open.
+- **A level 2 sleep clears calibrated KV scales.** On compressed-tensors checkpoints with an FP8 KV cache, the first request after a reload of the weights returned NaN logprobs and a wrong first token. Release 0.32.0 fixes this.
+- **A weight update during sleep stops the engine.** Issue 57853 reports a segfault when the trainer sends weights after `/sleep` and before `/wake_up`. The API server stays up, and every later request fails. The issue is open.
+
+So after each level 2 wake, reload the weights, reset the prefix cache, and read the speculative acceptance counters. Always wake the server before the trainer sends weights.
+
 ## Check the rollout logprobs
 
 The trainer often compares the logprobs that vLLM returned with the logprobs it computes itself. The two never match exactly, because the kernels differ. A small, steady gap is normal. A gap that grows means the weights did not reach the generator. Track the gap every step. [The reproducibility page](#s-get-reproducible-outputs) explains why the same weights still give different numbers.
@@ -34,6 +44,7 @@ Not measured on our hardware. We have not timed sleep, wake, or a weight update 
 - Sleep frees GPU memory for training, and wake takes it back.
 - A weight update is a transfer that the trainer starts and finishes through the server routes.
 - Track the gap between the generator and the trainer logprobs on every step.
+- At 0.31.0, read the draft acceptance after a level 2 wake, and wake before a weight update.
 ```
 
 Sources: the vLLM source at v0.31.0 (vllm/config/model.py, vllm/config/parallel.py, vllm/entrypoints/ api routers for sleep, rlhf, and rpc, vllm/distributed/weight_transfer/), vLLM documentation at v0.31.0 (docs/training/rlhf.md, docs/training/async_rl.md, docs/features/sleep_mode.md, docs/training/weight_transfer/), the release notes for v0.31.0 and v0.32.0.
