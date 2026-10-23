@@ -72,4 +72,4 @@ Keep your own ranges. These numbers hold for our model, data, and machine. Run t
 - Send a long run to Weights & Biases or TensorBoard, and keep the log too.
 ```
 
-Sources: capture/gpu/summary/miles-gb10-lab.json (runs.plain-48, runs.plain-48-s2, runs.plain-48-s3); Miles loss and metric code at main 08752a12; Miles wandb and tensorboard arguments and tracking code at main 08752a12; Miles monitoring documentation at main 08752a12; capture/gpu/out-gb10/tracker-eval-checks.txt (live check, 2026-10-23).
+Sources: capture/gpu/summary/miles-gb10-lab.json (runs.plain-48, runs.plain-48-s2, runs.plain-48-s3); Miles main 08752a12 files miles/backends/training_utils/loss/hub/losses.py, miles/backends/training_utils/metrics/log_utils.py, miles/ray/rollout/metrics.py, miles/utils/arguments.py, miles/utils/tracking_utils/tracking.py, miles/utils/tracking_utils/wandb_utils.py, miles/utils/tracking_utils/tensorboard_utils.py, docs/user-guide/monitoring.md; capture/gpu/out-gb10/tracker-eval-checks.txt (live check, 2026-10-23).
