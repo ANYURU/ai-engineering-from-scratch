@@ -43,7 +43,7 @@ curl http://localhost:8000/is_sleeping
 
 The two POST routes return HTTP 200 with an empty body. The first `/is_sleeping` call returns `{"is_sleeping":true}`, and the second returns `{"is_sleeping":false}`. Run `nvidia-smi` between the calls to see the GPU memory fall during the sleep and rise after the wake.
 
-We ran these calls at level 1 with the small Qwen3-0.6B on an L4. Each POST returned 200 with an empty body, and the sleep took 1.9 s. The GPU memory fell from 14.9 GB to 4.2 GB and came back after the wake. The log line `Sleep mode freed 10.37 GiB memory` confirms the sleep.
+We ran these calls at level 1 with the small Qwen3-0.6B on an L4. Each POST returned 200 with an empty body, and the sleep took 1.9 s. The GPU memory fell from 14,861 MiB to 4,245 MiB and came back after the wake. The log line `Sleep mode freed 10.37 GiB memory` confirms the sleep.
 
 ## Know the sleep mode problems at 0.31.0
 
