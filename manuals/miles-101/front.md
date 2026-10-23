@@ -8,7 +8,7 @@ Five commands start a run of reinforcement learning on one GPU. They are the sam
 
 ```bash
 docker pull radixark/miles:latest
-mkdir -p ~/miles-lab/runs && curl -fsSL -o ~/miles-lab/miles_grpo.py https://raw.githubusercontent.com/rohitg00/ai-engineering-from-scratch/main/manuals/miles-101/capture/gpu/miles_grpo.py
+mkdir -p ~/miles-lab/runs ~/.cache/huggingface && curl -fsSL -o ~/miles-lab/miles_grpo.py https://raw.githubusercontent.com/rohitg00/ai-engineering-from-scratch/main/manuals/miles-101/capture/gpu/miles_grpo.py
 cd ~/miles-lab
 docker run --rm --name miles-plain --gpus all --ipc=host --shm-size 32g --ulimit memlock=-1 -v "$HOME/miles-lab:/root/lab" -v "$HOME/.cache/huggingface:/root/.cache/huggingface" -e MILES_NUM_ROLLOUT=12 -e MILES_RUN=plain radixark/miles:latest python /root/lab/miles_grpo.py > runs/plain.log 2>&1
 grep -o "'rollout/raw_reward': [0-9.]*" runs/plain.log

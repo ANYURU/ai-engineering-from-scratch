@@ -67,11 +67,11 @@ The image is built for `arm64` and `amd64`. It holds its own build of SGLang, wh
 The container reads the launcher script, the model, and the data from one folder that you mount at `/root/lab`. Create it and download the launcher script of this manual into it:
 
 ```bash
-mkdir -p ~/miles-lab/runs
+mkdir -p ~/miles-lab/runs ~/.cache/huggingface
 curl -fsSL -o ~/miles-lab/miles_grpo.py https://raw.githubusercontent.com/rohitg00/ai-engineering-from-scratch/main/manuals/miles-101/capture/gpu/miles_grpo.py
 ```
 
-If you have a clone of this repository, run `cp manuals/miles-101/capture/gpu/miles_grpo.py ~/miles-lab/` from its root instead.
+If you have a clone of this repository, run `cp manuals/miles-101/capture/gpu/miles_grpo.py ~/miles-lab/` from its root instead. The second folder is the model cache that the run mounts. If it does not exist, Docker creates it as root, and later downloads on the host fail.
 
 The launcher downloads `Qwen/Qwen3-0.6B` and the `zhuzilin/gsm8k` dataset into the folder on its first run. Then it builds the Miles command and starts it.
 
