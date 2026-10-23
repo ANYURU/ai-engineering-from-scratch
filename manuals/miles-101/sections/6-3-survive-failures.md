@@ -33,7 +33,7 @@ With the FSDP trainer of this manual, a resume restores these parts of the run:
 
 The log of a resumed run should show `[FSDP] Loaded model from` and `[FSDP] Loaded optimizer from`, each with the folder of the step. If these lines are missing, the run started fresh. Our first run with an empty folder printed no message about the missing checkpoint. In our resume check, the first trainer line after the load was `step 2`.
 
-Test a restart on a short run before the long run starts. Miles always saves after the last step, so run the command above with `MILES_NUM_ROLLOUT=2`. Then run it again with `MILES_NUM_ROLLOUT=4`. The first step line of the second run should be `step 2`, not `step 0`. We have not run this test on our GB10.
+Test a restart on a short run before the long run starts. Miles always saves after the last step, so run the command above with `MILES_NUM_ROLLOUT=2`. Then run it again with `MILES_NUM_ROLLOUT=4`. The first step line of the second run should be `step 2`, not `step 0`. We ran this test on our GB10 with Qwen3-0.6B, and it passed. We also ran the converter below on the step 2 checkpoint, and it wrote a model folder with the weights and the tokenizer files.
 
 ## Convert a checkpoint for serving
 
