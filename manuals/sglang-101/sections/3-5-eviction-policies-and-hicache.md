@@ -26,6 +26,10 @@ Eviction removes only cached tokens that no running request locks, the leaves of
 
 The SGLang docs give the same advice: start with `lru` and change it only against a measured hit rate {{docs}}. Frequency-based policies hurt when popularity shifts, because yesterday's popular prompt stays in memory and today's prompt pays for it. Change the policy only when you can name the workload that the new policy serves, and measure the hit rate before and after.
 
+A 2026 study of production traces from two companies supports that default. It tested 14 eviction policies, and the policies built for other caches gave little gain over LRU. In those traces, active sessions sent their next turns at a regular pace, so recency predicted reuse well.
+
+The study found gains in two narrow cases. One is quick eviction of prefixes that are used only once, when such prompts fill the cache. The other is eviction that weighs how much a miss costs to compute again. We did not measure these results ourselves. Of the SGLang policies, `slru` is the closest to the first case.
+
 ## HiCache: three tiers for one tree
 
 **HiCache:** SGLang's hierarchical cache, which extends the radix tree from GPU memory to host memory and to a storage backend. `--enable-hierarchical-cache` turns it on, and it defaults to off {{code}}. The tiers have names in the code and the docs.
@@ -147,4 +151,4 @@ HiCache pays for itself when sessions outlive the GPU pool: multi-turn chat, cod
 - Watch for evict storms and rank hangs in the issues before you deploy HiCache.
 ```
 
-Sources: python/sglang/srt/mem_cache/evict_policy.py, python/sglang/srt/mem_cache/unified_radix_cache.py (write_through_threshold, prefetch_timeout_base), python/sglang/srt/mem_cache/hybrid_cache/hybrid_pool_assembler.py (prefetch_threshold), python/sglang/srt/arg_groups/fields/memory.py at v0.5.22, docs/docs/advanced_features/hicache_design.mdx and radix_eviction_policy.mdx at v0.5.22, the v0.5.21 release notes, the SGLang HiCache post of 2025-09-10, the RBG and Mooncake post on the Alibaba Cloud blog of 2026-03-10, issues #35129, #30760, and #42465, arXiv 2510.15152. capture/gpu/out-l4/server-working-set-hicache.log, capture/gpu/out-l4/server-working-set-default.log, capture/gpu/summary/l4.json. capture/gpu/summary/gb10.json. capture/gpu/out-gb10/server-working-set-default.log.
+Sources: python/sglang/srt/mem_cache/evict_policy.py, python/sglang/srt/mem_cache/unified_radix_cache.py (write_through_threshold, prefetch_timeout_base), python/sglang/srt/mem_cache/hybrid_cache/hybrid_pool_assembler.py (prefetch_threshold), python/sglang/srt/arg_groups/fields/memory.py at v0.5.22, docs/docs/advanced_features/hicache_design.mdx and radix_eviction_policy.mdx at v0.5.22, the v0.5.21 release notes, Liu, Yu, and Yang, When Fancy Eviction Fails: Rethinking Cache Replacement For LLM Prefix Reuse, arXiv 2609.28870 (2026-09), the SGLang HiCache post of 2025-09-10, the RBG and Mooncake post on the Alibaba Cloud blog of 2026-03-10, issues #35129, #30760, and #42465, arXiv 2510.15152. capture/gpu/out-l4/server-working-set-hicache.log, capture/gpu/out-l4/server-working-set-default.log, capture/gpu/summary/l4.json. capture/gpu/summary/gb10.json. capture/gpu/out-gb10/server-working-set-default.log.

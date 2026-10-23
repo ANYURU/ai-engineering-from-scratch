@@ -160,6 +160,16 @@ The environment module declares the new name `SGLANG_FORCE_SHUTDOWN`. Its compat
 
 **Our position:** set the termination grace period longer than your longest request at your output cap. A 32K-token answer at 30 tokens per second needs more than 18 minutes. Cap `max_tokens` before you set the grace period, or a drain can never finish in time.
 
+## Before you trust a measurement
+
+Three checks prevent most of the false results that we found on our own machines:
+
+1. Flush the prefix cache before each run that you compare, and record the cached tokens, as in [section 5.1](#s-sglang-benchmark-serving). In our kit, a warm cache made a run at a higher load look faster.
+2. Record the SM clock and the temperature with every run, as in [section 5.1](#s-sglang-benchmark-serving). A hot L4 reported up to 28 percent less throughput.
+3. On a shared GB10, run SGLang in a container with a memory limit, and log free memory during startup, as in [section 3.2](#s-mem-fraction-static-and-startup-sizing).
+
+When a greedy output changes between two runs, check the cache first. A request that finds its prompt in the cache runs a different prefill path, as [section 4.6](#s-deterministic-inference-and-logprobs) shows.
+
 ## The order to change settings
 
 Most tuning advice lists flags. The order matters more than the list, because each step changes what the next step measures. [Figure 7.1b](#fig-7-1b) shows the order this manual uses, and each row links to the section that measures it.
@@ -203,6 +213,7 @@ Batch tokenization took P99 latency from 4,583 ms to 464 ms. A scoring path that
 - Set `SGL_FORCE_SHUTDOWN` for a forced stop at v0.5.22, never only `SGLANG_FORCE_SHUTDOWN`.
 - Cap output length before you choose the termination grace period.
 - Change settings in the order of figure 7.1b, one change per measured run.
+- Flush the prefix cache and record the clock before every run that you compare.
 ```
 
-Sources: python/sglang/srt/entrypoints/http_server.py (ready, health_generate, HEALTH_CHECK_TIMEOUT), python/sglang/srt/managers/tokenizer_manager.py (sigterm_watchdog, _SCHEDULER_EXIT_TIMEOUT_SECS), python/sglang/srt/environ.py (SGLANG_FORCE_SHUTDOWN, SGLANG_ENABLE_HEALTH_ENDPOINT_GENERATION, SGLANG_CACHE_DIR, redirect_third_party_caches, _handle_deprecated_envs) and python/sglang/__init__.py at v0.5.22; docs/docs/get-started/install.mdx at v0.5.22; capture/out/server-default.log, capture/out/server-default.command.txt, capture/out/shutdown-exploratory.log, capture/out/shutdown-exploratory.txt, capture/shutdown_probe.py, capture/gpu/incidents/l4-toolchain-failures.txt; python/sglang/benchmark/datasets/random.py at v0.5.22; issues #22511 and #35884; field reports: Doubleword, fergusfinn.com/blog/fast-sglang-starts (2026-04-06), LinkedIn Engineering, linkedin.com/blog/engineering/ai/scaling-llm-based-ranking-systems-with-sglang-at-linkedin (2026-02-20), CERIT-SC, blog.cerit.io/blog/run-llm2 (2025-10-19) and blog-dev.cerit.io/blog/llm3 (2026-04-27), Ant Group on the LMSYS blog, lmsys.org/blog/2025-09-26-sglang-ant-group (2025-09-26), capture/gpu/out-l4/os-release.txt
+Sources: python/sglang/srt/entrypoints/http_server.py (ready, health_generate, HEALTH_CHECK_TIMEOUT), python/sglang/srt/managers/tokenizer_manager.py (sigterm_watchdog, _SCHEDULER_EXIT_TIMEOUT_SECS), python/sglang/srt/environ.py (SGLANG_FORCE_SHUTDOWN, SGLANG_ENABLE_HEALTH_ENDPOINT_GENERATION, SGLANG_CACHE_DIR, redirect_third_party_caches, _handle_deprecated_envs) and python/sglang/__init__.py at v0.5.22; docs/docs/get-started/install.mdx at v0.5.22; capture/out/server-default.log, capture/out/server-default.command.txt, capture/out/shutdown-exploratory.log, capture/out/shutdown-exploratory.txt, capture/shutdown_probe.py, capture/gpu/incidents/l4-toolchain-failures.txt; python/sglang/benchmark/datasets/random.py at v0.5.22; issues #22511 and #35884; field reports: Doubleword, fergusfinn.com/blog/fast-sglang-starts (2026-04-06), LinkedIn Engineering, linkedin.com/blog/engineering/ai/scaling-llm-based-ranking-systems-with-sglang-at-linkedin (2026-02-20), CERIT-SC, blog.cerit.io/blog/run-llm2 (2025-10-19) and blog-dev.cerit.io/blog/llm3 (2026-04-27), Ant Group on the LMSYS blog, lmsys.org/blog/2025-09-26-sglang-ant-group (2025-09-26), capture/gpu/out-l4/os-release.txt, sections 3.2, 4.6, and 5.1 of this manual (the cache, clock, and memory checks).
