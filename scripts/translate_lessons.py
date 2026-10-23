@@ -311,7 +311,8 @@ def main():
         h = source_hash(src)
         dst = out_path(doc, args.lang)
         # key is the lesson path; the cache file is already per-language
-        if cache.get(rel) == h and dst.is_file():
+        replacing = args.replace_maintained and args.lang not in AUTOMATIC
+        if cache.get(rel) == h and dst.is_file() and not replacing:
             skipped += 1
             continue
         if maintained and dst.is_file():

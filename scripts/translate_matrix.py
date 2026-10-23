@@ -165,6 +165,7 @@ def published_translations(root: Path) -> bool:
     )
     if fetch.returncode != 0:
         sys.stderr.write(fetch.stderr)
+        return False
     return ref_available(root, TRANSLATIONS)
 
 
