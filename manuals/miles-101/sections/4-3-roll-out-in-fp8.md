@@ -27,12 +27,16 @@ Mode 1 is the easiest start, but it is not safe in every case. We have not teste
 - A post by the Miles team and its partners found that this mismatch grows with MoE model size, from 30B to 1T parameters. Their answer is FP8 on both sides, as in mode 2.
 - Another RL library warns about small models. There, the cost to quantize the weights at each weight update can be larger than the time that FP8 saves.
 
+[The sources](#s-ref-sources) list the study, the post, and the library documentation.
+
 ## Set up mode 1
 
 Give the engine an FP8 checkpoint and give the trainer the BF16 weights:
 
 - `--hf-checkpoint` points at the FP8 checkpoint. The engine loads it.
 - The trainer loads the BF16 weights. On the Megatron trainer, `--ref-load` points at them.
+
+Mode 1 needs the Megatron trainer. The FSDP trainer loads its own weights from `--hf-checkpoint` too, so with FSDP both sides would load the FP8 checkpoint. Our GB10 runs use FSDP, which is one reason we have not run mode 1.
 
 **Block-wise FP8:** a format that stores one scale for each block of 128 by 128 weights. The documentation lists it for Hopper GPUs, for Blackwell B200 and newer, and for AMD MI350X and MI355X.
 
@@ -59,4 +63,4 @@ The documentation lists B200, B300, GB200, and GB300 for modes 3 and 4. Our GB10
 - Add routing replay on a MoE model, and a capped importance-sampling correction when the gap grows.
 ```
 
-Sources: Miles low-precision documentation, weight update check arguments, and importance sampling arguments at main 08752a12; Jet-RL, arXiv 2601.14243; Unified FP8, LMSYS blog, 2025-11-25; SkyRL quantized rollouts documentation.
+Sources: Miles FSDP actor at main 08752a12 (the trainer weights load from the hf_checkpoint argument), Miles low-precision documentation, weight update check arguments, and importance sampling arguments at main 08752a12; Jet-RL, arXiv 2601.14243; Unified FP8, LMSYS blog, 2025-11-25; SkyRL quantized rollouts documentation.

@@ -2,7 +2,7 @@
 
 > Partial rollout stops the slowest answers from setting the time of every step.
 
-A rollout step ends when its last answer ends. If a few answers run to the length limit, the whole step waits for them, and the engine sits half empty while it does.
+A rollout step ends when its last answer ends. If a few answers run to the length limit, the whole step waits for them, and the engine has idle capacity while it does.
 
 When you finish this section, you can measure how much the long answers cost you, and keep them from slowing every step.
 
@@ -10,15 +10,7 @@ We have not run partial rollout on our GB10. The measured part of this page is t
 
 ## Measure the long answers first
 
-`rollout/truncated` reports the share of answers that hit the length limit, `--rollout-max-response-len`. Our three baseline seeds used a limit of 1,024 tokens:
-
-| Seed | Cut share, first 8 steps | Cut share, last 8 steps |
-|---|---|---|
-| default (1234) | 0.33 | 0.08 |
-| 2 | 0.30 | 0.12 |
-| 3 | 0.34 | 0.09 |
-
-At the start, about a third of the answers hit the limit. By step 48 the model had learned shorter answers, and about a tenth did.
+`rollout/truncated` reports the share of answers that hit the length limit, `--rollout-max-response-len`. Our three baseline seeds used a limit of 1,024 tokens. In their first 8 steps, 0.30 to 0.34 of the answers hit the limit. In their last 8 steps, the model had learned shorter answers, and 0.08 to 0.12 did. [Section 5.3](#s-repeat-a-run) has the numbers for each seed.
 
 A high cut share has two costs. A cut answer usually stops before its final answer, so the math reward scores it 0. And the step waits for the longest answers.
 
@@ -29,10 +21,10 @@ If the cut answers are close to right, raise `--rollout-max-response-len`. The m
 If a few very long answers set the step time, use partial rollout instead:
 
 ```bash
---partial-rollout --over-sampling-batch-size 48 --dynamic-sampling-filter-path miles.rollout.filter_hub.dynamic_sampling_filters.check_reward_nonzero_std
+-e MILES_EXTRA_ARGS="--partial-rollout --over-sampling-batch-size 48 --dynamic-sampling-filter-path miles.rollout.filter_hub.common_filters.apply_reward_nonzero_std_filter"
 ```
 
-The filter path is the one from [section 3.2](#s-train-with-the-dapo-filter), which Miles marks as deprecated.
+The filter is the one from [section 3.2](#s-train-with-the-dapo-filter).
 
 With partial rollout, the step takes the groups that finish first. Groups that are not done go back to the data buffer, and a later step continues them from the tokens they already have. The engine does not generate those tokens again.
 

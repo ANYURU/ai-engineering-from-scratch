@@ -20,21 +20,7 @@ The Miles documentation lists NVIDIA GPUs from A100 to GB300, and AMD MI300X to 
 
 ## Record what each run used
 
-`latest` moves. Two runs a week apart can use different code under the same tag. Record three facts at the start of every run:
-
-```listing
-title: the identity of the image that our runs used
-source: capture/gpu/out-gb10/image-identity.txt
-lang: text
-note: The digest names the exact image. The other two lines read the Miles commit and the SGLang version from inside it.
----
-$ docker image inspect --format "{{index .RepoDigests 0}} {{.Architecture}}" radixark/miles:latest
-radixark/miles@sha256:c64fa344e3a86715f03c0a1b6a422c474e0035355591a2f6da87bf52a74c52da arm64
-$ docker run --rm --entrypoint git radixark/miles:latest -C /root/miles log -1 --format="%h %cs %s"
-08752a1283 2026-10-15 fix(ci): keep host networks out of the builder disk cleanup (#4130)
-$ docker run --rm --entrypoint /opt/sglang/bin/python3 radixark/miles:latest -c "import sglang;print(sglang.__version__)"
-0.5.22.dev46+g7b6993a
-```
+`latest` moves. Two runs a week apart can use different code under the same tag. Record three facts at the start of every run: the image digest, the Miles commit, and the SGLang version. [Section 1.1](#s-run-grpo-on-one-gpu-pull-the-image-and-record-what-you-pulled) gives the three commands and our output.
 
 Our `latest` image held Miles from 2026-10-15 and a development build of SGLang 0.5.22, newer than the v0.1.2 release.
 

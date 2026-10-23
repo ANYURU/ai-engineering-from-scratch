@@ -9,7 +9,7 @@ The ranges come from our lab runs: Qwen3-0.6B on GSM8K on one GB10, 32 prompts w
 | Metric | Meaning | Our range |
 |---|---|---|
 | `rollout/raw_reward` | the mean reward of the step | 0.53 to 0.87 per step over 48 steps |
-| `rollout/episode_response_length/mean` | the mean answer length in tokens | 396 to 787 |
+| `rollout/response_lengths` | the mean answer length in tokens | 396 to 787 |
 | `rollout/truncated` | the share of answers that hit the length limit | 0.02 to 0.43 |
 
 ## Training
@@ -32,7 +32,7 @@ The ranges come from our lab runs: Qwen3-0.6B on GSM8K on one GB10, 32 prompts w
 | `perf/log_probs_time` | the trainer scoring of the samples | 23.4 s median of 48 steps, in a run made before the heat guard |
 | `perf/train_time` | the training phase, with the scoring | 100.3 s median of 48 steps, in a run made before the heat guard |
 | `perf/update_weights_time` | the copy of new weights into the engine | 0.63 to 0.65 s for Qwen3-0.6B |
-| `perf/sleep_time` | the trainer moving its state to host memory after training | 0.76 s median over 48 steps for Qwen3-0.6B, 1.9 to 3.7 s in the first two steps |
+| `perf/sleep_time` | the trainer moving its state to host memory after training | 0.76 s median over 48 steps for Qwen3-0.6B, and 1.9 to 3.7 s in the first two steps of the same 48-step run |
 | `perf/wake_up_time` | the trainer moving its state back before the log probabilities | 0.87 s median over 48 steps for Qwen3-0.6B |
 | `perf/train_wait_time` | the time the trainer waits for samples | logged in every step |
 

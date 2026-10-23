@@ -48,7 +48,7 @@ Every run used these settings unless its name says otherwise:
 | e3e, e3f | 12 | 1 | a same-day pair at memory fraction 0.25, default offload and the engine kept loaded |
 | e2b-dapo-filter | 12 | 1 | the DAPO zero-variance filter, with batches of 48 prompts |
 
-Four runs failed and are left out of every table: two true on-policy runs that stopped at start, and two Qwen3-4B runs that Ray stopped. The e2-n16 and e2b-dapo-filter runs finished all their steps, and their time limit ended the container during shutdown. The summary marks them as partial.
+Four runs failed and are left out of every table: two true on-policy runs that stopped at start, and two Qwen3-4B runs that Ray stopped. Our run queue gave each run a time limit, and stopped the container when the limit came. The e2-n16 and e2b-dapo-filter runs had finished all their steps and were shutting down at that time. The summary marks them as partial.
 
 ## The heat guard
 
@@ -73,13 +73,20 @@ The capture kit checks the stored outputs without a GPU. It replays the watchdog
 
 A median over clean steps can still mislead. The default setting gave a 47.5 s rollout in `plain-48` and 59.1 s in the 6 clean steps of `e6a-base`. On the same 6 step numbers, `plain-48` took 60.9 s. The rollout time follows the answer length, so compare times on the same step numbers.
 
-## Results that are leads
+## Results from one run
 
-These numbers rest on one run and are labelled as leads where they appear:
+These numbers rest on one run, and each page that uses them says so:
 
 - The rollout time with the engine kept loaded, in section 2.2. A same-day pair gave 1 to 3 percent on one seed.
 - The cost of deterministic inference, in section 4.5.
 - The group sizes of 4 and 16 answers, in section 3.1.
 - The reward and the rollout cost of the DAPO filter, in section 3.2. Its rollout times take the pause time out, because no step was clean.
+
+
+## Why the first offload pair does not hold
+
+Our first pair compared `e6a-base` with `e3c`. It showed a clean rollout median of 59.1 s for the default and 52.0 s with the engine kept loaded, a gain of 12 percent. The two runs also used different engine memory fractions, 0.4 and 0.25, and their clean steps were different steps.
+
+Step 10 was clean in both runs. The engine kept loaded took 46.7 s with answers of 599 tokens. The default took 56.3 s with answers of 695 tokens. The rollout time follows the answer length, so the shorter answers explain most of that gap. The same-day pair `e3e` and `e3f` then changed only the offload setting, and gave 1 to 3 percent.
 
 Sources: capture/gpu/heat-guard.sh; capture/run.py; capture/gpu/watchdog_replay.py; capture/gpu/out-gb10/image-identity.txt; capture/gpu/miles_grpo.py; capture/gpu/summarize_miles.py; capture/gpu/summary/miles-gb10-lab.json; capture/gpu/out-gb10/thermostat.log; capture/gpu/out-gb10/unpaused-timing.txt; capture/gpu/out-gb10/ray-oom-4b.log.

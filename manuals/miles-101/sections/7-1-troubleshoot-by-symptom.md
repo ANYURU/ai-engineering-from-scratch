@@ -2,7 +2,7 @@
 
 > Start from what you see, and each entry gives the likely cause, the check, and the fix.
 
-The first five entries are problems we met on a GB10: four symptoms of failed runs and one timing effect of heat. The sixth uses our healthy runs as the reference. The others come from reports in the Miles issue tracker, and we have not reproduced them.
+The first six entries are problems we met on a GB10: five symptoms of failed runs and one timing effect of heat. The seventh uses our healthy runs as the reference. The eighth comes from the Miles and SGLang source and documentation. The others come from reports in the Miles issue tracker. We have not reproduced the eighth or the others.
 
 When you finish this section, you can find the cause of a failed or wrong run from its first symptom.
 
@@ -11,7 +11,7 @@ id: fig-7-1
 kind: decision
 title: Start from what you see
 claim: Each of the five symptoms we hit has one first check and one fix.
-caption: The five symptoms from our runs. The entries below add six more from issue reports.
+caption: Five of the symptoms from our runs. The entries below also cover a run that hangs on a missing reward module. They add a check against healthy runs, one entry from the documentation, and five from issue reports.
 ```
 
 ## The GPU is idle and the log keeps growing
@@ -19,6 +19,12 @@ caption: The five symptoms from our runs. The entries below add six more from is
 - **Cause:** the rollout engine died, and the trainer keeps sending requests to it.
 - **Check:** count `503 Service Unavailable` in each of the last few minutes of the log. Our failed run wrote more than 2,600 in every full minute for an hour. A healthy run with 16 answers for each prompt wrote short bursts of up to a minute, then none.
 - **Fix:** stop the run, then read the engine lines above the first 503 error. Start every unattended run with the watchdog in [section 1.2](#s-add-a-watchdog).
+
+## The run hangs after a reward import error
+
+- **Cause:** Miles cannot import the module that `--custom-rm-path` names, usually because `PYTHONPATH` does not reach the lab folder.
+- **Check:** look for `ModuleNotFoundError` with the name of your reward module in the log. No `rollout 0` line follows it.
+- **Fix:** the run does not stop by itself, and the watchdog does not stop it, because the engine writes only a few 503 errors. In our test the job stayed up for two hours. Stop the container, fix `PYTHONPATH` as in [section 3.5](#s-write-a-custom-reward), and start the run again.
 
 ## The engine stops at start with a FlashAttention 3 error
 
@@ -41,7 +47,7 @@ caption: The five symptoms from our runs. The entries below add six more from is
 ## Step times change from run to run
 
 - **Cause:** thermal pauses or a lower clock on a hot GPU. We expect the samples and the rewards to stay the same, but we have not tested that.
-- **Check:** the pause log of your heat guard, and the GPU clock during the run.
+- **Check:** the pause log of the heat guard from [section 1.2](#s-add-a-watchdog-guard-the-gpu-heat), and the GPU clock during the run.
 - **Fix:** time only steps without a pause, and compare times only within one session. [Section 5.3](#s-repeat-a-run) gives the rule.
 
 ## The gap at step 0 is far above your range
@@ -49,6 +55,12 @@ caption: The five symptoms from our runs. The entries below add six more from is
 - **Cause:** the engine and the trainer do not start from the same weights, or they read the same weights in different formats.
 - **Check:** compare `train/train_rollout_logprob_abs_diff` at step 0 with your healthy runs. Ours were 0.0148 to 0.0157 for Qwen3-0.6B.
 - **Fix:** stop the run before it trains on wrong numbers. Check the checkpoint paths of both sides.
+
+## The engine runs out of memory at start
+
+- **Cause:** `--sglang-mem-fraction-static` does not fit the GPU. With `--colocate`, the trainer can already hold GPU memory when the engine starts. A fraction that is too high leaves no room for activations and CUDA graphs. A fraction that is too low leaves no room for the KV cache.
+- **Check:** a CUDA out-of-memory error in the engine lines during startup or on the first batch, and no `Ray OutOfMemoryError`. A fraction that is too low does not always stop the engine. Read `#tokens` in the `KV Cache is allocated` line. In our check at 0.02, the engine started with 3,082 tokens, and the first rollout took 386 s against 61 s at 0.25.
+- **Fix:** lower the fraction for the first case, or raise it for the second, by 0.05 or 0.1 at a time. The Miles documentation asks for 0.8 or lower with `--colocate`. Our runs used 0.4. [SGLang 101, section 3.2](https://aiengineeringfromscratch.com/manual-sglang-101.html#s-mem-fraction-static-and-startup-sizing) explains how the engine divides its memory.
 
 ## A reward function with fractions moves a group that should stay still
 
@@ -86,4 +98,4 @@ caption: The five symptoms from our runs. The entries below add six more from is
 - Treat entries from the issue tracker as reports to check, not as results we measured.
 ```
 
-Sources: capture/gpu/out-gb10/engine-died-503.log; capture/gpu/out-gb10/engine-died-count.txt; capture/gpu/out-gb10/503-bursts.txt; capture/gpu/out-gb10/ray-oom-4b.log; capture/gpu/out-gb10/thermostat.log; capture/gpu/summary/miles-gb10-lab.json; manuals/sglang-101/capture/gpu/out-miles/true-on-policy-error.log; Miles issues 3649, 3714, 4003, 4019, 4134, 4238.
+Sources: Miles training backend documentation at main 08752a12; SGLang memory sizing code in the image build 0.5.22.dev46; capture/gpu/out-gb10/engine-died-503.log; capture/gpu/out-gb10/engine-died-count.txt; capture/gpu/out-gb10/503-bursts.txt; capture/gpu/out-gb10/ray-oom-4b.log; capture/gpu/out-gb10/thermostat.log; capture/gpu/summary/miles-gb10-lab.json; manuals/sglang-101/capture/gpu/out-miles/true-on-policy-error.log; Miles issues 3649, 3714, 4003, 4019, 4134, 4238; capture/gpu/out-gb10/custom-rm-noenv-hang.txt (live check, 2026-10-23); capture/gpu/out-gb10/frac-low-kv.txt (live check, 2026-10-23).

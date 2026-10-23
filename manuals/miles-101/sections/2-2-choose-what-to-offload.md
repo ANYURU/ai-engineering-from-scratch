@@ -4,7 +4,7 @@
 
 When you finish this section, you can decide which memory each side gives back while the other side runs. You can also check an offload change without the heat pauses fooling you.
 
-**Our result:** keeping the engine loaded saved 0.6 to 1.8 s of a rollout of about a minute. The 12 percent gain that an earlier run showed came from shorter answers, not from the offload setting.
+**Our result:** keeping the engine loaded saved 0.6 to 1.8 s of a rollout of about a minute. An earlier pair showed 12 percent, but shorter answers caused that gap.
 
 ## Know the two switches
 
@@ -14,6 +14,12 @@ When you finish this section, you can decide which memory each side gives back w
 - `--no-offload-train` keeps the trainer weights and its optimizer state on the GPU while the engine works.
 
 `--offload-rollout-level kv_cache` gives back the KV cache and the CUDA graph memory, and keeps the engine weights.
+
+Add a switch to the run of [section 1.1](#s-run-grpo-on-one-gpu) with `MILES_EXTRA_ARGS`:
+
+```bash
+-e MILES_EXTRA_ARGS="--no-offload-rollout --sglang-mem-fraction-static 0.25"
+```
 
 The trainer side has its own timers. `perf/sleep_time` is the time the trainer takes to move its state to host memory after training, and Miles logs it with the next step. `perf/wake_up_time` is the time it takes to move the state back before the log probabilities. The engine release before training has no timer. The engine resume after the weight update is in `perf/finalize_and_resume_engines_time`.
 
@@ -26,7 +32,7 @@ We ran a same-day pair: seed 1, 12 steps, the engine memory fraction at 0.25 in 
 | default offload | 4 of 12 | 60.7 s | 0.73 s | 0.76 s | 0.62 s |
 | engine kept loaded | 3 of 12 | 56.7 s | 0.75 s | 0.82 s | 0.64 s |
 
-**Clean step:** a step whose rollout overlapped no heat pause. [The lab notes](#s-ref-lab-notes) give the rule.
+The table counts clean steps, as [the front matter](#s-front-how-we-tested-it) defines them.
 
 The two medians cover different steps, and the rollout time follows the answer length. Early steps write answers of about 800 tokens and later steps about 690. So compare the steps that were clean in both runs:
 
@@ -38,13 +44,11 @@ claim: On the steps that were clean in both runs, the engine kept loaded saved 0
 caption: Each pair of bars is one step of the same-day pair, with nearly the same answer length in both runs.
 ```
 
-**We measured** a small gain on steps 0, 1, and 8: 69.4 against 68.0 s, 58.5 against 56.7 s, and 55.8 against 55.2 s. The gain is 1 to 3 percent. The training phase did not change, because no training step escaped a pause in either run. The all-step medians were 240.4 and 239.1 s, with the pauses inside them.
+**We measured** a small gain on steps 0, 1, and 8: 69.4 against 68.0 s, 58.5 against 56.7 s, and 55.8 against 55.2 s. The gain is 1 to 3 percent. No training phase escaped a pause in either run, so the training phase has no clean comparison. Its medians over all 12 steps were 240.3 and 239.1 s, with the pauses inside them.
 
-The earlier lead does not hold. Our first runs showed 52.0 s against 59.1 s with the engine kept loaded. Those runs also used different memory fractions, and their clean steps were different steps.
+Our first pair of runs showed a larger gain, 52.0 s against 59.1 s. That pair also changed the memory fraction, and its clean steps were different steps. [The lab notes](#s-ref-lab-notes-results-from-one-run) explain why it does not hold.
 
-In the earlier pair, step 10 was clean in both runs. The engine kept loaded took 46.7 s with answers of 599 tokens. The default took 56.3 s with answers of 695 tokens. The shorter answers explain that gap.
-
-One seed is not enough to rank the two settings. A gain of one or two seconds is inside the step-to-step noise of our hot GB10.
+One seed is not enough to rank the two settings. A gain of one or two seconds is inside the step-to-step noise of our GB10 under heat pauses.
 
 ## Decide
 

@@ -10,12 +10,12 @@ When you finish this section, you can record each run so that you can compare it
 
 | Fact | How we record it |
 |---|---|
-| The image digest | `docker image inspect`, as in [section 6.4](#s-pick-an-image) |
+| The image digest | `docker image inspect`, as in [section 1.1](#s-run-grpo-on-one-gpu-pull-the-image-and-record-what-you-pulled) |
 | The Miles commit and the SGLang version | read from inside the image |
 | The full command | the launcher prints it, and we keep the script |
 | The seed | `--seed` and `--rollout-seed` |
 | The trainer log and the engine log | one log file per run, not mixed with other runs |
-| The GPU temperature and pauses | the heat-guard log, as in [the lab notes](#s-ref-lab-notes) |
+| The GPU temperature and pauses | the heat-guard log, as in [section 1.2](#s-add-a-watchdog-guard-the-gpu-heat) |
 | The exit code | one status line per run |
 
 Keep the engine log next to the trainer log. Of the four failures we met, one began in the engine and three began in the trainer, so you need both.

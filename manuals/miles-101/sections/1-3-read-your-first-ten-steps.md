@@ -6,11 +6,11 @@ The reward goes up and down in the first steps, and it is easy to read too much 
 
 When you finish this section, you can pull five numbers out of a run log. You can then compare them with our ranges and decide if the run is healthy.
 
-**Our result:** across three seeds, the mean reward was 0.61 to 0.65 in the first 8 steps. In the last 8 it was 0.74 to 0.77.
+**Our result:** in the first ten steps of three seeds, the reward per step was 0.53 to 0.74. The log probability gap was 0.0141 to 0.0164.
 
 ## Pull the numbers out of the log
 
-Each step writes its numbers on two lines: a `rollout N` line for the samples and a `step N` line for the training update. Use `grep` to read one number over the steps:
+Each step writes its numbers on two lines: a `rollout N` line for the samples and a `step N` line for the training update. Go to the folder of the log from [section 1.1](#s-run-grpo-on-one-gpu) with `cd ~/miles-lab/runs`. Then use `grep` to read one number over the steps:
 
 ```listing
 title: two numbers over the first ten steps
@@ -34,6 +34,8 @@ Change the metric name in the pattern to read any other number.
 
 ## Compare with the healthy ranges
 
+**KL:** the Kullback-Leibler divergence, a distance between two probability distributions. It is 0 when the two distributions are the same.
+
 We ran the same 48-step job with three seeds. These are the values over the first ten steps of all three:
 
 | Metric | Log name | Healthy range in steps 0 to 9 | What it tells you |
@@ -42,7 +44,7 @@ We ran the same 48-step job with three seeds. These are the values over the firs
 | answer length | `rollout/response_lengths` | 626 to 787 tokens | how long the model talks |
 | cut share | `rollout/truncated` | 0.19 to 0.43 | the share of answers that hit the 1,024-token limit |
 | log probability gap | `train/train_rollout_logprob_abs_diff` | 0.0141 to 0.0164 | how far the trainer and the engine disagree on the same tokens |
-| KL between trainer and engine | `train/train_rollout_kl` | 0.00063 to 0.00075 | the same disagreement as a distribution distance |
+| KL between trainer and engine | `train/train_rollout_kl` | 0.00063 to 0.00075 | the same disagreement, as a distance between two probability distributions |
 
 **Log probability gap:** the mean absolute difference between the log probability that the engine gave each sampled token and the one the trainer computes. It is never zero, because the two sides run different kernels.
 
@@ -50,16 +52,7 @@ From one step to the next, the reward moved by up to 0.14 in the first ten steps
 
 ## Read the trend over the full run
 
-Over 48 steps, all three seeds moved the same way. The mean over the first eight steps against the last eight:
-
-| Metric | Steps 0 to 7 | Steps 40 to 47 |
-|---|---|---|
-| reward | 0.61 to 0.65 | 0.74 to 0.77 |
-| answer length | 712 to 734 tokens | 447 to 480 tokens |
-| cut share | 0.30 to 0.34 | 0.08 to 0.12 |
-| log probability gap | 0.0136 to 0.0164 over all steps | |
-
-The reward rose, the answers got shorter, and fewer answers hit the length limit. The log probability gap stayed flat.
+Over 48 steps, all three seeds moved the same way. The reward rose, the answers got shorter, fewer answers hit the length limit, and the log probability gap stayed flat. [Section 5.3](#s-repeat-a-run) gives the numbers for each seed.
 
 ```figure
 id: fig-1-3

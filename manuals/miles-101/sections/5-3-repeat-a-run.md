@@ -6,7 +6,7 @@ We ran the same GRPO setup three times. The first run used the default seed, whi
 
 When you finish this section, you can tell a real effect from seed noise, and time a run on a hot GPU.
 
-**Our result:** in one 12-step run, the median rollout was 83.9 s over all steps. Over the 6 steps with no heat pause, it was 59.1 s.
+**Our result:** in our 12-step run with seed 1, the median rollout was 83.9 s over all steps. Over its 6 clean steps, it was 59.1 s.
 
 ## Know the noise of your setup
 
@@ -36,11 +36,11 @@ A change of 0.01 in reward on one seed tells you nothing on this setup. A change
 
 ## Time only clean steps
 
-Our GB10 runs hot. A heat guard pauses the container when the GPU reaches 84 C, and it resumes the container after the GPU cools or after two minutes. A pause adds to the phase time of the step it falls in. We expect a pause to leave the samples and the losses unchanged. We have not tested that yet.
+Our GB10 got hot under long runs. The heat guard of [section 1.2](#s-add-a-watchdog-guard-the-gpu-heat) pauses the container at 84 C. It resumes the container after the GPU cools, or after two minutes. A pause adds to the phase time of the step it falls in. We expect a pause to leave the samples and the losses unchanged. We have not tested that yet.
 
 So we report times from steps whose rollout overlapped no pause. Our summary script finds those steps from the pause log and the step timestamps. [The lab notes](#s-ref-lab-notes) give the rule.
 
-Clean steps are not enough on their own. The same setting gave a median rollout of 47.5 s in our first 48-step run. That run came before we added the heat guard, so no pause could touch it. A 12-step run four days later gave 59.1 s over its 6 clean steps. On the same 6 step numbers, the 48-step run took 60.9 s.
+Clean steps are not enough on their own. The same setting gave a median rollout of 47.5 s in our first 48-step run. That run came before we added the heat guard, so no pause could touch it. Our 12-step run with seed 1, four days later, gave 59.1 s over its 6 clean steps. On the same 6 step numbers, the 48-step run took 60.9 s.
 
 The rollout time follows the answer length, and the 48-step median includes the late steps with short answers. So compare times on the same step numbers, and repeat them with a second seed.
 ```figure

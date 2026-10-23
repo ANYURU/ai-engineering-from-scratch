@@ -10,9 +10,9 @@ When you finish this section, you can explain why true on-policy mode covers onl
 
 The engine and the trainer hold the same weights after each update. They still run different programs. The engine is built for speed: it batches many requests, picks kernels by batch size, and fuses operations. The trainer is built for gradients: it runs a different attention kernel and a different order of operations.
 
-Floating-point addition gives slightly different results in a different order. The same long sum, added in two orders, can differ in its last bits. Across 28 layers and a vocabulary of 151,936 tokens, those bits add up. Our reading is that this is the gap we measured.
+Floating-point addition gives slightly different results in a different order. The same long sum, added in two orders, can differ in its last bits. Across 28 layers and a vocabulary of 151,936 tokens, those bits add up. We think that this is the gap we measured.
 
-So the gap is not a bug in either side. It is the price of two programs that each do their own job well.
+So the gap is not a bug in either side. It is the cost of two programs that each do their own job well.
 
 ## Deterministic inference fixes the wrong half
 
