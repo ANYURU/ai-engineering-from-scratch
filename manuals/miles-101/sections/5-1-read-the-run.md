@@ -33,15 +33,15 @@ All three seeds showed the same trend: the reward rose and the answers got short
 
 ## Send the signals to a dashboard
 
-The log is enough for ten steps. For a long run, a dashboard is easier to read. Miles can write the same `train/`, `rollout/`, and `perf/` metrics to Weights & Biases or to TensorBoard. We read every number in this manual from the log, and we have not used either tracker on our GB10.
+The log is enough for ten steps. For a long run, a dashboard is easier to read. Miles can write the same `train/`, `rollout/`, and `perf/` metrics to Weights & Biases or to TensorBoard. We read every number in this manual from the log. We tested both trackers with a 2-step run on our GB10.
 
 For Weights & Biases without an account or a network, write the run to a local folder:
 
 ```bash
--e MILES_EXTRA_ARGS="--use-wandb --wandb-mode offline --wandb-project miles-lab --wandb-dir /root/lab/runs/plain/wandb"
+-e MILES_EXTRA_ARGS="--use-wandb --wandb-mode offline --wandb-project miles-lab --wandb-group plain --wandb-dir /root/lab/runs/plain/wandb"
 ```
 
-The log should show `W&B offline mode enabled. Data will be saved locally.` For an online run, leave out `--wandb-mode offline` and give your key with `-e WANDB_API_KEY=...` on the `docker run` line. Do not put the key in `MILES_EXTRA_ARGS`, because the launcher prints the full command in the log.
+Keep `--wandb-group`. Without it, the run stops at start with `TypeError: unsupported operand type(s) for +: 'NoneType' and 'str'`. The log should show `W&B offline mode enabled. Data will be saved locally.`, and an `offline-run-` folder appears under `~/miles-lab/runs/plain/wandb/wandb/`. For an online run, leave out `--wandb-mode offline` and give your key with `-e WANDB_API_KEY=...` on the `docker run` line. Do not put the key in `MILES_EXTRA_ARGS`, because the launcher prints the full command in the log.
 
 For TensorBoard, give Miles a folder and turn the writer on:
 
@@ -70,4 +70,4 @@ Keep your own ranges. These numbers hold for our model, data, and machine. Run t
 - Send a long run to Weights & Biases or TensorBoard, and keep the log too.
 ```
 
-Sources: capture/gpu/summary/miles-gb10-lab.json (runs.plain-48, runs.plain-48-s2, runs.plain-48-s3); Miles loss and metric code at main 08752a12; Miles wandb and tensorboard arguments and tracking code at main 08752a12; Miles monitoring documentation at main 08752a12.
+Sources: capture/gpu/summary/miles-gb10-lab.json (runs.plain-48, runs.plain-48-s2, runs.plain-48-s3); Miles loss and metric code at main 08752a12; Miles wandb and tensorboard arguments and tracking code at main 08752a12; Miles monitoring documentation at main 08752a12; capture/gpu/out-gb10/tracker-eval-checks.txt (live check, 2026-10-23).
