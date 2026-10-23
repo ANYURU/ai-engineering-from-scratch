@@ -808,7 +808,10 @@ function dated(manual) {
   if (manual.modified) return manual;
   const shallow = shallowCommits();
   manual.modified = lastModified([rel(manual.dir)], manual.pin.verified, shallow);
-  for (const doc of manual.documents) doc.modified = lastModified([doc.label], manual.pin.verified, shallow);
+  for (const doc of manual.documents) {
+    const svgs = doc.blocks.filter(block => block.type === 'figure').map(block => rel(path.join(manual.dir, 'figures', `${block.id}.svg`)));
+    doc.modified = lastModified([doc.label, manual.label, ...svgs], manual.pin.verified, shallow);
+  }
   return manual;
 }
 
