@@ -50,7 +50,9 @@ Then add two settings to the run of [section 1.1](#s-run-grpo-on-one-gpu). `PYTH
 -e PYTHONPATH=/root/lab -e MILES_EXTRA_ARGS="--custom-rm-path my_rewards.custom_rm"
 ```
 
-The launcher passes `PYTHONPATH` on to the Ray workers that score the answers. If Miles cannot find the file, the log shows `ModuleNotFoundError: No module named 'my_rewards'`. When the import works, the first `rollout 0` line shows a `rollout/raw_reward` that your function computed.
+The launcher passes `PYTHONPATH` on to the Ray workers that score the answers. When the import works, the first `rollout 0` line shows a `rollout/raw_reward` that your function computed.
+
+If Miles cannot find the file, the log shows `ModuleNotFoundError: No module named 'my_rewards'`. The run does not stop by itself after this error. In our test the job stayed up for two hours with no rollout step. The watchdog did not stop it, because the engine wrote only 44 lines of `503 Service Unavailable` in that time. When you see the error, stop the container, fix `PYTHONPATH`, and start the run again.
 
 Write the function with `async def`. The flag help shows a plain function, but Miles awaits the result, so a plain function fails. The function receives the run arguments and one sample, with the answer in `sample.response` and the label in `sample.label`. If it returns a dict, name the field that holds the reward with `--reward-key`. With `--group-rm`, Miles passes the whole group as a list of samples instead, and the function must return one reward for each sample.
 
@@ -78,4 +80,4 @@ If your reward gives fractions, find groups where every answer has the same rewa
 - Check that groups with equal fractional rewards get advantages of 0.
 ```
 
-Sources: Miles reward hub, function loader, and reward arguments at main 08752a12; Miles launcher PYTHONPATH handling in the Ray backend at main 08752a12; capture/gpu/miles_grpo.py; Miles issue 4019.
+Sources: Miles reward hub, function loader, and reward arguments at main 08752a12; Miles launcher PYTHONPATH handling in the Ray backend at main 08752a12; capture/gpu/miles_grpo.py; Miles issue 4019; capture/gpu/out-gb10/custom-rm-noenv-hang.txt (live check, 2026-10-23).
