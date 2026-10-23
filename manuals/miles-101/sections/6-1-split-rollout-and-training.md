@@ -58,7 +58,7 @@ MODEL_ARGS=$(python3 miles/utils/external_utils/model_args_utils.py qwen3-4B)
 PYTHONPATH=/root/Megatron-LM python3 tools/convert_hf_to_torch_dist.py $MODEL_ARGS --hf-checkpoint /root/lab/models/Qwen3-4B --save /root/lab/models/Qwen3-4B_torch_dist
 ```
 
-Run these lines inside the container, with the lab folder mounted as in [section 1.1](#s-run-grpo-on-one-gpu). Our launcher builds an FSDP run only. For Megatron, start from a launcher of Miles for your model, in the `scripts` folder of the Miles source. We have not run the Megatron or the torchtitan trainer on our GB10.
+Run these lines inside the container, with the lab folder mounted as in [section 1.1](#s-run-grpo-on-one-gpu). Our launcher builds an FSDP run only. For Megatron, start from a launcher of Miles for your model, in the `scripts` folder of the Miles source. We have not run the Megatron or the torchtitan trainer on our GB10. We ran only the conversion to `torch_dist` for Qwen3-0.6B, and it wrote the checkpoint folder.
 
 ## Start a run on more than one node
 
@@ -84,4 +84,4 @@ To use a Ray cluster that you started yourself, set `MILES_SCRIPT_EXTERNAL_RAY=1
 - Pick the trainer before you size the run, because only Megatron has model parallel and LoRA.
 ```
 
-Sources: Miles main 08752a12 files docs/user-guide/training-backend.md, docs/user-guide/launch-script.md, miles/utils/external_utils/command_utils/ray_backend/backend.py, miles/utils/lora/arguments.py, tools/convert_hf_to_torch_dist.py, scripts/models/qwen3-4B.py, miles/ray/placement_group.py, miles/utils/arguments.py, miles/backends/training_utils/weight_update/protocol.py, miles/backends/training_utils/weight_update/protocols/broadcast.py, miles/backends/training_utils/weight_update/protocols/delta.py, miles/backends/training_utils/metrics/perf.py, docs/advanced/disaggregated-rollout.md, docs/advanced/p2p-weight-transfer.md.
+Sources: Miles main 08752a12 files docs/user-guide/training-backend.md, docs/user-guide/launch-script.md, miles/utils/external_utils/command_utils/ray_backend/backend.py, miles/utils/lora/arguments.py, tools/convert_hf_to_torch_dist.py, scripts/models/qwen3-4B.py, miles/ray/placement_group.py, miles/utils/arguments.py, miles/backends/training_utils/weight_update/protocol.py, miles/backends/training_utils/weight_update/protocols/broadcast.py, miles/backends/training_utils/weight_update/protocols/delta.py, miles/backends/training_utils/metrics/perf.py, docs/advanced/disaggregated-rollout.md, docs/advanced/p2p-weight-transfer.md; capture/gpu/out-gb10/live-check-summary.txt (live check, 2026-10-23).
