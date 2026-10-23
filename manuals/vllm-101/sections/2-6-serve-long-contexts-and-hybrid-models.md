@@ -48,7 +48,7 @@ Start the server and read the pool line. It gives the maximum concurrency at you
 grep "GPU KV cache size" server.log
 ```
 
-If the concurrency is below 1, the start fails. Lower the maximum length until the number is above the users you plan to serve at full length.
+The pool line prints only when the start succeeds. If the start stops with the error about the KV cache and the maximum length, lower `--max-model-len` until the pool line prints. Then read its concurrency, and compare it with the users you plan to serve at full length.
 
 ```takeaways
 - Set the maximum model length to your longest request, not to the model limit.

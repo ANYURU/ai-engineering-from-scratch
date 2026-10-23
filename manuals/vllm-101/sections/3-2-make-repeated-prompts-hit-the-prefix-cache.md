@@ -10,7 +10,7 @@ Every request repeats the same long system prompt. When you finish this section,
 
 Prefix caching is on by default in vLLM 0.31.0. We ran the same workload with it on and off on the L4 with `Qwen/Qwen3-8B`. Each run sent 4 groups of 16 prompts at 8 users. The prompts in a group shared a system prompt of the length in the table. Each prompt then added a 128-token question and asked for 64 tokens back.
 
-| Shared prompt tokens | Median TTFT, cache on | Median TTFT, cache off | Output tok/s, on / off |
+| Shared prompt tokens, L4 full-clock session | Median TTFT, cache on | Median TTFT, cache off | Output tok/s, on / off |
 |---|---|---|---|
 | none | 408 ms | 392 ms | 113.8 / 113.6 |
 | 256 | 488 ms | 753 ms | 111.5 / 99.1 |
@@ -20,7 +20,7 @@ Prefix caching is on by default in vLLM 0.31.0. We ran the same workload with it
 
 With the cache on, the first token took about 400 ms at every prefix length. With the cache off, the first token grew with the shared part, because every request computed the whole prompt again.
 
-Read the last two rows with care. Without the cache, the GPU ran much hotter. The median clock fell to 1,035 MHz at 2,048 tokens and to 675 MHz at 4,096 tokens. The cleanest comparison is the 1,024-token row, where both runs held 1,410 MHz or more. There the cache cut the first token about 3 times and gave 50 percent more output. The runs with the cache on were on 2026-10-17 and 2026-10-18, and the runs with it off on 2026-10-21.
+Read the last two rows with care. Without the cache, the GPU throttled. The median clock fell to 1,035 MHz at 2,048 tokens and to 675 MHz at 4,096 tokens. The cleanest comparison is the 1,024-token row, where both runs held 1,410 MHz or more. There the cache cut the first token about 3 times and gave 50 percent more output. The runs with the cache on were on 2026-10-17 and 2026-10-18, and the runs with it off on 2026-10-21.
 
 The server log reports the hit rate every few seconds:
 
@@ -51,7 +51,7 @@ The cache matches a prompt from its first token, one 16-token block at a time. I
 
 A timestamp or an ID near the start of the prompt changes the first block, and every later block then misses. Check your chat template too. Some templates put the date into the system prompt.
 
-Only full blocks are cached. A shared part of 20 tokens gives one cached block of 16, and the last 4 tokens are always computed.
+vLLM caches only full blocks. A shared part of 20 tokens gives one cached block of 16, and the last 4 tokens are always computed.
 
 ```figure
 id: fig-3-2

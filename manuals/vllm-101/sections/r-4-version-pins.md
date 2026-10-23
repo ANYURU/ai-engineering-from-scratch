@@ -20,7 +20,7 @@ Use this page to match your setup to ours before you compare a number.
 | Item | NVIDIA L4 | DGX Spark |
 |---|---|---|
 | GPU | NVIDIA L4, compute capability 8.9 | NVIDIA GB10, compute capability 12.1 |
-| Memory | 24 GB GDDR6, 22.1 GiB visible | 128 GB unified LPDDR5x, 121.7 GiB visible |
+| Memory | 24 GB GDDR6, 22.1 GiB visible | unified LPDDR5x sold as 128 GB, 121.69 GiB visible to the GPU |
 | CPU architecture | x86_64 | aarch64 |
 | Driver | 615.71.09 | 580.159.03 |
 | How vLLM ran | the pip wheel in a virtual environment | the image `vllm/vllm-openai:v0.31.0` |

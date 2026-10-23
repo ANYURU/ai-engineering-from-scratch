@@ -4,11 +4,11 @@
 
 You run vLLM on a DGX Spark or another machine where the CPU and the GPU share memory. When you finish this section, you can pick a memory fraction that leaves room for the operating system. You also know why the first start takes minutes.
 
-**Our result:** with a fraction of 0.75, the weights took 56.93 GiB and the KV cache 31.32 GiB of the 121.7 GiB pool.
+**Our result:** with a fraction of 0.75, the weights took 56.93 GiB and the KV cache 31.32 GiB of the 121.69 GiB of memory.
 
 ## Know what "GPU memory" means here
 
-The GB10 in a DGX Spark has no separate GPU memory. The CPU and the GPU use the same 128 GB of LPDDR5x. On our machine, the GPU reported 121.7 GiB in total, and the operating system, the page cache, and every other program use the same memory.
+The GB10 in a DGX Spark has no separate GPU memory. The CPU and the GPU use the same LPDDR5x memory, which NVIDIA sells as 128 GB. On our machine, the startup log reported 121.69 GiB in total. The operating system, the page cache, and every other program use the same memory.
 
 vLLM 0.31.0 knows this. On an integrated GPU it reads free memory from the operating system. The GPU driver reports too little free memory on these machines. It also releases its cached GPU memory when the whole system is more than 80 percent full. So `--gpu-memory-utilization` is a share of the whole machine, not of a separate card.
 
@@ -16,12 +16,12 @@ vLLM 0.31.0 knows this. On an integrated GPU it reads free memory from the opera
 
 The fraction sets the share that vLLM plans for. On unified memory it does not always limit what vLLM takes. Reports from other users show two cases. We did not see them in our run:
 
-- One user on a GB10 saw vLLM take about 101 GiB at a fraction of 0.50. The report says that vLLM sized the KV cache from the free memory, not from the share.
+- Issue 46307 reports a GB10 at a fraction of 0.70. It used about 112 GiB during the startup profile, against a share of about 83 GiB. The machine stopped responding. The issue was closed as stale with no fix.
 - Issue 44740 reports a negative estimate of the CUDA graph memory with MTP speculation on the GB10. The KV cache grew too large, and the start ran out of memory. The issue is open.
 
 In our run, the numbers matched the share of 0.75. That is one run, with no speculation.
 
-To give the cache a fixed size, set it in bytes with `--kv-cache-memory-bytes`. vLLM then ignores the fraction for the cache. Add the weights, the cache, and a few GiB for the profile and the graphs. Check that the sum leaves room for the operating system.
+To give the cache a fixed size, set it in bytes with `--kv-cache-memory-bytes`, as [the out-of-memory page](#s-fix-out-of-memory-at-startup) explains. Check that the weights, the cache, and a few GiB for the profile leave room for the operating system.
 
 ## Pick the fraction
 
@@ -31,12 +31,12 @@ Our run with `Qwen/Qwen3-30B-A3B-Instruct-2507` in BF16 used a fraction of 0.75:
 
 | Part | Size |
 |---|---|
-| The share for vLLM, 0.75 of 121.7 GiB | 91.3 GiB |
+| The share for vLLM, 0.75 of 121.69 GiB | 91.3 GiB |
 | The weights | 56.93 GiB |
 | Free for the KV cache | 31.32 GiB |
 | The rest, for the profile and the graphs | about 3 GiB |
 
-At 96 KiB per token, the 31.32 GiB holds about 342,000 tokens. That is enough for more than 500 users with 640 tokens each. Our sweeps then fixed the pool at 234,960 tokens, to match the SGLang server on the same machine. The fraction left about 30 GiB for the operating system and every other program.
+At 96 KiB per token, the 31.32 GiB holds about 342,000 tokens. That is enough for more than 500 users with 640 tokens each. Our sweeps used a smaller [fixed pool](#s-count-the-memory-before-you-pick-a-gpu). The fraction left about 30 GiB for the operating system and every other program.
 
 We ran one fraction only. A sweep of the fraction against the KV pool and the swap activity is planned and not run yet.
 
@@ -61,7 +61,9 @@ note: 330 seconds to load 56.93 GiB of weights.
 (EngineCore pid=143) INFO 10-21 10:58:45 [model_runner.py:407] Model loading took 56.93 GiB memory and 330.542793 seconds
 ```
 
-The load copies each tensor from the memory-mapped safetensors file into the GPU allocation, one tensor at a time. On the GB10, a copy from a file-backed page is slow. An open vLLM issue measured about 1.7 ms for each tensor copied from the file view. A copy in host memory first took about 0.2 ms. Release 0.31.0 fixed one part of the cost for one family of mixture-of-experts models. For other models the cost stays.
+The load copies each tensor from the memory-mapped safetensors file into the GPU allocation, one tensor at a time. On the GB10, a copy from a file-backed page is slow. An open vLLM issue measured about 1.7 ms for each tensor copied from the file view. A copy in host memory first took about 0.2 ms.
+
+Release 0.31.0 made a different part of the load faster. An indexed lookup of expert names saves about 25 s on a DGX Spark. The cost of each tensor copy stays.
 
 Two things help:
 
@@ -77,13 +79,12 @@ grep -E "Model loading took|Available KV cache memory|GPU KV cache size" server.
 free -g
 ```
 
-If `free -g` shows almost no available memory while the server is idle, lower the fraction by 0.05 and start again. If the KV cache line is larger than your share allows, set `--kv-cache-memory-bytes` instead.
+If `free -g` shows almost no available memory while the server is idle, lower the fraction by 0.05 and start again. If the KV cache line is larger than your share allows, set the cache size in bytes instead.
 
 ```takeaways
 - On unified memory, the memory fraction is a share of the whole machine.
 - Leave room for the operating system and the page cache, and check it with `free -g`.
-- If the fraction does not limit the memory, set the cache size with --kv-cache-memory-bytes.
 - Expect minutes for the first weight load, and keep the server running.
 ```
 
-Sources: the vLLM source at v0.31.0 (vllm/utils/mem_utils.py, vllm/platforms/cuda.py), the v0.31.0 release notes (weight loading on DGX Spark), vLLM issue 58726 (slow weight loading on GB10), capture/gpu/out-gb10/server-load-vllm.log, capture/gpu/summary/gb10.json, vLLM issue 44740 (negative CUDA graph memory estimate with MTP speculation on the GB10), a user report of about 101 GiB taken at a fraction of 0.50 on a GB10, vLLM documentation at v0.31.0 (--kv-cache-memory-bytes).
+Sources: the vLLM source at v0.31.0 (vllm/utils/mem_utils.py, vllm/platforms/cuda.py), the v0.31.0 release notes (weight loading on DGX Spark), vLLM issue 58726 (slow weight loading on GB10), vLLM pull request 58720 (indexed expert lookups in the weight load), capture/gpu/out-gb10/server-load-vllm.log, capture/gpu/summary/gb10.json, vLLM issue 44740 (negative CUDA graph memory estimate with MTP speculation on the GB10), vLLM issue 46307 (memory use above the share during the startup profile on the GB10), vLLM documentation at v0.31.0 (--kv-cache-memory-bytes).

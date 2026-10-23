@@ -4,13 +4,14 @@
 
 Use this page to check whether a problem you see is known.
 
-States are as of 2026-10-21, and as of 2026-10-22 for issues 44740, 52479, 54623, 57853, and 60333. Numbers refer to issues in the vLLM repository.
+States are as of 2026-10-22. Numbers refer to issues in the vLLM repository.
 
 ## Issues
 
 | Issue | What it reports | State | Page |
 |---|---|---|---|
 | 44740 | a negative CUDA graph memory estimate with MTP speculation on the GB10, which makes the KV cache too large | open | [DGX Spark](#s-size-memory-on-a-dgx-spark) |
+| 46307 | memory use above the `--gpu-memory-utilization` share during the startup profile on the GB10, which stopped the host | closed as stale on 2026-10-22, with no fix | [DGX Spark](#s-size-memory-on-a-dgx-spark) |
 | 52479 | a level 2 wake from sleep that does not reload the speculative draft, so no draft token is accepted | open | [RL rollouts](#s-use-vllm-as-an-rl-rollout-engine) |
 | 54623 | the Qwen3.5 family never loads checkpoint KV scales, so an FP8 KV cache runs at scale 1.0 | open | [FP8 KV cache](#s-fit-more-users-with-an-fp8-kv-cache) |
 | 57853 | a weight update sent while the engine sleeps segfaults the engine core | open | [RL rollouts](#s-use-vllm-as-an-rl-rollout-engine) |
@@ -35,4 +36,4 @@ States are as of 2026-10-21, and as of 2026-10-22 for issues 44740, 52479, 54623
 | 2026-10-22 | L4, shared GPU | the start failed, because one request at a maximum length of 2,928 tokens needed slightly more KV cache than was free | [startup](#s-fix-out-of-memory-at-startup) |
 | 2026-10-21 | GB10 | the first weight load of 56.93 GiB took 330 seconds | [DGX Spark](#s-size-memory-on-a-dgx-spark) |
 
-Sources: vLLM issues 44740, 52479, 54623, 57853, 58253, 58726, 59538, 59770, 60174, 60262, 60333, 60830, 60838, 61024, 61229, 61698, and 61886 (fetched 2026-10-21, and the state of 44740, 52479, 54623, 57853, 60174, and 60333 again on 2026-10-22); capture/gpu/out-gb10/server-load-vllm.log.
+Sources: vLLM issues 44740, 46307, 52479, 54623, 57853, 58253, 58726, 59538, 59770, 60174, 60262, 60333, 60830, 60838, 61024, 61229, 61698, and 61886 (fetched 2026-10-21, and the state of each again on 2026-10-22); capture/gpu/out-gb10/server-load-vllm.log.

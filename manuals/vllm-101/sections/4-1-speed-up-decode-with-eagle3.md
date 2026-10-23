@@ -27,7 +27,7 @@ A deeper draft can give more tokens for each pass of the target model. But each 
 
 ## See what our runs show
 
-**We measured** EAGLE3 at depths 1, 3, and 5 against no speculation on our L4 with `Qwen/Qwen3-8B` on 2026-10-22. We locked the SM clock at 900 MHz with `nvidia-smi -lgc`, and ran 1 and 32 users with two seeds each. The prompts came from the random dataset of the benchmark tool, with 512 tokens in and 128 tokens out.
+**We measured** EAGLE3 at depths 1, 3, and 5 against no speculation on our L4 with `Qwen/Qwen3-8B` on 2026-10-22. This was [the session locked at 900 MHz](#l4-sessions), and we ran 1 and 32 users with two seeds each. The prompts came from the random dataset of the benchmark tool, with 512 tokens in and 128 tokens out.
 
 ```figure
 id: fig-4-1
@@ -37,7 +37,7 @@ claim: With the clock locked, a draft depth of 3 gave the highest output at 32 u
 caption: Each bar is the median of two seeds. The run with no speculation at one user is left out, because its clock fell to 210 MHz. From capture/gpu/summary/l4.json.
 ```
 
-| Users | Config | Median TPOT | Output tok/s | Median SM clock |
+| Users, L4 locked session | Config | Median TPOT | Output tok/s | Median SM clock |
 |---|---|---|---|---|
 | 32 | no speculation | 119.9 ms | 208.8 | 881 MHz |
 | 32 | depth 1 | 100.4 ms | 271.1 | 900 MHz |
@@ -51,7 +51,7 @@ At 32 users, depth 3 gave 1.6 times the output of no speculation. Its seed range
 
 At one user, depth 3 cut the time per token from 39.4 to 27.8 ms against depth 1. Depth 5 gave about the same as depth 3, and their seed ranges overlapped.
 
-The run with no speculation at one user fell to 210 MHz, below the lock. A lock sets the highest clock, and it cannot stop the GPU from slowing down when it is hot. So we do not compare EAGLE3 against no speculation at one user.
+The run with no speculation at one user fell to 210 MHz, below the lock. A lock sets the highest clock, and it cannot stop the GPU from throttling. So we do not compare EAGLE3 against no speculation at one user.
 
 We did not collect acceptance data from these runs, so we give no acceptance length here.
 
@@ -61,9 +61,8 @@ The median TPOT fell, but the gaps between the token groups grew. At 32 users, t
 
 Our gain holds for random prompts and outputs of 128 tokens. Other teams found that real traffic can give less. We did not measure these effects ourselves:
 
-- A 2026 benchmark study by NVIDIA researchers, SPEED-Bench, found that synthetic prompts overstate the speculative throughput of real prompts. It also found that the best draft depth changes with the batch size.
-- A 2026 study of EAGLE-3 and other drafts, Test-Time Speculation, found that the acceptance length falls as the answer grows. Within a few thousand output tokens it came close to 1, which means no gain.
-- A 2025 study of serving benchmarks found that speculation lowered the median TPOT but raised the P99 TPOT and the TTFT.
+- The 2026 paper "SPEED-Bench: A Unified and Diverse Benchmark for Speculative Decoding", by NVIDIA researchers, found that synthetic prompts overstate the speculative throughput of real prompts. It also found that the best draft depth changes with the batch size.
+- The 2026 paper "Test-Time Speculation" studied EAGLE-3 and other drafts. The acceptance length fell as the answer grew, and within a few thousand output tokens it came close to 1, which means no gain.
 
 So a gain on short random answers does not predict a gain on long chat answers or on reasoning traces.
 
@@ -71,7 +70,14 @@ So a gain on short random answers does not predict a gain on long chat answers o
 
 Our first EAGLE3 runs had no clock lock. At one user, the run with no speculation ran at 210 MHz, and the EAGLE3 run at about 1,400 MHz. A gap that large hides the effect of speculation, so we set those runs aside.
 
-Before you compare speculative decoding with no speculation, lock the clock or record it for each run. Compare two runs only at the same clock.
+Before you compare speculative decoding with no speculation, lock the clock or record it for each run. Compare two runs only at the same clock. The lock needs root:
+
+```bash
+sudo nvidia-smi -lgc 900,900
+sudo nvidia-smi -rgc
+```
+
+The first command locks the SM clock at 900 MHz, and the second releases the lock after the runs.
 
 ## Choose the depth
 
@@ -97,11 +103,9 @@ curl -s http://localhost:8000/metrics | grep -E "spec_decode_num_(draft|accepted
 Divide the accepted tokens by the draft tokens. vLLM also writes a `SpecDecoding metrics` line to the log, with the mean acceptance length.
 
 ```takeaways
-- Use a draft trained for your target model, and set the depth yourself.
-- Start with a depth of 3. On our L4 it gave 1.6 times the output at 32 users, on random prompts.
-- A depth of 5 added nothing at one user and lost output at 32 users.
-- Measure the acceptance rate and the P99 latency on your own traffic before you keep it.
+- Use a draft trained for your target model, and start with a depth of 3.
+- Measure the acceptance rate and the P99 latency on your own traffic.
 - Lock or record the GPU clock before you compare speculative decoding.
 ```
 
-Sources: capture/gpu/summary/l4.json (load.vllm-lock-b, load.vllm-lock-eagle3-k1, load.vllm-lock-eagle3-k3, load.vllm-lock-eagle3-k5, and the unlocked load.vllm-eagle3 and load.vllm-eagle3-k5), the vLLM source at v0.31.0 (vllm/config/speculative.py, vllm/v1/spec_decode/metrics.py), vLLM documentation at v0.31.0 (docs/features/speculative_decoding/eagle.md, docs/features/speculative_decoding/dynamic_speculative_decoding.md), the 2026 benchmark study SPEED-Bench by NVIDIA researchers, the 2026 study Test-Time Speculation on EAGLE-3 and other drafts, a 2025 study of serving benchmarks (speculation, median and P99 TPOT, TTFT).
+Sources: capture/gpu/summary/l4.json (load.vllm-lock-b, load.vllm-lock-eagle3-k1, load.vllm-lock-eagle3-k3, load.vllm-lock-eagle3-k5, and the unlocked load.vllm-eagle3 and load.vllm-eagle3-k5), the vLLM source at v0.31.0 (vllm/config/speculative.py, vllm/v1/spec_decode/metrics.py), vLLM documentation at v0.31.0 (docs/features/speculative_decoding/eagle.md, docs/features/speculative_decoding/dynamic_speculative_decoding.md), SPEED-Bench: A Unified and Diverse Benchmark for Speculative Decoding (arXiv 2604.09557, 2026), Test-Time Speculation (arXiv 2605.09329, 2026).

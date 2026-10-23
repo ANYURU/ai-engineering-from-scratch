@@ -55,12 +55,14 @@ note: The weights took 56.93 GiB, and 31.32 GiB was left for the KV cache.
 (EngineCore pid=143) INFO 10-21 10:59:46 [gpu_worker.py:692] Available KV cache memory: 31.32 GiB
 ```
 
-At 96 KiB per token, 31.32 GiB holds about 342,000 tokens. Our sweep then fixed the pool at 234,960 tokens with `--num-gpu-blocks-override`, to match the pool of the SGLang server on the same machine. A fixed pool makes the two engines comparable. Your server uses the full number.
+At 96 KiB per token, 31.32 GiB holds about 342,000 tokens.
+
+**Fixed pool:** in our sweeps, we set the pool size by hand with `--num-gpu-blocks-override`, which sets the number of 16-token blocks. We gave vLLM the same pool as the SGLang server on the same machine, so that the two engines had the same room. On the DGX Spark the pool was 234,960 tokens, and on the L4 it was 24,096 tokens. Your server sizes the pool from free memory, so it uses the full number.
 
 The next line gives the pool in tokens and the users that fit at the full context length:
 
 ```listing
-title: the pool line from the L4 head-to-head
+title: the pool line from the L4 comparison run
 source: capture/gpu/out-l4/server-h2h-vllm.log
 lang: text
 note: 24,096 tokens at 144 KiB each is 3.31 GiB of KV cache.

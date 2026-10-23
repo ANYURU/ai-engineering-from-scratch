@@ -16,7 +16,7 @@ The last change breaks any browser client that calls the server directly. After 
 
 ## Plan for the cold start
 
-A start has three slow parts: the weight load, the compile, and the CUDA graph capture. On our DGX Spark, the weight load alone took 330 seconds for 57 GiB.
+A start has three slow parts: the weight load, the compile, and the CUDA graph capture. On our DGX Spark, the model load alone took 330 seconds for 57 GiB.
 
 - **Weights.** Keep them on a local disk. A network mount or a fresh download makes every start slower.
 - **Compile.** vLLM caches compiled code under `~/.cache/vllm`. Keep that folder on a persistent volume, so a restart reuses it.
@@ -47,7 +47,7 @@ Each later step depends on the ones before it. A speed feature measured on a ser
 
 ## Read the security advisories
 
-The vLLM project published dozens of security advisories in the weeks around 0.31 and 0.32. Several were rated high. Many came through multimodal inputs, and some through the KV transfer connectors. Do not expose the server to the internet without a gateway in front of it. Use `--api-key`, and read the advisories before you pick a release.
+The vLLM project published dozens of security advisories in the weeks around 0.31 and 0.32. Several were rated high. Many came through multimodal inputs, and some through the KV transfer connectors. Do not expose the server to the internet without a gateway in front of it. Use `--api-key`, as [the server options page](#s-set-the-server-options-every-deployment-needs) shows, and read the advisories before you pick a release.
 
 ```takeaways
 - Pin an exact image, and read the breaking changes before every upgrade.
@@ -56,4 +56,4 @@ The vLLM project published dozens of security advisories in the weeks around 0.3
 - Read the security advisories before you pick a release.
 ```
 
-Sources: the release notes for v0.30.0, v0.31.0, and v0.32.0, the GitHub security advisories of vllm-project/vllm (2026-09-21 to 2026-10-21), vLLM documentation at v0.31.0 (docs/design/torch_compile.md, docs/serving/openai_compatible_server.md), the vLLM source at v0.31.0 (vllm/benchmarks/startup.py), capture/gpu/out-gb10/server-load-vllm.log.
+Sources: the release notes for v0.30.0, v0.31.0, and v0.32.0, the GitHub security advisories of vllm-project/vllm (2026-09-21 to 2026-10-21), vLLM documentation at v0.31.0 (docs/design/torch_compile.md, docs/serving/online_serving/openai_compatible_server.md), the vLLM source at v0.31.0 (vllm/benchmarks/startup.py), capture/gpu/out-gb10/server-load-vllm.log.

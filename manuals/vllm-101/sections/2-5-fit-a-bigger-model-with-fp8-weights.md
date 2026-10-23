@@ -26,11 +26,11 @@ GPUs before Ada, such as the A100, have no FP8 math. On those, vLLM keeps the we
 
 The weights take close to half the memory in FP8. vLLM gives the memory that it frees to the KV pool. For `Qwen/Qwen3-8B`, each GiB of KV pool holds about 7,300 tokens in BF16, as [the FP8 KV cache page](#s-fit-more-users-with-an-fp8-kv-cache) shows.
 
-In our runs, we held the pool at 24,096 tokens with `--num-gpu-blocks-override`, so that both runs had the same room. So we did not measure the larger pool. The gain in room comes from the bytes, not from a run.
+In our runs, we held the pool at 24,096 tokens as a [fixed pool](#s-count-the-memory-before-you-pick-a-gpu), so that both runs had the same room. So we did not measure the larger pool. The gain in room comes from the bytes, not from a run.
 
 ## See what our runs show
 
-**We measured** `Qwen/Qwen3-8B-FP8` against `Qwen/Qwen3-8B` on our L4 on 2026-10-22. We locked the SM clock at 900 MHz and ran 1 and 32 users with two seeds each.
+**We measured** `Qwen/Qwen3-8B-FP8` against `Qwen/Qwen3-8B` on our L4 on 2026-10-22, in [the session locked at 900 MHz](#l4-sessions). We ran 1 and 32 users with two seeds each.
 
 ```figure
 id: fig-2-5
@@ -40,24 +40,46 @@ claim: With the clock locked and the same KV pool, FP8 weights gave 284.7 agains
 caption: Each bar is the median of two seeds. The BF16 run had a median clock of 881 MHz and the FP8 run 900 MHz. From capture/gpu/summary/l4.json.
 ```
 
-| Users | Median TPOT, BF16 / FP8 | Output tok/s, BF16 / FP8 | Median SM clock, BF16 / FP8 |
+| Users, L4 locked session | Median TPOT, BF16 / FP8 | Output tok/s, BF16 / FP8 | Median SM clock, BF16 / FP8 |
 |---|---|---|---|
 | 32 | 119.9 / 83.8 ms | 208.8 / 284.7 | 881 / 900 MHz |
 | 1 | not compared / 35.3 ms | not compared / 25.4 | 210 / 900 MHz |
 
 At 32 users, FP8 gave 36 percent more output and cut the time per token by 30 percent. The seed ranges did not overlap for either number. The BF16 clock was about 2 percent lower, much less than the gap.
 
-At one user, the BF16 run fell to 210 MHz, below the lock, because the GPU was hot. So we do not compare the two at one user.
+At one user, the BF16 run fell to 210 MHz, below the lock, because the GPU throttled. So we do not compare the two at one user.
+
+## Use a 4-bit or 8-bit integer checkpoint
+
+FP8 halves the weights. A 4-bit checkpoint stores most weights in about half a byte, so a model with twice the parameters can fit. On a 24 GB GPU such as the L4, a 4-bit checkpoint is a common way to serve a 14B model.
+
+vLLM 0.31.0 reads these formats from the checkpoint config, so you set no flag for a published checkpoint:
+
+| Format | What it stores | Notes at 0.31.0 |
+|---|---|---|
+| AWQ and GPTQ | 4-bit weights, 16-bit math | runs from the Turing GPUs on, with the fast Marlin kernels on Ampere, Ada, and Hopper |
+| compressed-tensors W4A16 or W8A8 | 4-bit or 8-bit weights, made with the LLM Compressor library | the vLLM project suggests this library to make your own checkpoint |
+| bitsandbytes | 4-bit weights, made when the server loads the model | set `--quantization bitsandbytes` for a model that is not quantized |
+| GGUF | the llama.cpp file format | needs the separate `vllm-gguf-plugin` package, and the vLLM documentation calls it experimental |
+
+For example, Qwen publishes a 4-bit AWQ checkpoint of Qwen3-14B:
+
+```bash
+vllm serve Qwen/Qwen3-14B-AWQ --max-model-len 8192
+```
+
+We started this AWQ checkpoint once on an L4, with no `--quantization` flag. The log showed `quantization=auto_awq` and the Marlin kernel. The weights took 9.44 GiB, and the pool held 36,272 tokens. We did not measure its speed or its accuracy, and we did not run the other formats.
+
+A 4-bit model can lose more accuracy than an FP8 model, and the loss depends on the model and the method. Test both formats on your own prompts.
 
 ## Check the accuracy
 
 We did not measure output quality with FP8 weights. Run your own prompts on both checkpoints, and compare the answers before you go to production.
 
 ```takeaways
-- Use a published FP8 checkpoint, and set no extra flag.
-- On our L4 locked at 900 MHz, FP8 Qwen3-8B gave 36 percent more output at 32 users.
-- The freed memory goes to the KV pool, so you also get more room.
+- Serve a published FP8 checkpoint, and set no extra flag.
+- Use a 4-bit checkpoint when the model does not fit in FP8.
 - Check output quality on your own prompts before production.
 ```
 
-Sources: capture/gpu/summary/l4.json (load.vllm-lock-b, load.vllm-lock-fp8), the vLLM source at v0.31.0 (vllm/model_executor/layers/quantization/fp8.py), vLLM documentation at v0.31.0 (docs/features/quantization/online.md).
+Sources: capture/gpu/summary/l4.json (load.vllm-lock-b, load.vllm-lock-fp8), the vLLM source at v0.31.0 (vllm/model_executor/layers/quantization/fp8.py), vLLM documentation at v0.31.0 (docs/features/quantization/online.md, docs/features/quantization/README.md, docs/features/quantization/auto_awq.md, docs/features/quantization/gptqmodel.md, docs/features/quantization/bnb.md, docs/features/quantization/gguf.md, docs/features/quantization/llm_compressor/), capture/gpu/out-l4/livecheck-2026-10-22.txt.

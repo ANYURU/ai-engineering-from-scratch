@@ -2,7 +2,7 @@
 
 > For chat, the worst gap between tokens matters more than throughput, so watch P99 ITL as users grow.
 
-Your chat service streams smoothly for a few users and stutters for many. When you finish this section, you can keep the stream steady as the number of users grows.
+Your chat service streams smoothly for a few users and has long gaps between tokens for many. When you finish this section, you can keep the stream steady as the number of users grows.
 
 **Our result:** on our L4, about two in three requests met our latency target at 16 users, and none at 32. Capping the batch did not fix it.
 
@@ -14,9 +14,9 @@ Watch the P99 ITL, the worst gap in 100. One long pause in a stream feels worse 
 
 ## See where the stream breaks
 
-**We measured** users at once from 1 to 64 on our L4 with `Qwen/Qwen3-8B` on 2026-10-21. Each request sent 512 prompt tokens and asked for 128 tokens, with three seeds per point.
+**We measured** users at once from 1 to 64 on our L4 with `Qwen/Qwen3-8B` on 2026-10-21, in [the full-clock session](#l4-sessions). Each request sent 512 prompt tokens and asked for 128 tokens, with three seeds per point.
 
-| Users | Output tok/s | Median TTFT | P99 ITL | Share of requests that met the target | Median SM clock |
+| Users, L4 full-clock session | Output tok/s | Median TTFT | P99 ITL | Share of requests that met the target | Median SM clock |
 |---|---|---|---|---|---|
 | 8 | 112.8 | 0.25 s | 67 ms | 75% | 1,485 MHz |
 | 16 | 201.3 | 0.29 s | 85 ms | 64% | 1,455 MHz |
@@ -29,7 +29,7 @@ Each step has a budget of 2,048 tokens on this GPU. When new prompts arrive, the
 
 ## Know what a cap on sequences does
 
-`--max-num-seqs` sets how many requests run at once. For `vllm serve` on a GPU with less than 70 GiB, such as the L4, the default is 256. On a larger GPU other than an A100, it is 1,024. We set it to 16 and ran the same sweep:
+`--max-num-seqs` sets how many requests run at once. On the L4 the default is 256, and [the token budget page](#s-keep-long-prompts-from-stalling-short-ones) gives the rule for other GPUs. We set it to 16 and ran the same sweep:
 
 ```figure
 id: fig-3-1
@@ -39,7 +39,7 @@ claim: A cap of 16 sequences matched the default up to 16 users, and at 32 users
 caption: Each point is the median of three seeds, and the bands span them. The time to the first token uses a log scale. From capture/gpu/summary/l4.json.
 ```
 
-| Users | Config | Output tok/s | Median TTFT | Median ITL | P99 ITL | Median SM clock |
+| Users, L4 full-clock session | Config | Output tok/s | Median TTFT | Median ITL | P99 ITL | Median SM clock |
 |---|---|---|---|---|---|---|
 | 32 | default | 275.1 | 1.8 s | 80.5 ms | 613 ms | 1,275 MHz |
 | 32 | `--max-num-seqs 16` | 171.8 | 12.3 s | 69.8 ms | 595 ms | 1,365 MHz |
@@ -50,9 +50,9 @@ A cap does not make room for more users. It only chooses who waits.
 
 ## See what a small pool does
 
-The KV pool limits the users too. **We measured** a pool of 6,560 tokens, with `--num-gpu-blocks-override 410` and `--max-model-len 4096`, against our pool of 24,096 tokens. Both ran on our L4 on 2026-10-22 with the clock locked at 900 MHz, at 32 users and two seeds each.
+The KV pool limits the users too. **We measured** a pool of 6,560 tokens, with `--num-gpu-blocks-override 410` and `--max-model-len 4096`, against our pool of 24,096 tokens. Both ran on our L4 on 2026-10-22 in [the session locked at 900 MHz](#l4-sessions), at 32 users and two seeds each.
 
-| Pool | Median TTFT | P99 TTFT | Median SM clock |
+| Pool, L4 locked session | Median TTFT | P99 TTFT | Median SM clock |
 |---|---|---|---|
 | 24,096 tokens | 3.1 s | 7.1 s | 881 MHz |
 | 6,560 tokens | 31.6 s | 48.0 s | 248 MHz |

@@ -13,7 +13,7 @@ With the OpenAI client, use `response_format`:
 ```python
 from openai import OpenAI
 
-client = OpenAI(base_url="http://localhost:8000/v1", api_key="none")
+client = OpenAI(base_url="http://localhost:8000/v1", api_key="EMPTY")
 schema = {
     "type": "object",
     "properties": {"city": {"type": "string"}, "days": {"type": "integer"}},
@@ -27,7 +27,7 @@ reply = client.chat.completions.create(
 print(reply.choices[0].message.content)
 ```
 
-For other limits, send `structured_outputs` in `extra_body`. It takes one of `json`, `json_object`, `regex`, `choice`, `grammar`, or `structural_tag`. The older `guided_json` and `guided_*` fields were removed in 0.12.0. A recipe that uses them is out of date.
+For other limits, send `structured_outputs` in `extra_body`. It takes one of `json`, `json_object`, `regex`, `choice`, `grammar`, or `structural_tag`. Release 0.12.0 removed the older `guided_json` and `guided_*` fields. A recipe that uses them is out of date.
 
 ## Know what runs on the server
 
@@ -53,7 +53,7 @@ The parser turns the model's text into the `tool_calls` field of the response. P
 ## Avoid two known problems
 
 - **Speculative decoding.** A schema and a speculation method can disagree on the next tokens. An issue on 0.31 showed invalid JSON with MTP speculation for one model, and the issue is now closed. Test your schema with and without `--speculative-config` before you rely on both.
-- **Reasoning models.** A model that thinks before it answers needs the schema to apply to the answer only. Set the reasoning parser for your model, so the limit starts after the thinking ends.
+- **Reasoning models.** A model that thinks before it answers needs the schema to apply to the answer only. Set the reasoning parser for your model, so the limit starts after the thinking ends. [The reasoning models page](#s-serve-reasoning-models) shows the flag.
 
 ## Check the result
 

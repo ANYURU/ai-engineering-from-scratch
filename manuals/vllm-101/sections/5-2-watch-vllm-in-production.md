@@ -6,7 +6,18 @@ Your server is in production and you must know when it is in trouble. When you f
 
 ## Scrape the endpoint
 
-vLLM exports Prometheus metrics at `/metrics` on the same port as the API. Point your Prometheus scrape at it. No flag is needed.
+vLLM exports Prometheus metrics at `/metrics` on the same port as the API. No flag is needed. Add a job like this one to the `scrape_configs` list of your Prometheus config, and change the target to your server:
+
+```yaml
+scrape_configs:
+  - job_name: vllm
+    scrape_interval: 15s
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["vllm-host:8000"]
+```
+
+We did not run Prometheus against our servers.
 
 ## Alert on five metrics
 
@@ -16,9 +27,17 @@ vLLM exports Prometheus metrics at `/metrics` on the same port as the API. Point
 | `vllm:kv_cache_usage_perc` | above 0.95 for more than a minute | the pool is full, so new requests wait or preempt |
 | `vllm:num_preemptions_total` | the rate is above 0 | requests are stopped and computed again |
 | `vllm:time_to_first_token_seconds` | the 99th percentile passes your target | users wait for the first word |
-| `vllm:inter_token_latency_seconds` | the 99th percentile passes your target | the stream stutters |
+| `vllm:inter_token_latency_seconds` | the 99th percentile passes your target | the stream has long gaps between tokens |
 
 Set the latency targets from your product, not from the defaults of a dashboard. Our sweeps used 1,000 ms for the first token and 100 ms for each output token.
+
+The two latency metrics are histograms, so the 99th percentile comes from a PromQL query. This expression is above 0 when the P99 of the first-token time over the last five minutes is more than 1 second:
+
+```text
+histogram_quantile(0.99, sum by (le) (rate(vllm:time_to_first_token_seconds_bucket[5m]))) > 1
+```
+
+Use the same form with `vllm:inter_token_latency_seconds_bucket` and a target of 0.1 for the token gaps.
 
 ## Read them together
 
