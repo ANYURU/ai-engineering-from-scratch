@@ -31,7 +31,7 @@ With the FSDP trainer of this manual, a resume restores these parts of the run:
 - the step count, so the run continues at the next step
 - the position in the prompt data, which the rollout side saves next to the trainer state
 
-The log of a resumed run should show `[FSDP] Loaded model from` and `[FSDP] Loaded optimizer from`, each with the folder of the step. A message that the tracker file or the folder was not found means that the run started fresh.
+The log of a resumed run should show `[FSDP] Loaded model from` and `[FSDP] Loaded optimizer from`, each with the folder of the step. If these lines are missing, the run started fresh. Our first run with an empty folder printed no message about the missing checkpoint. In our resume check, the first trainer line after the load was `step 2`.
 
 Test a restart on a short run before the long run starts. Miles always saves after the last step, so run the command above with `MILES_NUM_ROLLOUT=2`. Then run it again with `MILES_NUM_ROLLOUT=4`. The first step line of the second run should be `step 2`, not `step 0`. We have not run this test on our GB10.
 
@@ -73,4 +73,4 @@ The Miles team built a fault injector for its tests. Their release notes report 
 - Test an engine crash on your own setup before a long run.
 ```
 
-Sources: Miles main 08752a12 files miles/backends/fsdp_utils/checkpoint.py, miles/ray/rollout/rollout_executor.py, miles/rollout/data_source.py, tools/convert_fsdp_to_hf.py, docs/user-guide/training-backend.md, miles/utils/arguments.py, docs/advanced/fault-tolerance.md, miles/ray/placement_group.py, miles/backends/training_utils/checkpoint/io.py, miles/utils/test_utils/fault_injector.py, compared with miles/utils/arguments.py at main ee36bb2a of 2026-10-20; Miles release notes v0.1.2; Miles issue 3649; capture/gpu/out-gb10/engine-died-503.log.
+Sources: Miles main 08752a12 files miles/backends/fsdp_utils/checkpoint.py, miles/ray/rollout/rollout_executor.py, miles/rollout/data_source.py, tools/convert_fsdp_to_hf.py, docs/user-guide/training-backend.md, miles/utils/arguments.py, docs/advanced/fault-tolerance.md, miles/ray/placement_group.py, miles/backends/training_utils/checkpoint/io.py, miles/utils/test_utils/fault_injector.py, compared with miles/utils/arguments.py at main ee36bb2a of 2026-10-20; Miles release notes v0.1.2; Miles issue 3649; capture/gpu/out-gb10/engine-died-503.log; capture/gpu/out-gb10/resume-check.txt (live check, 2026-10-23).
