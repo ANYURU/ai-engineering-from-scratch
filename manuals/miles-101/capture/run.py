@@ -15,6 +15,13 @@ SUMMARY = GPU / "summary" / "miles-gb10-lab.json"
 PAUSES = OUT / "thermostat.log"
 REPLAY_INPUT = OUT / "e2-n16-503-per-second.txt"
 REPLAY_STORED = OUT / "503-bursts.txt"
+LIVE_CHECKS = {
+    "custom-rm-noenv-hang.txt": ["lines with 503 Service Unavailable: 44", "lines with rollout N metrics: 0", "first timestamped line: 2026-10-23 00:19:02", "last timestamped line: 2026-10-23 02:17:06", "No module named 'my_rewards'"],
+    "frac-low-kv.txt": ["#tokens: 3082", "perf/rollout_time': 385.5", "perf/rollout_time': 60.69"],
+    "tracker-eval-checks.txt": ["TypeError: unsupported operand type(s) for +: 'NoneType' and 'str'", "W&B offline mode enabled.", "Saving tensorboard log to /root/lab/runs/plain/tb.", "503 lines 5311", "503 lines 4339"],
+    "resume-check.txt": ["[FSDP] Loaded model from /ckpt/run-a/iter_0000002/model", "step 2:", "lines mentioning a missing tracker or folder: 0"],
+    "live-check-summary.txt": ["successfully saved checkpoint from iteration", "latest_checkpointed_iteration.txt: release", "model.safetensors", "tokenizer.json"],
+}
 REPLAY_COMMAND = "$ python3 watchdog_replay.py"
 
 sys.dont_write_bytecode = True
@@ -77,6 +84,9 @@ def check():
     if replay_output() != stored_replay():
         problems.append(f"the watchdog replay differs from {REPLAY_STORED.name}")
     problems += summary_problems(json.loads(SUMMARY.read_text()))
+    for name, quoted in LIVE_CHECKS.items():
+        text = (OUT / name).read_text()
+        problems += [f"{name}: the quoted value {value!r} is missing" for value in quoted if value not in text]
     runs = lab_runs()
     if runs is None:
         print("skipped: the raw run logs stay on the DGX Spark that recorded them, so only the stored outputs were compared. Set MILES_LAB_RUNS to a runs folder to compare a fresh summary.")
@@ -86,7 +96,7 @@ def check():
         print(f"drift: {problem}")
     if problems:
         return 1
-    print("capture check passed: watchdog replay, pause marks, and medians match the stored outputs")
+    print("capture check passed: watchdog replay, pause marks, medians, and live-check notes match the stored outputs")
     return 0
 
 
