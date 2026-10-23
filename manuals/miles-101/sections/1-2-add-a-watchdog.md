@@ -159,17 +159,17 @@ The second container prints the error for 60 s and then stays quiet for two minu
 
 Our GB10 reached 84 C again and again under hours of load. The heat guard from [the front matter](#s-front-how-we-tested-it) paused our runs 1,005 times in five days. Run it on a GB10, or on any GPU that gets hot when you leave a run alone for hours. A short run of a few steps does not need it.
 
-Download the script that we ran, and start it in a third terminal on the host, not in the container. The `rm` line deletes a stop file that an earlier session can leave behind, because the script exits at once when that file exists:
+Download the script that we ran, and start it in a third terminal on the host, not in the container. The `rm` part deletes a stop file that an earlier session can leave behind, because the script exits at once when that file exists. Delete it only when no queue of yours uses the file to stop the guard. The commands stop at the first failure, so a failed download does not start an old copy:
 
 ```bash
-curl -fsSL -o ~/miles-lab/heat-guard.sh https://raw.githubusercontent.com/rohitg00/ai-engineering-from-scratch/main/manuals/miles-101/capture/gpu/heat-guard.sh
-rm -f ~/miles-lab/queue2.done
-sh ~/miles-lab/heat-guard.sh
+curl -fsSL -o ~/miles-lab/heat-guard.sh https://raw.githubusercontent.com/rohitg00/ai-engineering-from-scratch/main/manuals/miles-101/capture/gpu/heat-guard.sh \
+  && rm -f ~/miles-lab/queue2.done \
+  && sh ~/miles-lab/heat-guard.sh
 ```
 
 Every 5 s, the script reads the GPU temperature with `nvidia-smi`. It pauses the first running container of the `radixark/miles:latest` image at 84 C. It resumes the container at 74 C or below after at least 45 s, or after 120 s at most. Each pause and resume goes to `~/miles-lab/runs/thermostat.log`.
 
-Stop the script with Ctrl+C. It resumes a paused container before it exits, so no run stays paused. It also stops when the file `~/miles-lab/queue2.done` exists, which is how our run queue stopped it.
+Stop the script with Ctrl+C. It resumes the container that it paused before it exits, so no run stays paused. In our check, Ctrl+C during a pause resumed the run within 5 s. It also stops when the file `~/miles-lab/queue2.done` exists, which is how our run queue stopped it.
 
 Read the pause log when you compare times. A step that overlapped a pause took longer for a reason that is not the work. [Section 5.3](#s-repeat-a-run) shows how to time only clean steps.
 

@@ -3,8 +3,9 @@ L="$HOME/miles-lab/runs/thermostat.log"
 DONE="$HOME/miles-lab/queue2.done"
 paused=0
 c=
+pc=
 release() {
-  if [ "$paused" = 1 ] && [ -n "$c" ] && docker unpause "$c" >/dev/null; then
+  if [ "$paused" = 1 ] && [ -n "$pc" ] && docker unpause "$pc" >/dev/null; then
     echo "$(date -u +%FT%TZ) resume on exit after $(( $(date +%s) - since )) s" >> "$L"
   fi
   paused=0
@@ -12,10 +13,14 @@ release() {
 trap 'release; exit 1' INT TERM HUP
 while [ ! -f "$DONE" ]; do
   t=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits | head -1)
-  c=$(docker ps -q --filter ancestor=radixark/miles:latest | head -1)
-  if [ -z "$c" ]; then paused=0
-  elif [ "$paused" = 0 ] && [ "$t" -ge 84 ]; then docker pause "$c" >/dev/null && paused=1 && since=$(date +%s) && echo "$(date -u +%FT%TZ) pause at ${t}C" >> "$L"
-  elif [ "$paused" = 1 ] && { { [ "$t" -le 74 ] && [ $(( $(date +%s) - since )) -ge 45 ]; } || [ $(( $(date +%s) - since )) -ge 120 ]; }; then docker unpause "$c" >/dev/null && paused=0 && echo "$(date -u +%FT%TZ) resume at ${t}C after $(( $(date +%s) - since )) s" >> "$L"
+  if [ "$paused" = 1 ]; then
+    if ! docker ps -q --filter "id=$pc" | grep -q .; then paused=0
+    elif { [ "$t" -le 74 ] && [ $(( $(date +%s) - since )) -ge 45 ]; } || [ $(( $(date +%s) - since )) -ge 120 ]; then docker unpause "$pc" >/dev/null && paused=0 && echo "$(date -u +%FT%TZ) resume at ${t}C after $(( $(date +%s) - since )) s" >> "$L"
+    fi
+  else
+    c=$(docker ps -q --filter ancestor=radixark/miles:latest --filter status=running | head -1)
+    if [ -n "$c" ] && [ "$t" -ge 84 ]; then docker pause "$c" >/dev/null && pc=$c && paused=1 && since=$(date +%s) && echo "$(date -u +%FT%TZ) pause at ${t}C" >> "$L"
+    fi
   fi
   sleep 5
 done
