@@ -154,3 +154,12 @@
 @media (pointer: coarse) { .m-fig-replay { min-height: 40px; padding: 0 14px; } }
 @media print { .m-dither, .m-fig-replay { display: none; } }
 @media (prefers-reduced-motion: reduce) { .m-index-card { transition: none; } .m-index-card:hover, .m-index-card:focus-within { transform: none; } }
+
+.m-section-num .m-section-link { color: inherit; text-decoration: none; }
+.m-section-num .m-section-link:hover { text-decoration: underline; }
+.m-web .m-crumbs { margin: 0 0 18px; color: var(--m-ink-mute); }
+.m-web .m-crumbs a { text-decoration: none; }
+.m-web .m-pager { border-top: 1px solid var(--m-rule); padding-top: 22px; margin-top: 40px; }
+.m-web .m-section-pin { color: var(--m-ink-mute); margin-top: 18px; }
+.m-sidebar .m-toc a[aria-current="page"] { color: var(--m-ink); font-weight: 650; }
+.m-sidebar .m-toc-label a { color: inherit; text-decoration: none; }
