@@ -112,7 +112,7 @@ Every recipe in this manual adds its flags through `MILES_EXTRA_ARGS`. For examp
 -e MILES_EXTRA_ARGS="--rollout-top-p 0.95 --rollout-top-k 64"
 ```
 
-When a flag is in the launcher and also in `MILES_EXTRA_ARGS`, the value in `MILES_EXTRA_ARGS` wins, because Miles keeps the last value. Our runs with an engine memory fraction of 0.25 set it that way.
+When a flag is in the launcher and also in `MILES_EXTRA_ARGS`, the value in `MILES_EXTRA_ARGS` wins, because Miles keeps the last value. Our runs with an engine memory fraction of 0.25 set it that way. There is one exception. With `MILES_TRUE_ON_POLICY=1`, the launcher adds its true on-policy flags after `MILES_EXTRA_ARGS`, so those flags win. Set the attention backends of that mode with `MILES_SGLANG_ATTENTION` and `MILES_FSDP_ATTENTION` instead.
 
 ## Start the run
 
