@@ -140,7 +140,7 @@ from: phases/12-multimodal-ai/20-omni-models-thinker-talker/docs/en.md, phases/1
 | First speech tokens commit | 40ms | Before residual-VQ decode |
 | Residual-VQ decode | 30ms | `rvq_decode = 30` |
 | Speech waveform decode | 50-80ms | `wave_decode = 70` |
-| Total TTFAB | 320-510ms | 600-900ms at 70B |
+| Total TTFAB | 320-490ms | 600-900ms at 70B |
 
 ## Troubleshooting
 type: troubleshooting
