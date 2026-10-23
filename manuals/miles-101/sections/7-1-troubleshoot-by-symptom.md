@@ -59,7 +59,7 @@ caption: Five of the symptoms from our runs. The entries below also cover a run 
 ## The engine runs out of memory at start
 
 - **Cause:** `--sglang-mem-fraction-static` does not fit the GPU. With `--colocate`, the trainer can already hold GPU memory when the engine starts. A fraction that is too high leaves no room for activations and CUDA graphs. A fraction that is too low leaves no room for the KV cache.
-- **Check:** a CUDA out-of-memory error in the engine lines during startup or on the first batch, and no `Ray OutOfMemoryError`. If the fraction is too low, the engine stops before the `KV Cache is allocated` line and names a larger fraction.
+- **Check:** a CUDA out-of-memory error in the engine lines during startup or on the first batch, and no `Ray OutOfMemoryError`. A fraction that is too low does not always stop the engine. Read `#tokens` in the `KV Cache is allocated` line. In our check at 0.02, the engine started with 3,082 tokens, and the first rollout took 386 s against 61 s at 0.25.
 - **Fix:** lower the fraction for the first case, or raise it for the second, by 0.05 or 0.1 at a time. The Miles documentation asks for 0.8 or lower with `--colocate`. Our runs used 0.4. [SGLang 101, section 3.2](https://aiengineeringfromscratch.com/manual-sglang-101.html#s-mem-fraction-static-and-startup-sizing) explains how the engine divides its memory.
 
 ## A reward function with fractions moves a group that should stay still
@@ -98,4 +98,4 @@ caption: Five of the symptoms from our runs. The entries below also cover a run 
 - Treat entries from the issue tracker as reports to check, not as results we measured.
 ```
 
-Sources: Miles training backend documentation at main 08752a12; SGLang memory sizing code in the image build 0.5.22.dev46; capture/gpu/out-gb10/engine-died-503.log; capture/gpu/out-gb10/engine-died-count.txt; capture/gpu/out-gb10/503-bursts.txt; capture/gpu/out-gb10/ray-oom-4b.log; capture/gpu/out-gb10/thermostat.log; capture/gpu/summary/miles-gb10-lab.json; manuals/sglang-101/capture/gpu/out-miles/true-on-policy-error.log; Miles issues 3649, 3714, 4003, 4019, 4134, 4238; capture/gpu/out-gb10/custom-rm-noenv-hang.txt (live check, 2026-10-23).
+Sources: Miles training backend documentation at main 08752a12; SGLang memory sizing code in the image build 0.5.22.dev46; capture/gpu/out-gb10/engine-died-503.log; capture/gpu/out-gb10/engine-died-count.txt; capture/gpu/out-gb10/503-bursts.txt; capture/gpu/out-gb10/ray-oom-4b.log; capture/gpu/out-gb10/thermostat.log; capture/gpu/summary/miles-gb10-lab.json; manuals/sglang-101/capture/gpu/out-miles/true-on-policy-error.log; Miles issues 3649, 3714, 4003, 4019, 4134, 4238; capture/gpu/out-gb10/custom-rm-noenv-hang.txt (live check, 2026-10-23); capture/gpu/out-gb10/frac-low-kv.txt (live check, 2026-10-23).
