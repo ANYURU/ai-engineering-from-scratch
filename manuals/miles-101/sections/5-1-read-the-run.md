@@ -41,7 +41,9 @@ For Weights & Biases without an account or a network, write the run to a local f
 -e MILES_EXTRA_ARGS="--use-wandb --wandb-mode offline --wandb-project miles-lab --wandb-group plain --wandb-dir /root/lab/runs/plain/wandb"
 ```
 
-Keep `--wandb-group`. Without it, the run stops at start with `TypeError: unsupported operand type(s) for +: 'NoneType' and 'str'`. The log should show `W&B offline mode enabled. Data will be saved locally.`, and an `offline-run-` folder appears under `~/miles-lab/runs/plain/wandb/wandb/`. For an online run, leave out `--wandb-mode offline`. Keep the key out of the command line, because commands go to the shell history and the process list. Put `WANDB_API_KEY=<your key>` in a file that only you can read, such as `~/miles-lab/wandb.env` with mode 600, and add `--env-file ~/miles-lab/wandb.env` to the `docker run` line. Do not put the key in `MILES_EXTRA_ARGS`, because the launcher prints the full command in the log.
+Keep `--wandb-group`. Without it, the run stops at start with `TypeError: unsupported operand type(s) for +: 'NoneType' and 'str'`. The log should show `W&B offline mode enabled. Data will be saved locally.`, and an `offline-run-` folder appears under `~/miles-lab/runs/plain/wandb/wandb/`.
+
+For an online run, leave out `--wandb-mode offline`. Keep the key out of the command line, because commands go to the shell history and the process list. Put `WANDB_API_KEY=<your key>` in a file that only you can read, such as `~/miles-lab/wandb.env` with mode 600, and add `--env-file ~/miles-lab/wandb.env` to the `docker run` line. Do not put the key in `MILES_EXTRA_ARGS`, because the launcher prints the full command in the log.
 
 For TensorBoard, give Miles a folder and turn the writer on:
 
