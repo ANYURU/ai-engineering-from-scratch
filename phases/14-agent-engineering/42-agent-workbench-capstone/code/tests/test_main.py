@@ -66,6 +66,23 @@ class GeneratedPackEncodingTest(unittest.TestCase):
             with self.subTest(source=source.name):
                 self.assertEqual(calls_without_encoding(source.read_text(encoding="utf-8")), [])
 
+    def test_checker_flags_text_io_without_encoding(self) -> None:
+        source = "from pathlib import Path\nPath('a').write_text('x')\nPath('a').read_text()\nopen('a', 'w')\n"
+        self.assertEqual(calls_without_encoding(source), ["line 2: write_text", "line 3: read_text", "line 4: open"])
+
+    def test_checker_flags_text_mode_subprocess_without_encoding(self) -> None:
+        source = "import subprocess\nsubprocess.run(['ls'], text=True)\nsubprocess.run(['ls'])\n"
+        self.assertEqual(calls_without_encoding(source), ["line 2: run"])
+
+    def test_checker_accepts_binary_and_explicit_encodings(self) -> None:
+        source = (
+            "from pathlib import Path\n"
+            "open('a', 'rb')\n"
+            "Path('a').write_text('x', encoding='utf-8')\n"
+            "open('a', 'a', encoding='utf-8')\n"
+        )
+        self.assertEqual(calls_without_encoding(source), [])
+
 
 if __name__ == "__main__":
     unittest.main()
