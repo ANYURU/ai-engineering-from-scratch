@@ -30,7 +30,7 @@ The key ingredient is the visual tokenizer. Emu3 trains a custom IBQ-class token
 
 This is larger than Chameleon's 1024 tokens per 512x512 at K=8192 on both axes: four times the tokens and a codebook four times as large. The extra capacity buys reconstruction quality. The key metric: reconstruction PSNR at 30.5 dB, competitive with Stable Diffusion's continuous latent space at 32 dB.
 
-For video: a 3D VQ tokenizer encodes a spatiotemporal patch (4x4x4 pixels) to one integer. A 4s clip at 8 FPS has 32 frames; at 256x256 with 4x spatial and 4x temporal reduction, the token count is (256/4) * (256/4) * (32/4) = 64 * 64 * 8 = 32,768 tokens.
+For video: a 3D VQ tokenizer encodes a spatiotemporal patch (4 frames x 8x8 pixels) to one integer. A 4s clip at 8 FPS has 32 frames; at 256x256 with 8x spatial and 4x temporal reduction, the token count is (256/8) * (256/8) * (32/4) = 32 * 32 * 8 = 8,192 tokens.
 
 Tokenizer quality is the ceiling. Emu3's contribution is partly "we trained a very good tokenizer."
 
@@ -106,7 +106,7 @@ This lesson produces `outputs/skill-token-gen-cost-analyzer.md`. Given a generat
 
 1. Emu3 produces 4096 tokens per 512x512 image at 8x8 reduction. Compute the equivalent for 1024x1024 and 2048x2048. What happens to inference latency?
 
-2. Read Emu3 Section 3.3 on the video tokenizer. Describe the 3D VQ patch shape and why it is 4x4x4 not 8x8x1.
+2. Read Emu3 Section 3.3 on the video tokenizer. Describe the 3D VQ patch shape and why it spans 4 frames x 8x8 pixels instead of a single frame.
 
 3. Classifier-free guidance weight 5.0 vs 3.0: what visual effect? Trace the math in `code/main.py`.
 
